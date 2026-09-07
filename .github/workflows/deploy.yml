@@ -7,12 +7,12 @@ name: Build and deploy
 # project sidesteps any question of whether the deploy action's build step recognises
 # it. Nothing is lost: the project references pull in Cv.Domain and Cv.Application.
 
+# Manual only. GitHub Pages (pages.yml) is the live target; this exists as a second
+# deployment path if the site is ever moved to Azure. Running it on every push would fail
+# permanently until AZURE_STATIC_WEB_APPS_API_TOKEN is set, and a repository that shows a
+# red cross on every commit reads badly when the repository is itself a work sample.
 on:
-  push:
-    branches: [main]
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
-    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
