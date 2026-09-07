@@ -1,0 +1,41 @@
+/*
+    Page-level print rules.
+
+    These cannot live in a scoped component stylesheet: @page and the body/background
+    resets apply to the document, not to a component's element subtree.
+*/
+
+@page {
+    size: A4;
+    margin: 14mm 14mm 16mm;
+}
+
+@media print {
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        background: #fff !important;
+        /* Ask the browser to keep specified colours rather than dropping them. */
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Blazor's error banner and the loading spinner must never reach paper. */
+    #blazor-error-ui,
+    .loading-progress,
+    .loading-progress-text {
+        display: none !important;
+    }
+
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    /*
+        Deliberately NOT expanding href values after links, which a print stylesheet
+        often does. The URLs are already written out as visible link text, so appending
+        them again would duplicate every address in the extracted text an ATS reads.
+    */
+}

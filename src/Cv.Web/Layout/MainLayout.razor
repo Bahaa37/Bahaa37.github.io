@@ -1,0 +1,56 @@
+@inherits LayoutComponentBase
+@inject CvDataService CvData
+
+@*
+    Site chrome for the showcase pages.
+
+    The printable CV uses EmptyLayout instead, so none of this reaches paper or an
+    ATS text extractor.
+*@
+
+<header class="site-header">
+    <div class="shell site-header__inner">
+        <a class="site-header__name" href="/">@(profile?.Name ?? "Portfolio")</a>
+        <nav class="site-nav">
+            <a href="#skills">Skills</a>
+            <a href="#timeline">Experience</a>
+            <a href="#work">Selected work</a>
+            <a href="#credentials">Credentials</a>
+            <a href="/cv">CV</a>
+        </nav>
+    </div>
+</header>
+
+<main>
+    @Body
+</main>
+
+<footer class="site-footer">
+    <div class="shell">
+        @if (profile is not null)
+        {
+            <p>
+                @profile.Name — @profile.Title, @profile.Location.
+            </p>
+            <p>
+                <a href="mailto:@profile.Email">@profile.Email</a>
+                @if (!string.IsNullOrWhiteSpace(profile.GitHub))
+                {
+                    <span> · </span><a href="@profile.GitHub">GitHub</a>
+                }
+                @if (!string.IsNullOrWhiteSpace(profile.LinkedIn))
+                {
+                    <span> · </span><a href="@profile.LinkedIn">LinkedIn</a>
+                }
+                <span> · </span><a href="/cv">Printable CV</a>
+            </p>
+        }
+        <p>Built with Blazor WebAssembly on .NET 10. This site is itself a work sample.</p>
+    </div>
+</footer>
+
+@code {
+    private Profile? profile;
+
+    protected override async Task OnInitializedAsync() => profile = (await CvData.GetAsync()).Profile;
+}

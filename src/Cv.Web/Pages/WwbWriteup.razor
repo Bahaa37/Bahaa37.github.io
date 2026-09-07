@@ -1,0 +1,221 @@
+@page "/work/windoor-wizard-builder"
+
+@*
+    The WWB technical write-up, published as a page rather than a file.
+
+    Source of record: docs/writeups/wwb-technical-writeup.md. The repository itself is
+    private, so this page is what a recruiter or architect can actually evaluate — which
+    is why it leads with decisions and their reasoning rather than a feature list.
+*@
+
+<PageTitle>Windoor Wizard Builder — technical write-up</PageTitle>
+
+<article class="paper">
+    <div class="shell">
+
+        <p class="eyebrow"><a href="/#work">Selected work</a> <span class="sep">/</span> Case study</p>
+
+        <h1 class="title">Windoor Wizard Builder</h1>
+        <p class="standfirst">
+            A vertical SaaS with a fabrication engine that had to be exactly right.
+        </p>
+
+        <p class="lede">
+            Egyptian UPVC window and door workshops run on WhatsApp, Excel, and paper. Quotes
+            are priced by hand. Cut lists are worked out per job. The profile offcuts that
+            decide whether a job is profitable are estimated rather than calculated.
+        </p>
+
+        <p>
+            Generic ERP software does not help, because it does not model the domain. It has no
+            concept of a frame deduction registry, of bar nesting, or of the glass area and
+            steel reinforcement that drive the real cost of a window. A workshop using generic
+            software still does the hard part on paper.
+        </p>
+
+        <h2>The decision that shaped everything</h2>
+
+        <p>
+            The single most consequential design decision in this system is how a length is
+            stored. The obvious choice is <code>decimal</code> millimetres. It is wrong, and the
+            reason is not theoretical.
+        </p>
+
+        <p class="pull">
+            The shop cuts half-millimetres. In 195 verified rows from real orders,
+            <strong>44 contained a half-millimetre cut</strong> — 483.5mm, not 483 and not 484.
+            A cut list that rounds produces a window that does not fit, and the error is
+            discovered after the profile has been cut.
+        </p>
+
+        <div class="code">
+            <div class="code__head">
+                <span class="mono">Millimetres.cs</span>
+                <span class="mono code__tag">WWB.Fabrication</span>
+            </div>
+<pre class="mono"><span class="c">// There is deliberately NO decimal factory: a decimal entry point would invite
+// rounding (Math.Round(483.5) == 484), destroying the very half-millimetre
+// this type exists to preserve.</span>
+<span class="k">public readonly record struct</span> <span class="t">Millimetres</span>
+{
+    <span class="k">public int</span> Tenths { <span class="k">get</span>; }
+
+    <span class="k">public static</span> Millimetres <span class="f">FromTenths</span>(<span class="k">int</span> tenths) =&gt; <span class="k">new</span>(tenths);
+    <span class="k">public static</span> Millimetres <span class="f">FromMm</span>(<span class="k">int</span> wholeMm)   =&gt; <span class="k">new</span>(wholeMm * <span class="n">10</span>);
+}</pre>
+        </div>
+
+        <p>
+            The part worth pausing on is the <em>absence</em> of a <code>FromDecimal</code>
+            factory. Every length in the model either originates as whole millimetres — an
+            opening measurement, a seed delta — or as the exact result of integer arithmetic on
+            tenths. There is no legitimate path from a decimal into the model, and providing one
+            would create an entry point through which rounding could reach the domain silently.
+        </p>
+
+        <p>
+            This is a case where the right design was to make the wrong thing
+            <strong>unrepresentable</strong> rather than to document it as discouraged. A comment
+            saying "don't round here" is advice. A missing constructor is a guarantee.
+        </p>
+
+        <h2>Bar nesting: bin packing, with a saw</h2>
+
+        <p>
+            A window frame is cut from stock bars of fixed length, and profile is the dominant
+            material cost. Deciding how to lay pieces onto bars is one-dimensional bin packing,
+            which is NP-hard, so the engine uses First-Fit-Decreasing — a well-understood
+            heuristic with a known worst-case bound. Three details separate the real
+            implementation from the textbook one.
+        </p>
+
+        <dl class="points">
+            <div>
+                <dt>The saw has width</dt>
+                <dd>
+                    Every cut consumes kerf. A packer that ignores it produces arrangements that
+                    fit on paper and fail on the machine. Kerf is charged per placement, not once
+                    per bar, because it is consumed per cut.
+                </dd>
+            </div>
+            <div>
+                <dt>It fails loudly rather than degrading</dt>
+                <dd>
+                    A piece longer than a usable bar can never be cut, however the rest are
+                    arranged. Returning a best-effort arrangement would hand the shop floor a cut
+                    list that cannot be executed, so the operation fails and names the offending
+                    measurement.
+                </dd>
+            </div>
+            <div>
+                <dt>Packing is deterministic</dt>
+                <dd>
+                    The sort is stable, so ties keep their input order and two runs over the same
+                    order produce identical cut lists. A cut list is printed, taken to the machine,
+                    and cross-checked against the order — a packing that reshuffled between runs
+                    would make that check meaningless.
+                </dd>
+            </div>
+            <div>
+                <dt>Nothing is hardcoded</dt>
+                <dd>
+                    Bar length, end trim, saw kerf, and the minimum reusable offcut all arrive from
+                    the caller. A different workshop with a different saw is a configuration change,
+                    not a code change — the difference between software for one shop and a product.
+                </dd>
+            </div>
+        </dl>
+
+        <h2>Merging two systems into one bounded context</h2>
+
+        <p>
+            The two halves were built separately and each lacked what the other had. The SaaS
+            shell had authentication, multi-tenancy, quotes, orders, and Arabic RTL PDF output —
+            but its pricing engine was <strong>hollow</strong>; the quote calculation was stubbed.
+            The fabrication engine <em>was</em> that missing calculation, verified against real
+            orders — but it had no tenancy and no persistence beyond JSON files.
+        </p>
+
+        <figure class="arch">
+            <div class="arch__row">
+                <span class="box box--lead">WWB.Api</span>
+            </div>
+            <span class="arch__arrow" aria-hidden="true">↓</span>
+            <div class="arch__row">
+                <span class="box">WWB.Application &nbsp;·&nbsp; MediatR CQRS</span>
+            </div>
+            <div class="arch__row arch__row--three">
+                <span class="box">WWB.Domain</span>
+                <span class="box box--focus">WWB.Fabrication</span>
+                <span class="box">WWB.Infrastructure</span>
+            </div>
+            <figcaption class="mono">tenant isolation via EF Core global query filters</figcaption>
+        </figure>
+
+        <p>
+            The engine became a <strong>bounded context inside the SaaS</strong> rather than a
+            service alongside it. That choice is worth defending: the fabrication calculations
+            always run in the context of a quote belonging to a tenant, they share that
+            transaction, and they have no independent lifecycle. Splitting them across a network
+            boundary would have bought distribution overhead and returned nothing.
+        </p>
+
+        <p>
+            Multi-tenancy is enforced through EF Core global query filters on
+            <code>TenantId</code>, not through a <code>WHERE</code> clause each query is trusted
+            to remember. Tenant isolation implemented as a convention fails the first time
+            somebody forgets; implemented as a query filter, forgetting is not possible. For a
+            system holding one workshop's pricing against its competitors', that distinction is
+            the whole security model.
+        </p>
+
+        <h2>Verified against reality, not against assumptions</h2>
+
+        <p>
+            The engine is <strong>oracle-verified</strong> — its output is checked against real
+            orders from a working workshop, not against expectations derived from the same
+            understanding that produced the code. A calculation engine validated only against its
+            author's mental model is a mental model with tests. The merged solution carries
+            <strong>491 passing unit tests</strong>.
+        </p>
+
+        <p>
+            One finding from the merge is worth recording for how it was treated. After
+            restructuring, 72 tests failed — all value assertions against the SaaS's stubbed
+            pricing service. None were "type not found" errors, which is what a bad copy
+            produces. These failures were pre-existing and <em>diagnostic</em>: they specify
+            exactly which multipliers the real engine must satisfy once wired in. They were left
+            failing and documented as the acceptance criteria for integration, rather than
+            deleted to make the suite green.
+        </p>
+
+        <h2>Stack</h2>
+
+        <div class="scroll-x">
+            <table class="stack-table">
+                <tbody>
+                    <tr><th scope="row">Backend</th><td>.NET 10, Clean Architecture (Domain / Application / Infrastructure / Api)</td></tr>
+                    <tr><th scope="row">Application</th><td>MediatR, CQRS</td></tr>
+                    <tr><th scope="row">Persistence</th><td>EF Core, multi-tenant via <code>TenantId</code> global query filters</td></tr>
+                    <tr><th scope="row">Auth</th><td>JWT</td></tr>
+                    <tr><th scope="row">Documents</th><td>QuestPDF, Arabic right-to-left</td></tr>
+                    <tr><th scope="row">Frontend</th><td>Angular 18 — standalone components, OnPush, NgRx Signals, Arabic RTL</td></tr>
+                    <tr><th scope="row">Orchestration</th><td>.NET Aspire (AppHost + ServiceDefaults)</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2>What this project demonstrates</h2>
+
+        <p class="closing">
+            Domain modelling where correctness is physical rather than notional — a rounding error
+            becomes a mis-cut profile. Choosing a known heuristic for an NP-hard problem, then
+            handling the three practical details that separate a working implementation from a
+            textbook one. Deciding a bounded-context boundary on transaction and lifecycle
+            grounds. Enforcing a security property structurally instead of by convention. And
+            treating failing tests as a specification when that is what they actually are.
+        </p>
+
+        <p class="back"><a href="/#work">← Back to selected work</a></p>
+    </div>
+</article>

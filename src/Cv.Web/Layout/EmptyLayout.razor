@@ -1,0 +1,11 @@
+@inherits LayoutComponentBase
+
+@*
+    A chrome-free layout for the printable CV.
+
+    The showcase page's navigation, sidebar, and footer must not appear in the printed
+    document, and hiding them with print CSS still leaves them in the DOM for an ATS
+    text extractor to pick up. Not rendering them at all is the reliable fix.
+*@
+
+@Body

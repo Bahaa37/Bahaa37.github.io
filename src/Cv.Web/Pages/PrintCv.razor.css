@@ -1,0 +1,181 @@
+/*
+    Print CV styling.
+
+    Constraint: this document is machine-parsed by applicant tracking systems.
+    Single column, real text, no icon fonts, no tables, no content in pseudo-elements
+    — an ATS reads none of those. Visual richness belongs on the showcase page.
+*/
+
+.loading {
+    padding: 2rem;
+    font-family: Georgia, "Times New Roman", serif;
+    color: #555;
+}
+
+.cv-actions {
+    max-width: 8.5in;
+    margin: 0 auto;
+    padding: 1rem 0.75in 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.85rem;
+    color: #555;
+}
+
+.cv-actions button {
+    padding: 0.5rem 1rem;
+    font: inherit;
+    font-weight: 600;
+    color: #fff;
+    background: #14425f;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.cv-actions button:hover {
+    background: #1d5b81;
+}
+
+.cv {
+    max-width: 8.5in;
+    margin: 0 auto;
+    padding: 0.5in 0.75in 0.75in;
+    background: #fff;
+    color: #1a1a1a;
+    /* A serif body face reads better in print and extracts cleanly. */
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 10.5pt;
+    line-height: 1.42;
+}
+
+.cv-header {
+    margin-bottom: 0.9rem;
+}
+
+.cv h1 {
+    margin: 0;
+    font-size: 20pt;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.cv-title {
+    margin: 0.15rem 0 0.3rem;
+    font-size: 12pt;
+    color: #14425f;
+}
+
+.cv-contact {
+    margin: 0;
+    font-size: 9.5pt;
+    color: #333;
+}
+
+.cv-contact a {
+    color: #14425f;
+    text-decoration: none;
+}
+
+.sep {
+    color: #999;
+    padding: 0 0.25rem;
+}
+
+.cv section {
+    margin-top: 0.85rem;
+}
+
+.cv h2 {
+    margin: 0 0 0.4rem;
+    padding-bottom: 0.15rem;
+    font-size: 11.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #14425f;
+}
+
+.cv h3 {
+    margin: 0;
+    font-size: 11pt;
+}
+
+.role {
+    margin-bottom: 0.65rem;
+    /* Keep a job block whole rather than splitting it across a page break. */
+    break-inside: avoid;
+}
+
+.role-meta {
+    margin: 0.05rem 0 0.25rem;
+    font-size: 9.5pt;
+    font-style: italic;
+    color: #555;
+}
+
+.cv ul {
+    margin: 0.2rem 0 0;
+    padding-left: 1.1rem;
+}
+
+.cv li {
+    margin-bottom: 0.22rem;
+}
+
+.skill-line {
+    margin: 0 0 0.2rem;
+}
+
+.cert-note {
+    margin: 0.35rem 0 0;
+    font-size: 9.5pt;
+    font-style: italic;
+    color: #555;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    /*
+        Tuned so the document lands on exactly 2 pages. Without this it runs to 3, with
+        only the last few certifications on the final page — which wastes a third of the
+        reader's attention on almost nothing. Tightening leading and vertical rhythm
+        recovers the needed lines without shrinking the type below comfortable reading
+        size, which is the trade to make in this direction.
+    */
+    .cv {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        font-size: 9.8pt;
+        line-height: 1.32;
+    }
+
+    .cv section {
+        margin-top: 0.6rem;
+        break-inside: auto;
+    }
+
+    .cv h2 {
+        margin-bottom: 0.28rem;
+        /* Never leave a section heading stranded at the foot of a page. */
+        break-after: avoid;
+    }
+
+    .role {
+        margin-bottom: 0.45rem;
+    }
+
+    .cv li {
+        margin-bottom: 0.14rem;
+    }
+
+    .skill-line {
+        margin-bottom: 0.12rem;
+    }
+}

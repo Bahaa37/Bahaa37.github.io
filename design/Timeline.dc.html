@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; }
+    a { color: #8ec6ea; text-decoration: none; }
+    a:hover { color: #a9d7f5; }
+    .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+    .display { font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif; }
+  </style>
+</helmet>
+
+<div style="width: 1280px; background: #0d151c; color: #e6edf3; padding: 66px 72px 72px;">
+
+  <div class="mono" style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #6f8496;">Experience</div>
+  <h2 class="display" style="margin: 10px 0 0; font-size: 36px; letter-spacing: -0.03em; font-weight: 700;">3.5+ years across three employers</h2>
+  <p style="margin: 12px 0 30px; max-width: 68ch; font-size: 16px; color: #a9b8c6;">
+    Where a real number exists it is shown. Where one does not, none is invented.
+  </p>
+
+  <div style="display: flex; flex-direction: column; gap: 26px;">
+    <sc-for list="{{roles}}" as="role" hint-placeholder-count="4">
+      <div style="display: grid; grid-template-columns: 150px 16px 1fr; gap: 22px; align-items: start;">
+
+        <div class="mono" style="font-size: 11.5px; color: #6f8496; padding-top: 4px; text-align: right;">
+          {{role.period}}
+        </div>
+
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 0; padding-top: 5px;">
+          <div style="width: 11px; height: 11px; border-radius: 50%; border: 2px solid {{role.dot}}; background: {{role.fill}};"></div>
+          <div style="width: 2px; flex-grow: 1; min-height: 68px; background: #24313c;"></div>
+        </div>
+
+        <div style="padding-bottom: 4px;">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <span class="display" style="font-size: 18px; font-weight: 700; letter-spacing: -0.015em;">{{role.title}}</span>
+            <sc-if value="{{role.badge}}" hint-placeholder-val="{{true}}">
+              <span class="mono" style="font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: {{role.badgeBg}}; color: {{role.badgeFg}};">{{role.badge}}</span>
+            </sc-if>
+          </div>
+          <div style="margin-top: 3px; font-size: 14px; font-weight: 600; color: {{accent}};">{{role.company}}</div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px; max-width: 76ch;">
+            <sc-for list="{{role.points}}" as="point" hint-placeholder-count="2">
+              <div style="display: flex; gap: 10px; align-items: baseline;">
+                <span style="color: {{accent}}; font-size: 11px;">■</span>
+                <span style="font-size: 14px; line-height: 1.55; color: #a9b8c6;">{{point.text}}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#8ec6ea","options":["#8ec6ea","#7fd1b9","#c3a6f0","#e0b95f"]}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#8ec6ea';
+    return {
+      accent,
+      roles: [
+        {
+          period: 'Nov 2025 — Present', title: 'Senior Full-Stack Software Engineer',
+          company: 'Andalusia Business Solutions', badge: 'Current',
+          badgeBg: accent, badgeFg: '#0d151c', dot: accent, fill: accent,
+          points: [
+            { text: 'Led the re-architecture of the Temporal orchestrator to remove its DTC dependency, unblocking legacy .NET Core 2.2 and Framework 4.5 services.' },
+            { text: 'Authored the transformation project template and its governing rules as the first engineer on the initiative.' },
+            { text: 'Designed AI skills and an orchestrating workflow that cut an upgrade cycle from 5–7 working days to a maximum of 3 — company award.' },
+          ],
+        },
+        {
+          period: 'Nov 2024 — Nov 2025', title: 'Senior Full-Stack Software Engineer',
+          company: 'PS Digital', badge: 'Returned',
+          badgeBg: '#2a2213', badgeFg: '#e0b95f', dot: '#3a4a56', fill: '#0d151c',
+          points: [
+            { text: 'Architected payment middleware serving 9 countries on Clean Architecture with CQRS, Strategy, and Pipeline.' },
+            { text: 'Covered the engineering manager\'s role for 45 days during an unplanned absence, through a business-critical period, and was promoted on the strength of it.' },
+          ],
+        },
+        {
+          period: 'Jul 2024 — Nov 2024', title: 'Backend Software Engineer',
+          company: 'MEEM Development', badge: '',
+          badgeBg: '#24313c', badgeFg: '#a9b8c6', dot: '#3a4a56', fill: '#0d151c',
+          points: [
+            { text: 'Produced solution architecture documentation used by delivery teams as the build reference.' },
+            { text: 'Authored SRS and Low-Level Design documents, translating business requirements into unambiguous technical specifications.' },
+          ],
+        },
+        {
+          period: 'Mar 2023 — Jul 2024', title: 'Software Engineer → Senior',
+          company: 'PS Digital', badge: 'Promoted ×2',
+          badgeBg: '#24313c', badgeFg: '#a9b8c6', dot: '#3a4a56', fill: '#0d151c',
+          points: [
+            { text: 'Led the rebuild of a legacy MVC application into a modern .NET Web API.' },
+            { text: 'Replaced Entity Framework with Dapper in the data access layer.' },
+          ],
+        },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

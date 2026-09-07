@@ -1,0 +1,17 @@
+.booting {
+    padding: 4rem 1.25rem;
+    color: var(--ink-faint);
+}
+
+.summary {
+    max-width: 78ch;
+    font-size: clamp(1.02rem, 0.98rem + 0.3vw, 1.15rem);
+    color: var(--ink-soft);
+    margin: 0;
+}
+
+.contact__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}

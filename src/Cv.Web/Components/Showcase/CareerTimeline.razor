@@ -1,0 +1,77 @@
+@*
+    The career, in order.
+
+    A repeat employer appears twice with another company between — being re-hired is
+    worth showing plainly rather than smoothing over, so returns are marked.
+*@
+
+<section class="band reveal" id="timeline">
+    <div class="shell">
+        <p class="eyebrow">Experience</p>
+        <h2 class="band__title">@ExperiencePhrase across @Employers.Count employers</h2>
+        <p class="band__lede">
+            Every achievement below is drawn from the same record as the printable CV.
+            Where a real number exists it is shown; where one does not, none is invented.
+        </p>
+
+        <ol class="timeline">
+            @foreach (var role in Roles)
+            {
+                <li class="entry @(role.Period.IsOngoing ? "entry--current" : null)">
+                    <div class="entry__rail" aria-hidden="true"></div>
+                    <div class="entry__body">
+                        <p class="entry__period">
+                            @role.Period.ToDisplayString()
+                            @if (role.Period.IsOngoing)
+                            {
+                                <span class="badge badge--now">Current</span>
+                            }
+                            @if (IsReturn(role))
+                            {
+                                <span class="badge badge--return">Returned</span>
+                            }
+                        </p>
+                        <h3 class="entry__role">@role.Role</h3>
+                        <p class="entry__company">
+                            @role.Company@(role.Location is null ? "" : $" · {role.Location}")
+                        </p>
+                        <ul class="entry__points">
+                            @foreach (var highlight in role.Highlights)
+                            {
+                                <li>
+                                    @highlight.Text
+                                    @if (highlight.HasMetric)
+                                    {
+                                        <span class="metric-chip">@highlight.Metric</span>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </li>
+            }
+        </ol>
+    </div>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<ExperienceEntry> Roles { get; set; }
+
+    [Parameter, EditorRequired]
+    public required string ExperiencePhrase { get; set; }
+
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<string> Employers { get; set; }
+
+    /// <summary>
+    /// True when an earlier role at the same employer exists further down the list —
+    /// that is, this entry is a return rather than a first stint.
+    /// </summary>
+    private bool IsReturn(ExperienceEntry role)
+    {
+        var index = Roles.ToList().IndexOf(role);
+
+        return index >= 0 && Roles.Skip(index + 1).Any(r => r.IsSameEmployerAs(role));
+    }
+}

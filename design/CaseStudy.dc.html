@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; }
+    a { color: #8ec6ea; text-decoration: none; }
+    a:hover { color: #a9d7f5; }
+    .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+    .display { font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif; }
+  </style>
+</helmet>
+
+<div style="width: 1280px; background: #111920; color: #e6edf3; padding: 66px 72px 72px;">
+
+  <div class="mono" style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #6f8496;">Selected work · 03</div>
+  <h2 class="display" style="margin: 10px 0 0; font-size: 36px; letter-spacing: -0.03em; font-weight: 700;">
+    Windoor Wizard Builder
+  </h2>
+  <p style="margin: 12px 0 0; max-width: 76ch; font-size: 17px; color: #a9b8c6; text-wrap: pretty;">
+    A multi-tenant SaaS for Egyptian UPVC workshops, merging a commercial quoting platform
+    with a cutting-optimisation engine verified against a real shop floor.
+  </p>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 32px;">
+    <div>
+      <div class="mono" style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: #6f8496;">The problem</div>
+      <p style="margin: 10px 0 0; font-size: 14.5px; line-height: 1.62; color: #a9b8c6;">
+        Workshops run on WhatsApp, Excel, and paper. Generic ERP does not help because it does
+        not model the domain — no frame deduction registry, no bar nesting, no glass area or
+        steel reinforcement. A workshop running generic software still does the hard part by hand.
+      </p>
+    </div>
+    <div>
+      <div class="mono" style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: #6f8496;">The decision that shaped it</div>
+      <p style="margin: 10px 0 0; font-size: 14.5px; line-height: 1.62; color: #a9b8c6;">
+        Lengths are stored as exact integer tenths of a millimetre, not decimals. The shop cuts
+        half-millimetres — 44 of 195 verified rows — and a rounded cut list produces a window
+        that does not fit. The type exposes no decimal factory, so rounding cannot enter the
+        model at all.
+      </p>
+    </div>
+  </div>
+
+  <div style="margin-top: 30px; border: 1px solid #24313c; border-radius: 12px; background: #0d151c; overflow: hidden;">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 11px 18px; border-bottom: 1px solid #24313c; background: #16202a;">
+      <span class="mono" style="font-size: 11px; color: #6f8496;">Millimetres.cs</span>
+      <span class="mono" style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #55636e;">WWB.Fabrication</span>
+    </div>
+    <pre class="mono" style="margin: 0; padding: 18px 20px; font-size: 12.5px; line-height: 1.72; color: #b9c6d2; overflow-x: auto;"><span style="color: #6f8496;">// There is deliberately NO decimal factory: a decimal entry point would invite</span>
+<span style="color: #6f8496;">// rounding (Math.Round(483.5) == 484), destroying the very half-millimetre</span>
+<span style="color: #6f8496;">// this type exists to preserve.</span>
+<span style="color: #c3a6f0;">public readonly record struct</span> <span style="color: #8ec6ea;">Millimetres</span>
+{
+    <span style="color: #c3a6f0;">public int</span> Tenths { <span style="color: #c3a6f0;">get</span>; }
+
+    <span style="color: #c3a6f0;">public static</span> Millimetres <span style="color: #e0b95f;">FromTenths</span>(<span style="color: #c3a6f0;">int</span> tenths) =&gt; <span style="color: #c3a6f0;">new</span>(tenths);
+    <span style="color: #c3a6f0;">public static</span> Millimetres <span style="color: #e0b95f;">FromMm</span>(<span style="color: #c3a6f0;">int</span> wholeMm)   =&gt; <span style="color: #c3a6f0;">new</span>(wholeMm * <span style="color: #7fd1b9;">10</span>);
+}</pre>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1.25fr 1fr; gap: 24px; margin-top: 26px; align-items: start;">
+
+    <div style="border: 1px solid #24313c; border-radius: 12px; background: #16202a; padding: 22px 24px 24px;">
+      <div class="mono" style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: #6f8496; margin-bottom: 18px;">Bounded context, after the merge</div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+        <div style="border: 1px solid {{accent}}; color: {{accent}}; border-radius: 8px; padding: 9px 20px; font-size: 12.5px;">WWB.Api</div>
+        <div style="color: #55636e; font-size: 13px;">↓</div>
+        <div style="border: 1px solid #33414c; border-radius: 8px; padding: 9px 20px; font-size: 12.5px; color: #cdd9e3;">WWB.Application &nbsp;·&nbsp; MediatR CQRS</div>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: 100%; margin-top: 4px;">
+          <div style="border: 1px solid #33414c; border-radius: 8px; padding: 9px; text-align: center; font-size: 11.5px; color: #a9b8c6;">WWB.Domain</div>
+          <div style="border: 1px solid #7fd1b9; border-radius: 8px; padding: 9px; text-align: center; font-size: 11.5px; color: #7fd1b9;">WWB.Fabrication</div>
+          <div style="border: 1px solid #33414c; border-radius: 8px; padding: 9px; text-align: center; font-size: 11.5px; color: #a9b8c6;">WWB.Infrastructure</div>
+        </div>
+        <div class="mono" style="margin-top: 6px; font-size: 10.5px; color: #6f8496;">tenant isolation via EF Core global query filters</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="mono" style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: #6f8496;">Outcome</div>
+      <div style="display: flex; flex-direction: column; gap: 11px; margin-top: 12px;">
+        <sc-for list="{{outcomes}}" as="o" hint-placeholder-count="4">
+          <div style="display: flex; gap: 10px; align-items: baseline;">
+            <span style="color: #7fd1b9; font-size: 11px;">■</span>
+            <span style="font-size: 13.5px; line-height: 1.55; color: #a9b8c6;">{{o.text}}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 7px; margin-top: 20px;">
+        <sc-for list="{{stack}}" as="s" hint-placeholder-count="6">
+          <span class="mono" style="font-size: 10.5px; padding: 4px 10px; border-radius: 999px; background: #1c2731; color: #a9b8c6;">{{s.name}}</span>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#8ec6ea","options":["#8ec6ea","#7fd1b9","#c3a6f0","#e0b95f"]}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      accent: this.props.accent ?? '#8ec6ea',
+      outcomes: [
+        { text: 'Two half-built systems merged into one .NET 10 monorepo.' },
+        { text: '491 unit tests passing across domain, application, API, and infrastructure.' },
+        { text: 'Engine oracle-verified against real orders from a working workshop.' },
+        { text: '72 pre-existing pricing failures kept as the integration specification, not deleted to make the suite green.' },
+      ],
+      stack: [
+        { name: '.NET 10' }, { name: 'Clean Architecture' }, { name: 'MediatR CQRS' },
+        { name: 'EF Core' }, { name: 'Multi-tenancy' }, { name: 'Angular 18' },
+        { name: 'NgRx Signals' }, { name: '.NET Aspire' }, { name: 'Arabic RTL' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

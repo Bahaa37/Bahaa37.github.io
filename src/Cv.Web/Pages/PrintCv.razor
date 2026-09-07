@@ -1,0 +1,180 @@
+@page "/cv"
+@layout EmptyLayout
+@inject CvDataService CvData
+
+@*
+    The printable CV.
+
+    Deliberately plain: single column, standard section headings, no tables, no icons,
+    no text inside graphics. This file is parsed by applicant tracking systems, and
+    every one of those features breaks text extraction. All visual ambition belongs on
+    the showcase page instead — see the design spec, section 4.
+*@
+
+<PageTitle>@(document?.Profile.Name ?? "CV")</PageTitle>
+
+@if (document is null)
+{
+    <p class="loading">Loading…</p>
+}
+else
+{
+    <div class="cv-actions no-print">
+        <button type="button" @onclick="PrintAsync">Save as PDF</button>
+        <span>Choose "Save as PDF" in the print dialog. Margins: default. Background graphics: off.</span>
+    </div>
+
+    <article class="cv">
+
+        <header class="cv-header">
+            <h1>@document.Profile.Name</h1>
+            <p class="cv-title">@document.Profile.Title</p>
+            <p class="cv-contact">
+                @document.Profile.Location
+                <span class="sep">|</span>
+                <a href="@document.Profile.PhoneHref">@document.Profile.Phone</a>
+                <span class="sep">|</span>
+                <a href="mailto:@document.Profile.Email">@document.Profile.Email</a>
+                @if (!string.IsNullOrWhiteSpace(document.Profile.LinkedIn))
+                {
+                    <span class="sep">|</span>
+                    <a href="@document.Profile.LinkedIn">@StripScheme(document.Profile.LinkedIn)</a>
+                }
+                @if (!string.IsNullOrWhiteSpace(document.Profile.GitHub))
+                {
+                    <span class="sep">|</span>
+                    <a href="@document.Profile.GitHub">@StripScheme(document.Profile.GitHub)</a>
+                }
+                @if (!string.IsNullOrWhiteSpace(document.Profile.Website))
+                {
+                    <span class="sep">|</span>
+                    <a class="cv-portfolio" href="@document.Profile.Website">@StripScheme(document.Profile.Website)</a>
+                }
+            </p>
+        </header>
+
+        <section>
+            <h2>Professional Summary</h2>
+            <p>@document.Summary</p>
+        </section>
+
+        <section>
+            <h2>Technical Skills</h2>
+            @foreach (var group in document.SkillGroups)
+            {
+                <p class="skill-line">
+                    <strong>@group.Category:</strong> @string.Join(", ", group.Skills)
+                </p>
+            }
+        </section>
+
+        <section>
+            <h2>Professional Experience</h2>
+            @foreach (var role in CareerSummary.InReverseChronologicalOrder(document.Experience))
+            {
+                <div class="role">
+                    <h3>@role.Role<span class="sep"> | </span>@role.Company</h3>
+                    <p class="role-meta">
+                        @role.Period.ToDisplayString()@(role.Location is null ? "" : $" | {role.Location}")
+                    </p>
+                    <ul>
+                        @foreach (var highlight in role.Highlights.Where(h => h.IsFeatured))
+                        {
+                            <li>
+                                @highlight.Text
+                                @if (highlight.HasMetric)
+                                {
+                                    <strong> (@highlight.Metric)</strong>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </section>
+
+        @if (document.Awards.Count > 0)
+        {
+            <section>
+                <h2>Awards and Recognition</h2>
+                <ul>
+                    @foreach (var award in document.Awards)
+                    {
+                        <li>
+                            <strong>@award.Title</strong> — @award.Issuer.
+                            @award.Description
+                        </li>
+                    }
+                </ul>
+            </section>
+        }
+
+        <section>
+            <h2>Education</h2>
+            @foreach (var entry in document.Education.OrderByDescending(e => e.Period.Start))
+            {
+                <div class="role">
+                    <h3>@entry.Credential<span class="sep"> | </span>@entry.Institution</h3>
+                    <p class="role-meta">@entry.Period.ToDisplayString()</p>
+                    @if (entry.Details.Count > 0)
+                    {
+                        <ul>
+                            @foreach (var detail in entry.Details)
+                            {
+                                <li>@detail</li>
+                            }
+                        </ul>
+                    }
+                </div>
+            }
+        </section>
+
+        <section>
+            <h2>Certifications</h2>
+            <ul>
+                @foreach (var certification in document.Certifications.Where(c => c.IsFeatured))
+                {
+                    <li>
+                        @certification.Name — @certification.Issuer@(certification.Awarded is { } awarded ? $" ({awarded.ToDisplayString()})" : "")
+                    </li>
+                }
+            </ul>
+            @if (remainingCertifications > 0)
+            {
+                <p class="cert-note">
+                    @remainingCertifications more, plus case studies and architecture diagrams, at
+                    @if (!string.IsNullOrWhiteSpace(document.Profile.Website))
+                    {
+                        <a href="@document.Profile.Website">@StripScheme(document.Profile.Website)</a>
+                    }
+                    else
+                    {
+                        <span>the online portfolio</span>
+                    }.
+                </p>
+            }
+        </section>
+
+    </article>
+}
+
+@code {
+    private CvDocument? document;
+    private int remainingCertifications;
+
+    protected override async Task OnInitializedAsync()
+    {
+        document = await CvData.GetAsync();
+        remainingCertifications = document.Certifications.Count(c => !c.IsFeatured);
+    }
+
+    private async Task PrintAsync() => await JS.InvokeVoidAsync("window.print");
+
+    [Inject]
+    private IJSRuntime JS { get; set; } = default!;
+
+    private static string StripScheme(string url) =>
+        url.Replace("https://", string.Empty, StringComparison.OrdinalIgnoreCase)
+           .Replace("http://", string.Empty, StringComparison.OrdinalIgnoreCase)
+           .TrimEnd('/');
+}

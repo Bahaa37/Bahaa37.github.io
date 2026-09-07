@@ -1,0 +1,113 @@
+@page "/"
+@using Cv.Web.Components.Showcase
+@inject CvDataService CvData
+
+<PageTitle>@(document?.Profile.Name ?? "Portfolio") — @(document?.Profile.Title ?? "Software Engineer")</PageTitle>
+
+@if (document is null)
+{
+    <div class="shell booting">
+        <p>Loading…</p>
+    </div>
+}
+else
+{
+    <Hero Profile="document.Profile"
+          ExperiencePhrase="@experiencePhrase"
+          AwardCount="document.Awards.Count" />
+
+    <section class="band reveal">
+        <div class="shell">
+            <p class="eyebrow">In short</p>
+            <p class="summary">@document.Summary</p>
+        </div>
+    </section>
+
+    <SkillMatrix Groups="document.SkillGroups" Experience="document.Experience" />
+
+    <CareerTimeline Roles="roles" ExperiencePhrase="@experiencePhrase" Employers="employers" />
+
+    <section class="band band--alt reveal" id="work">
+        <div class="shell">
+            <p class="eyebrow">Selected work</p>
+            <h2 class="band__title">Five pieces of work, in depth</h2>
+            <p class="band__lede">
+                Each one covers the problem, the decisions made, and what actually changed.
+                Where a diagram helps, it renders on demand rather than on page load.
+            </p>
+
+            @foreach (var (study, index) in document.CaseStudies
+                .OrderBy(c => c.DisplayOrder)
+                .Select((study, index) => (study, index + 1)))
+            {
+                <CaseStudyPanel Study="study" Index="index" />
+            }
+        </div>
+    </section>
+
+    <Credentials Awards="document.Awards"
+                 Education="document.Education"
+                 Certifications="document.Certifications" />
+
+    <section class="band reveal" id="contact">
+        <div class="shell contact">
+            <p class="eyebrow">Contact</p>
+            <h2 class="band__title">Open to senior .NET and architecture roles</h2>
+            <p class="band__lede">
+                The quickest way to reach me is email. The CV below is the same content as
+                this page, formatted for printing and for applicant tracking systems.
+            </p>
+            <div class="contact__actions">
+                <a class="btn btn--primary" href="mailto:@document.Profile.Email">
+                    @document.Profile.Email
+                </a>
+                <a class="btn btn--ghost" href="@document.Profile.PhoneHref">@document.Profile.Phone</a>
+                <a class="btn btn--ghost" href="/cv">Printable CV</a>
+            </div>
+        </div>
+    </section>
+}
+
+@code {
+    [Inject]
+    private IJSRuntime JS { get; set; } = default!;
+
+    private CvDocument? document;
+    private IReadOnlyList<ExperienceEntry> roles = [];
+    private IReadOnlyList<string> employers = [];
+    private string experiencePhrase = string.Empty;
+    private IJSObjectReference? reveal;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Sections only exist after the document has loaded and rendered, so the observer
+        // is armed here rather than on initialization.
+        if (document is null)
+        {
+            return;
+        }
+
+        if (reveal is null)
+        {
+            reveal = await JS.InvokeAsync<IJSObjectReference>("import", "./js/reveal.js");
+            await reveal.InvokeVoidAsync("start");
+        }
+        else
+        {
+            await reveal.InvokeVoidAsync("observe");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        document = await CvData.GetAsync();
+
+        // "Now" is read once here rather than inside the render tree, so every derived
+        // figure on the page is computed against the same instant.
+        var today = YearMonth.FromDateTime(DateTime.Now);
+
+        roles = CareerSummary.InReverseChronologicalOrder(document.Experience);
+        employers = CareerSummary.Employers(document.Experience);
+        experiencePhrase = CareerSummary.ExperiencePhrase(document.Experience, today);
+    }
+}

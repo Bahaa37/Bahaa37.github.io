@@ -1,0 +1,58 @@
+.groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.group {
+    padding: 1.1rem 1.2rem 1.3rem;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+}
+
+.group__title {
+    font-size: 0.94rem;
+    letter-spacing: 0.02em;
+    color: var(--accent-bright);
+    margin-bottom: 0.7rem;
+}
+
+.skills {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.skill {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px dashed var(--line);
+}
+
+.skill:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.skill__name {
+    font-size: 0.93rem;
+}
+
+/* An evidenced skill is weighted more heavily than an unevidenced one. */
+.skill--evidenced .skill__name {
+    font-weight: 600;
+}
+
+.skill__where {
+    font-size: 0.76rem;
+    color: var(--ink-faint);
+    margin-left: auto;
+    text-align: right;
+}

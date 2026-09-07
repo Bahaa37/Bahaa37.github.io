@@ -1,0 +1,75 @@
+name: Deploy to GitHub Pages
+
+# Primary deployment target.
+#
+# The portfolio URL is printed on a CV that gets emailed to employers, so it has to read
+# as permanent — an Azure Static Web Apps free-tier subdomain (calm-sand-0123.azure...)
+# does not. A GitHub Pages *user site* gives https://bahaa37.github.io, which is clean,
+# free, and served at the domain root, so the app's base href stays "/" unchanged.
+#
+# Requires the repository to be named exactly `Bahaa37.github.io`, and Settings → Pages →
+# Source set to "GitHub Actions".
+#
+# deploy.yml (Azure Static Web Apps) remains as an optional second target.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let an in-flight deploy finish rather than cancelling it mid-publish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # Gate the deploy on the content rules as well as the code. A timeline that says
+      # two full-time jobs overlapped, or a bullet claiming a .NET version that had not
+      # shipped, must never reach a recruiter.
+      - name: Test
+        run: dotnet test tests/Cv.Tests/Cv.Tests.csproj --configuration Release
+
+      - name: Publish
+        run: dotnet publish src/Cv.Web/Cv.Web.csproj --configuration Release --output publish
+
+      # GitHub Pages runs Jekyll by default, which ignores directories beginning with an
+      # underscore -- that would silently drop the entire _framework folder and leave a
+      # blank page with no build error.
+      - name: Disable Jekyll processing
+        run: touch publish/wwwroot/.nojekyll
+
+      # Pages has no SPA fallback, so a deep link like /cv would 404 on refresh. Serving
+      # the app shell as the 404 page makes the client router pick the route up instead.
+      - name: Add SPA fallback
+        run: cp publish/wwwroot/index.html publish/wwwroot/404.html
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: publish/wwwroot
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

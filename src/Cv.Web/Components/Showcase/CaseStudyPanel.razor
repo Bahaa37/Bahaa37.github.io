@@ -1,0 +1,144 @@
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+@*
+    One case study, told as problem → approach → outcome.
+
+    A CV bullet has room to say what was done; this has room to show how it was decided,
+    which is the part a hiring manager is actually assessing.
+*@
+
+<article class="case" id="@Study.Slug">
+    <header class="case__head">
+        <p class="eyebrow">
+            @(Study.Organisation ?? "Project")
+            <span class="case__index">@($"{Index:00}")</span>
+        </p>
+        <h3 class="case__title">@Study.Title</h3>
+        <p class="case__summary">@Study.Summary</p>
+    </header>
+
+    <div class="case__grid">
+        <div class="case__block">
+            <h4>The problem</h4>
+            <p>@Study.Problem</p>
+        </div>
+        <div class="case__block">
+            <h4>What I did</h4>
+            <p>@Study.Approach</p>
+        </div>
+    </div>
+
+    @if (Study.Outcomes.Count > 0)
+    {
+        <div class="case__block case__block--outcomes">
+            <h4>Outcome</h4>
+            <ul class="outcomes">
+                @foreach (var outcome in Study.Outcomes)
+                {
+                    <li>@outcome</li>
+                }
+            </ul>
+        </div>
+    }
+
+    @if (Study.Stack.Count > 0)
+    {
+        <ul class="stack">
+            @foreach (var item in Study.Stack)
+            {
+                <li class="tag">@item</li>
+            }
+        </ul>
+    }
+
+    @if (Study.HasDiagram || Study.HasWriteup)
+    {
+        <div class="case__diagram">
+            @if (Study.HasWriteup)
+            {
+                <a class="btn btn--primary" href="@Study.WriteupUrl">Read the full write-up</a>
+            }
+            @if (Study.HasDiagram)
+            {
+                <button type="button" class="btn btn--ghost diagram__toggle" @onclick="ToggleDiagramAsync">
+                    @(showDiagram ? "Hide architecture diagram" : "Show architecture diagram")
+                </button>
+            }
+
+            @if (showDiagram)
+            {
+                <div class="scroll-x diagram__canvas" @ref="diagramElement"></div>
+
+                @if (diagramFailed)
+                {
+                    <details class="diagram__fallback" open>
+                        <summary>Diagram source (renderer unavailable)</summary>
+                        <pre><code>@Study.MermaidDiagram</code></pre>
+                    </details>
+                }
+            }
+        </div>
+    }
+</article>
+
+@code {
+    [Parameter, EditorRequired]
+    public required CaseStudy Study { get; set; }
+
+    [Parameter]
+    public int Index { get; set; }
+
+    private ElementReference diagramElement;
+    private IJSObjectReference? module;
+    private bool showDiagram;
+    private bool diagramFailed;
+    private bool needsRender;
+
+    private async Task ToggleDiagramAsync()
+    {
+        showDiagram = !showDiagram;
+        diagramFailed = false;
+
+        // The canvas element does not exist until after this toggle has rendered, so the
+        // actual draw is deferred to OnAfterRenderAsync.
+        needsRender = showDiagram;
+        await Task.CompletedTask;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!needsRender)
+        {
+            return;
+        }
+
+        needsRender = false;
+
+        module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/diagram-interop.js");
+
+        var drawn = await module.InvokeAsync<bool>(
+            "renderDiagram", diagramElement, Study.Slug, Study.MermaidDiagram);
+
+        if (!drawn)
+        {
+            diagramFailed = true;
+            StateHasChanged();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (module is not null)
+        {
+            try
+            {
+                await module.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // The browser is already gone; nothing to release.
+            }
+        }
+    }
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json.schemastore.org/staticwebapp.config.json",
+
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/_framework/*", "/css/*", "/js/*", "/lib/*", "/data/*", "*.{png,jpg,svg,ico,pdf}"]
+  },
+
+  "mimeTypes": {
+    ".wasm": "application/wasm",
+    ".webcil": "application/octet-stream",
+    ".blat": "application/octet-stream",
+    ".dat": "application/octet-stream",
+    ".json": "application/json"
+  },
+
+  "routes": [
+    {
+      "route": "/_framework/*",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "route": "/data/cv.json",
+      "headers": {
+        "Cache-Control": "no-cache"
+      }
+    },
+    {
+      "route": "/index.html",
+      "headers": {
+        "Cache-Control": "no-cache"
+      }
+    }
+  ],
+
+  "globalHeaders": {
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin"
+  }
+}

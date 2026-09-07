@@ -1,0 +1,263 @@
+.hero {
+    padding: clamp(2.5rem, 1.6rem + 4vw, 4.5rem) 0 clamp(2.5rem, 2rem + 3vw, 4rem);
+    background:
+        radial-gradient(120% 90% at 10% -14%, var(--accent-wash), transparent 62%),
+        var(--paper);
+}
+
+.hero__grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: clamp(1.75rem, 1rem + 3vw, 3.5rem);
+    align-items: center;
+}
+
+.hero__eyebrow {
+    margin: 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+}
+
+.dot {
+    padding: 0 0.35rem;
+}
+
+.hero__headline {
+    margin: 1.1rem 0 0;
+    font-size: clamp(2.1rem, 1.2rem + 3.6vw, 3.7rem);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    font-weight: 700;
+}
+
+.hero__accent {
+    color: var(--accent-bright);
+}
+
+.hero__pitch {
+    margin: 1.4rem 0 0;
+    max-width: 46ch;
+    font-size: clamp(1rem, 0.96rem + 0.28vw, 1.09rem);
+    line-height: 1.62;
+    color: var(--ink-soft);
+    text-wrap: pretty;
+}
+
+.hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1.9rem;
+}
+
+/* ---------- the before/after diagram ---------- */
+
+.diagram {
+    margin: 0;
+    padding: 1.4rem 1.5rem 1.6rem;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--paper-alt);
+}
+
+.diagram__label {
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 1.1rem;
+}
+
+.diagram__body {
+    display: grid;
+    grid-template-columns: 1fr 2.25rem 1fr;
+    gap: 0.85rem;
+    /* Stretch, not center: the two panels hold different numbers of nodes, and centring
+       them leaves the Before and After headings on different baselines. */
+    align-items: stretch;
+}
+
+.panel {
+    padding: 0.9rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--paper);
+}
+
+.panel--before {
+    border-color: color-mix(in srgb, #b4634c 30%, var(--line));
+}
+
+.panel--after {
+    border-color: color-mix(in srgb, var(--accent-bright) 32%, var(--line));
+}
+
+.panel__label {
+    margin: 0 0 0.7rem;
+    font-size: 0.63rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+}
+
+.panel__stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.node {
+    padding: 0.42rem 0.55rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    text-align: center;
+}
+
+.node--blocker {
+    border-style: dashed;
+    border-color: color-mix(in srgb, #b4634c 55%, var(--line));
+    color: #b4634c;
+}
+
+.node--lead {
+    border-color: var(--accent-bright);
+    color: var(--accent-bright);
+    font-weight: 600;
+}
+
+.arrow {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    line-height: 1;
+}
+
+.bridge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+}
+
+/*
+    The bridge is the one piece of motion that carries meaning rather than decorating:
+    the line grows left-to-right, so the diagram performs the transformation the whole
+    page is about instead of just depicting it.
+*/
+.bridge__line {
+    width: 100%;
+    height: 2px;
+    background: var(--accent-bright);
+    transform-origin: left center;
+    animation: bridge-draw .7s cubic-bezier(.3, .7, .3, 1) both;
+    animation-delay: 900ms;
+}
+
+.bridge__arrow {
+    font-size: 1.05rem;
+    color: var(--accent-bright);
+    animation: rise-in .4s ease both;
+    animation-delay: 1500ms;
+}
+
+@keyframes bridge-draw {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bridge__line,
+    .bridge__arrow {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* ---------- stats ---------- */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.75rem;
+    margin: clamp(2rem, 1.5rem + 2vw, 3rem) 0 0;
+    padding: 0;
+}
+
+.stat {
+    margin: 0;
+    padding: 0.85rem 1rem 0.9rem;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.stat dt {
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+}
+
+.stat dd {
+    margin: 0.3rem 0 0;
+    font-family: var(--font-display);
+    font-size: 1.42rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+.stat__note {
+    margin: 0.3rem 0 0;
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+}
+
+/* Gold is the page's only emphasis colour and marks exactly one thing: the awarded
+   metric. Spending it anywhere else would cost it its meaning. */
+.stat--feature {
+    border-color: color-mix(in srgb, var(--gold) 45%, var(--line));
+    background: var(--gold-wash);
+}
+
+.stat--feature dt,
+.stat--feature .stat__note {
+    color: color-mix(in srgb, var(--gold) 70%, var(--ink-faint));
+}
+
+.stat--feature dd {
+    color: var(--gold);
+}
+
+@media (max-width: 900px) {
+    .hero__grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Stacked, the diagram's three columns become unreadably narrow. */
+    .diagram__body {
+        grid-template-columns: 1fr;
+        gap: 0.6rem;
+    }
+
+    .bridge {
+        flex-direction: row;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+
+    .bridge__line {
+        width: 40%;
+    }
+
+    .bridge__arrow {
+        transform: rotate(90deg);
+    }
+}

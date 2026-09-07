@@ -1,0 +1,42 @@
+# Build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+artifacts/
+publish/
+publish-test*/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Test output
+[Tt]est[Rr]esult*/
+coverage*
+
+# Local tooling / scratch
+_temp/
+_tools/__pycache__/
+
+# Internal working notes — NOT published.
+#
+# These contain candid career material: direct quotes about how gaps in the CV might be
+# read, notes on what is not remembered, framing strategy, and (in earlier revisions) a
+# colleague's medical detail. They stay on disk and remain readable locally; they are
+# simply never committed to the public repository.
+docs/content/
+docs/superpowers/
+docs/PROGRESS.md
+docs/claude-design-prompt.md
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Seeded design canvas output (regenerated from design/*.dc.html)
+design/portfolio-landing-page.html

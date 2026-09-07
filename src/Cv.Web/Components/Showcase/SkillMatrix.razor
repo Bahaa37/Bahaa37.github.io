@@ -1,0 +1,45 @@
+@*
+    Skills, each annotated with the employers whose achievement record actually mentions
+    it. A skills list is the least trusted part of a CV because anyone can type anything
+    into one — attaching the evidence turns a claim into a citation.
+*@
+
+<section class="band band--alt reveal" id="skills">
+    <div class="shell">
+        <p class="eyebrow">Capabilities</p>
+        <h2 class="band__title">Skills, with the work that backs them</h2>
+        <p class="band__lede">
+            Anyone can list a technology. Where a skill shows up in the achievement record,
+            the employers are named beside it.
+        </p>
+
+        <div class="groups">
+            @foreach (var group in Groups)
+            {
+                <div class="group">
+                    <h3 class="group__title">@group.Category</h3>
+                    <ul class="skills">
+                        @foreach (var skill in SkillEvidence.For(group, Experience))
+                        {
+                            <li class="skill @(skill.HasEvidence ? "skill--evidenced" : null)">
+                                <span class="skill__name">@skill.Skill</span>
+                                @if (skill.HasEvidence)
+                                {
+                                    <span class="skill__where">@string.Join(" · ", skill.UsedAt)</span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<SkillGroup> Groups { get; set; }
+
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<ExperienceEntry> Experience { get; set; }
+}

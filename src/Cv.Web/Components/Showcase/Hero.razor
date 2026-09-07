@@ -1,0 +1,108 @@
+@*
+    Opening screen — Direction A from the design canvas.
+
+    The hero carries the before/after architecture itself, so an architect reader sees
+    the kind of problem being solved before reading a word of prose. That is the whole
+    argument for this direction over a purely editorial one.
+*@
+
+<section class="hero">
+    <div class="shell">
+        <div class="hero__grid">
+
+            <div class="hero__lede">
+                <p class="mono hero__eyebrow rise" style="animation-delay: 60ms">
+                    @Profile.Location <span class="dot">·</span> Open to architecture roles
+                </p>
+
+                <h1 class="hero__headline rise" style="animation-delay: 120ms">
+                    I remove the <span class="hero__accent">constraint</span><br />
+                    that froze the estate.
+                </h1>
+
+                <p class="hero__pitch rise" style="animation-delay: 200ms">
+                    Solution architect and systems analyst in the .NET ecosystem. I take the
+                    architectural decisions on systems people have stopped touching — then
+                    write the template, the rules, and the workflow that let the next team
+                    repeat it.
+                </p>
+
+                <div class="hero__actions rise" style="animation-delay: 280ms">
+                    <a class="btn btn--primary" href="/cv">Read the CV</a>
+                    <a class="btn btn--ghost" href="#work">Selected work</a>
+                    @if (!string.IsNullOrWhiteSpace(Profile.GitHub))
+                    {
+                        <a class="btn btn--ghost" href="@Profile.GitHub">GitHub</a>
+                    }
+                </div>
+            </div>
+
+            <figure class="diagram rise" style="animation-delay: 340ms">
+                <figcaption class="mono diagram__label">The decision, in one diagram</figcaption>
+
+                <div class="diagram__body">
+                    <div class="panel panel--before">
+                        <p class="mono panel__label">Before</p>
+                        <div class="panel__stack">
+                            <span class="node">Service · .NET FW 4.5</span>
+                            <span class="node">Service · Core 2.2</span>
+                            <span class="node">Service</span>
+                            <span class="arrow" aria-hidden="true">↓</span>
+                            <span class="node node--blocker">Distributed Transaction Coordinator</span>
+                        </div>
+                    </div>
+
+                    <div class="bridge" aria-hidden="true">
+                        <span class="bridge__line"></span>
+                        <span class="bridge__arrow">→</span>
+                    </div>
+
+                    <div class="panel panel--after">
+                        <p class="mono panel__label">After</p>
+                        <div class="panel__stack">
+                            <span class="node node--lead">Orchestrator</span>
+                            <span class="arrow" aria-hidden="true">↓</span>
+                            <span class="node">Service · modernized</span>
+                            <span class="node">Service · modernized</span>
+                            <span class="node">Service</span>
+                        </div>
+                    </div>
+                </div>
+            </figure>
+        </div>
+
+        <dl class="stats rise" style="animation-delay: 420ms">
+            <div class="stat stat--feature">
+                <dt class="mono">Upgrade cycle</dt>
+                <dd>5–7 d &rarr; 3</dd>
+                <p class="stat__note">Company award</p>
+            </div>
+            <div class="stat">
+                <dt class="mono">Payment markets</dt>
+                <dd>9 countries</dd>
+                <p class="stat__note">One integration surface</p>
+            </div>
+            <div class="stat">
+                <dt class="mono">Experience</dt>
+                <dd>@ExperiencePhrase</dd>
+                <p class="stat__note">Computed from dates</p>
+            </div>
+            <div class="stat">
+                <dt class="mono">Recognition</dt>
+                <dd>@AwardCount awards</dd>
+                <p class="stat__note">Delivery · AI enablement</p>
+            </div>
+        </dl>
+    </div>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public required Profile Profile { get; set; }
+
+    [Parameter, EditorRequired]
+    public required string ExperiencePhrase { get; set; }
+
+    [Parameter]
+    public int AwardCount { get; set; }
+}

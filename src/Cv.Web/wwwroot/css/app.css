@@ -1,0 +1,404 @@
+/*
+    Design system for the showcase site.
+
+    Replaces the Blazor template's Bootstrap-based styling. Bootstrap was dropped
+    because this site is a handful of bespoke layouts, and shipping ~200KB of a grid
+    framework to a recruiter who will read the page once is a poor trade on a page
+    whose entire job is loading fast.
+
+    Colours are defined once as tokens on :root and overridden only inside the dark
+    media query, so no colour has its sole definition inside a conditional block.
+*/
+
+:root {
+    --ink: #16202a;
+    --ink-soft: #46586a;
+    --ink-faint: #6b7c8d;
+    --paper: #ffffff;
+    --paper-alt: #f4f7fa;
+    --paper-sunken: #e9eff5;
+    --line: #d8e1ea;
+    --accent: #14425f;
+    --accent-bright: #1d6fa5;
+    --accent-wash: #e6eff6;
+    --gold: #8a6116;
+    --gold-wash: #fbf3e2;
+
+    --measure: 68ch;
+    --page: 1120px;
+    --radius: 10px;
+    --shadow: 0 1px 2px rgba(16, 32, 42, .06), 0 8px 24px rgba(16, 32, 42, .06);
+
+    --font-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+    --font-body: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, Helvetica, sans-serif;
+    --font-mono: "IBM Plex Mono", "Cascadia Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --ink: #e6edf3;
+        --ink-soft: #a9b8c6;
+        --ink-faint: #7d8d9c;
+        --paper: #0f151b;
+        --paper-alt: #151d26;
+        --paper-sunken: #1c2731;
+        --line: #2a3742;
+        --accent: #8ec6ea;
+        --accent-bright: #a9d7f5;
+        --accent-wash: #16242f;
+        --gold: #e0b95f;
+        --gold-wash: #2a2213;
+        --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px rgba(0, 0, 0, .3);
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--paper);
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    line-height: 1.22;
+    margin: 0;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+}
+
+.mono {
+    font-family: var(--font-mono);
+}
+
+/* ---------- motion ----------
+
+   One orchestrated moment, not scattered micro-interactions. Every rule here is
+   disabled by the prefers-reduced-motion block at the foot of this file, so motion
+   is additive to a page that already works without it.
+*/
+
+/* Sections start hidden ONLY once the observer has claimed them. Without this guard a
+   viewer with JavaScript disabled, or one who loads before the script runs, would be
+   left with permanently invisible content. */
+.js-reveal .reveal {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .5s ease, transform .5s ease;
+}
+
+.js-reveal .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+@keyframes rise-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: none; }
+}
+
+.rise {
+    animation: rise-in .55s cubic-bezier(.2, .7, .3, 1) both;
+}
+
+p {
+    margin: 0 0 1rem;
+}
+
+a {
+    color: var(--accent-bright);
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent-bright);
+    outline-offset: 3px;
+    border-radius: 3px;
+}
+
+/* ---------- layout primitives ---------- */
+
+.shell {
+    max-width: var(--page);
+    margin: 0 auto;
+    padding: 0 1.25rem;
+}
+
+.band {
+    padding: 3.5rem 0;
+    border-top: 1px solid var(--line);
+}
+
+.band--alt {
+    background: var(--paper-alt);
+}
+
+.band__title {
+    font-size: clamp(1.35rem, 1.1rem + 1.1vw, 1.8rem);
+    letter-spacing: -0.01em;
+    margin-bottom: 0.4rem;
+}
+
+.band__lede {
+    color: var(--ink-soft);
+    max-width: var(--measure);
+    margin-bottom: 2rem;
+}
+
+.eyebrow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 0.6rem;
+}
+
+/* ---------- site chrome ---------- */
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+}
+
+.site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 60px;
+}
+
+.site-header__name {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    color: var(--ink);
+    white-space: nowrap;
+}
+
+.site-nav {
+    display: flex;
+    gap: 1.25rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.site-nav a {
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 0.92rem;
+    white-space: nowrap;
+}
+
+.site-nav a:hover {
+    color: var(--accent-bright);
+}
+
+/*
+    Below this width the name and five nav links cannot share a row: flex-wrap
+    interleaves them into a jumble with the name stranded mid-list. Stack into two rows
+    and let the nav scroll sideways within its own strip instead.
+*/
+@media (max-width: 720px) {
+    .site-header__inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding-top: 0.5rem;
+    }
+
+    .site-header__name {
+        padding-bottom: 0.4rem;
+    }
+
+    .site-nav {
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        gap: 1.1rem;
+        overflow-x: auto;
+        padding-bottom: 0.55rem;
+        /* Hide the scrollbar; the overflow is discoverable by swiping. */
+        scrollbar-width: none;
+    }
+
+    .site-nav::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.site-footer {
+    border-top: 1px solid var(--line);
+    padding: 2rem 0 3rem;
+    color: var(--ink-faint);
+    font-size: 0.9rem;
+}
+
+/* ---------- buttons ---------- */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.65rem 1.15rem;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    font: inherit;
+    font-size: 0.94rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    background: none;
+}
+
+.btn--primary {
+    background: var(--accent);
+    color: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+    .btn--primary {
+        color: #0f151b;
+    }
+}
+
+.btn--primary:hover {
+    background: var(--accent-bright);
+}
+
+.btn--ghost {
+    border-color: var(--line);
+    color: var(--ink);
+}
+
+.btn--ghost:hover {
+    border-color: var(--accent-bright);
+    color: var(--accent-bright);
+}
+
+/* ---------- misc shared ---------- */
+
+.tag {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    background: var(--paper-sunken);
+    color: var(--ink-soft);
+    font-size: 0.78rem;
+    white-space: nowrap;
+}
+
+.metric-chip {
+    display: inline-block;
+    padding: 0.12rem 0.5rem;
+    border-radius: 6px;
+    background: var(--gold-wash);
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+}
+
+/* Wide content must scroll inside itself; the page never scrolls sideways. */
+.scroll-x {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+/* ---------- Blazor plumbing (kept from the template) ---------- */
+
+#blazor-error-ui {
+    color-scheme: light only;
+    background: lightyellow;
+    color: #111;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+.loading-progress {
+    position: absolute;
+    display: block;
+    width: 8rem;
+    height: 8rem;
+    inset: 20vh 0 auto 0;
+    margin: 0 auto;
+}
+
+.loading-progress circle {
+    fill: none;
+    stroke: var(--paper-sunken);
+    stroke-width: 0.6rem;
+    transform-origin: 50% 50%;
+    transform: rotate(-90deg);
+}
+
+.loading-progress circle:last-child {
+    stroke: var(--accent-bright);
+    stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
+    transition: stroke-dasharray 0.05s ease-in-out;
+}
+
+.loading-progress-text {
+    position: absolute;
+    text-align: center;
+    font-weight: bold;
+    color: var(--ink-soft);
+    inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
+}
+
+.loading-progress-text:after {
+    content: var(--blazor-load-percentage-text, "Loading");
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    /* Zeroing the durations is not enough on its own: the reveal rule sets opacity: 0
+       as a starting state, so without this the content would simply stay invisible for
+       anyone who asked for less motion. */
+    .js-reveal .reveal {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}

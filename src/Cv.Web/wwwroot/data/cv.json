@@ -1,0 +1,642 @@
+{
+  "profile": {
+    "name": "Bahaa Aldeen Mohamed",
+    "title": "Senior .NET Engineer — Solution Architecture & Systems Analysis",
+    "location": "Alexandria, Egypt",
+    "phone": "+20 105 555 3796",
+    "email": "BahaaMohamed37@gmail.com",
+    "linkedIn": "https://linkedin.com/in/bahaamohamed-dev",
+    "gitHub": "https://github.com/Bahaa37",
+    "website": "https://bahaa37.github.io"
+  },
+  "summary": "Software architect and systems analyst working in the .NET ecosystem, with a track record of taking architectural decisions on systems that were considered too risky to change. Led the re-architecture of a distributed orchestrator to remove its transaction-coordinator dependency — the constraint that had frozen an entire service estate on unsupported runtimes — then authored the transformation template, its governing rules, and the AI-guided workflow that let other teams repeat it. A single upgrade cycle fell from 5-7 working days to a maximum of 3, with a company award for the time and cost saved. Designs and documents systems as well as building them: solution architecture documents, SRS and low-level design, and Mermaid workflow modelling. Architected payment middleware serving 9 countries on Clean Architecture with CQRS, Strategy, and Pipeline. Separately awarded as a subject matter expert for AI enablement across non-technical departments. Completing diplomas in microservices architecture and Azure, and targeting systems analysis and architecture roles.",
+  "skillGroups": [
+    {
+      "category": "Architecture & Patterns",
+      "skills": [
+        "Clean Architecture",
+        "CQRS",
+        "Mediator",
+        "Repository",
+        "Strategy",
+        "Pipeline",
+        "Microservices",
+        "Distributed Transactions / DTC removal",
+        "Workflow Orchestration",
+        "OOP",
+        "SOLID"
+      ]
+    },
+    {
+      "category": "Systems Analysis & Design",
+      "skills": [
+        "Solution architecture documents",
+        "Software Requirements Specification (SRS)",
+        "Low-Level Design (LLD)",
+        "Architecture diagrams",
+        "Workflow and sequence modelling",
+        "Mermaid diagramming",
+        "Requirements analysis",
+        "Cross-team technical facilitation"
+      ]
+    },
+    {
+      "category": "Legacy Modernization",
+      "skills": [
+        "Framework upgrade strategy",
+        "Incremental migration",
+        "Project templating & rule authoring",
+        "Refactoring at scale",
+        "Cross-team transformation leadership"
+      ]
+    },
+    {
+      "category": "AI Engineering & Enablement",
+      "skills": [
+        "Microsoft Copilot Studio",
+        "Autonomous agent development",
+        "AI-guided development workflows",
+        "Claude Code",
+        "GitHub Copilot",
+        "AI training & curriculum design"
+      ]
+    },
+    {
+      "category": "Languages & Frameworks",
+      "skills": [
+        "C#",
+        ".NET 9 / .NET 10",
+        ".NET Core",
+        ".NET Framework",
+        "ASP.NET Core",
+        "ASP.NET MVC",
+        "Web API",
+        "Entity Framework Core",
+        "Dapper",
+        "Blazor"
+      ]
+    },
+    {
+      "category": "Data & Messaging",
+      "skills": [
+        "Microsoft SQL Server",
+        "LINQ",
+        "Query optimization",
+        "Redis",
+        "RabbitMQ"
+      ]
+    },
+    {
+      "category": "Cloud & DevOps",
+      "skills": [
+        "Microsoft Azure",
+        "Azure Static Web Apps",
+        "Azure DevOps",
+        "Team Foundation Server",
+        "Git",
+        "CI/CD pipelines"
+      ]
+    },
+    {
+      "category": "APIs & Integration",
+      "skills": [
+        "RESTful APIs",
+        "Payment gateway integration",
+        "JWT authentication",
+        "Google Maps API",
+        "reCAPTCHA",
+        "SMS & email gateways"
+      ]
+    },
+    {
+      "category": "Frontend",
+      "skills": [
+        "Angular",
+        "React",
+        "Blazor",
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "jQuery",
+        "Ajax"
+      ]
+    },
+    {
+      "category": "Practice & Documentation",
+      "skills": [
+        "Agile / Scrum",
+        "API documentation",
+        "FluentValidation"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "company": "Andalusia Business Solutions",
+      "role": "Senior Full-Stack Software Engineer",
+      "employmentType": "FullTime",
+      "location": "Alexandria, Egypt",
+      "period": {
+        "start": "2025-11",
+        "end": null
+      },
+      "highlights": [
+        {
+          "text": "Led the re-architecture of the platform's Temporal orchestrator to remove its distributed transaction coordinator (DTC) dependency, unblocking the upgrade of legacy .NET Core 2.2 and .NET Framework 4.5 services.",
+          "tags": [
+            "Architecture",
+            "Legacy Modernization",
+            "Distributed Systems"
+          ],
+          "isFeatured": true
+        },
+        {
+          "text": "Authored the transformation project template and its governing rules as the first engineer on the initiative, giving every subsequent module upgrade a repeatable starting point.",
+          "tags": [
+            "Legacy Modernization",
+            "Tooling"
+          ],
+          "isFeatured": true
+        },
+        {
+          "text": "Designed a set of AI skills and an orchestrating workflow to guide the modernization, cutting the time to understand and upgrade one system cycle. Recognised with a company award for the resulting time and cost saving.",
+          "metric": "5-7 working days reduced to a maximum of 3",
+          "tags": [
+            "AI Engineering",
+            "Legacy Modernization",
+            "Award"
+          ],
+          "isFeatured": true
+        },
+        {
+          "text": "Built and delivered an AI training course for non-technical departments including HR, and was recognised as a subject matter expert for it.",
+          "tags": [
+            "AI Enablement",
+            "Training",
+            "Award"
+          ],
+          "isFeatured": true
+        },
+        {
+          "text": "Developed an autonomous AI agent on Microsoft Copilot Studio.",
+          "tags": [
+            "AI Engineering",
+            "Copilot Studio"
+          ],
+          "isFeatured": true
+        },
+        {
+          "text": "Modernized 5 platform modules, leading the transformation within the team and running cross-team sessions to guide other teams through the same migration.",
+          "tags": [
+            "Leadership",
+            "Legacy Modernization"
+          ],
+          "isFeatured": true
+        },
+        {
+          "text": "Built internal engineering tools, including a RabbitMQ watcher that observes live message flows and analyses them to surface issues in real time.",
+          "tags": [
+            "Tooling",
+            "RabbitMQ",
+            "Observability"
+          ]
+        },
+        {
+          "text": "Worked directly with Product Owners, QC, DevOps, database, and bug-triage teams to identify defects, refactor problem areas, and keep the modernization aligned across functions.",
+          "tags": [
+            "Collaboration",
+            "Cross-functional"
+          ]
+        },
+        {
+          "text": "Mentored the development team on applying AI tooling to everyday engineering work, raising both throughput and code quality.",
+          "tags": [
+            "Mentoring",
+            "AI Enablement"
+          ]
+        },
+        {
+          "text": "Documented complex API endpoints and module workflows as Mermaid flowcharts and sequence diagrams in Markdown.",
+          "tags": [
+            "Documentation",
+            "Mermaid"
+          ]
+        }
+      ]
+    },
+    {
+      "company": "PS Digital",
+      "role": "Senior Full-Stack Software Engineer",
+      "employmentType": "FullTime",
+      "location": "Alexandria, Egypt",
+      "period": {
+        "start": "2024-11",
+        "end": "2025-11"
+      },
+      "highlights": [
+        {
+          "text": "Architected and built a middleware reverse proxy for payment gateway integration serving 9 countries, using Clean Architecture with CQRS, Strategy, and Pipeline patterns.",
+          "metric": "9 countries",
+          "tags": [
+            "Architecture",
+            "Payments",
+            "CQRS"
+          ],
+          "isFeatured": true
+        },
+        {
+          "text": "Stepped up to cover the engineering manager's role for 45 days during an unplanned absence, holding it through a business-critical period, and was promoted on the strength of that period.",
+          "tags": [
+            "Leadership",
+            "Promotion"
+          ],
+          "isFeatured": true
+        },
+        {
+          "text": "Upgraded enterprise projects to current C# and .NET, introducing CQRS and the Mediator pattern to improve maintainability, testability, and separation of concerns.",
+          "tags": [
+            "Legacy Modernization",
+            "CQRS"
+          ],
+          "isFeatured": true
+        },
+        {
+          "text": "Integrated payment providers, email and SMS gateways, Google Maps, and Google reCAPTCHA across customer-facing products.",
+          "tags": [
+            "Integration",
+            "Payments"
+          ]
+        },
+        {
+          "text": "Contributed to solution architecture documents, including architecture diagrams and workflow designs.",
+          "tags": [
+            "Documentation",
+            "Architecture"
+          ]
+        }
+      ]
+    },
+    {
+      "company": "MEEM Development",
+      "role": "Backend Software Engineer",
+      "employmentType": "FullTime",
+      "location": "Egypt",
+      "period": {
+        "start": "2024-07",
+        "end": "2024-11"
+      },
+      "highlights": [
+        {
+          "text": "Produced solution architecture documentation — architecture diagrams and workflow designs — used by delivery teams as the reference for build work.",
+          "tags": [
+            "Architecture",
+            "Documentation",
+            "Systems Analysis"
+          ],
+          "isFeatured": true
+        },
+        {
+          "text": "Authored Software Requirements Specification (SRS) and Low-Level Design (LLD) documents, translating business requirements into unambiguous technical specifications that teams could implement without re-interpretation.",
+          "tags": [
+            "SRS",
+            "LLD",
+            "Systems Analysis",
+            "Requirements"
+          ],
+          "isFeatured": true
+        }
+      ]
+    },
+    {
+      "company": "PS Digital",
+      "role": "Software Engineer, promoted to Senior Software Engineer",
+      "employmentType": "FullTime",
+      "location": "Alexandria, Egypt",
+      "period": {
+        "start": "2023-03",
+        "end": "2024-07"
+      },
+      "highlights": [
+        {
+          "text": "Promoted twice within the first year on the strength of delivery.",
+          "tags": [
+            "Promotion"
+          ],
+          "isFeatured": true
+        },
+        {
+          "text": "Led the rebuild of a legacy MVC web application into a modern .NET Web API, improving scalability and maintainability.",
+          "tags": [
+            "Legacy Modernization",
+            "Web API"
+          ],
+          "isFeatured": true
+        },
+        {
+          "text": "Replaced Entity Framework with Dapper in the data access layer, improving query performance and simplifying data operations.",
+          "tags": [
+            "Performance",
+            "Dapper"
+          ],
+          "isFeatured": true
+        },
+        {
+          "text": "Redesigned the database structure and rebuilt the backend architecture to modern standards.",
+          "tags": [
+            "Database",
+            "Architecture"
+          ]
+        },
+        {
+          "text": "Supported migration of the application onto Azure, using managed cloud services for data processing and storage.",
+          "tags": [
+            "Azure",
+            "Cloud Migration"
+          ]
+        },
+        {
+          "text": "Built new websites from scratch and maintained existing applications, improving code quality through systematic refactoring.",
+          "tags": [
+            "Full-Stack",
+            "Refactoring"
+          ]
+        }
+      ]
+    }
+  ],
+  "awards": [
+    {
+      "title": "Award for engineering time and cost saving",
+      "issuer": "Andalusia Business Solutions",
+      "description": "For the AI-guided modernization workflow that cut a system upgrade cycle from 5-7 working days to a maximum of 3."
+    },
+    {
+      "title": "Subject Matter Expert recognition",
+      "issuer": "Andalusia Business Solutions",
+      "description": "For designing and delivering an AI training course for non-technical departments, including HR."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Information Technology Institute (ITI)",
+      "credential": "Full Stack Development using .NET Framework — Diploma",
+      "period": {
+        "start": "2022-11",
+        "end": "2023-03"
+      },
+      "details": [
+        "Intensive 4-month bootcamp on the Microsoft stack, covering computer science fundamentals.",
+        "C# and .NET: built web applications and APIs.",
+        "SQL Server: relational database design and management.",
+        "Angular: dynamic web interfaces."
+      ]
+    },
+    {
+      "institution": "Steps Learning Academy",
+      "credential": "Microservices Architecture — Diploma (in progress)",
+      "period": {
+        "start": "2025-01",
+        "end": null
+      },
+      "details": [
+        "Microservices design and Angular frontend development for scalable distributed systems."
+      ]
+    },
+    {
+      "institution": "Steps Learning Academy",
+      "credential": "Azure Cloud A-to-Z — Diploma (in progress)",
+      "period": {
+        "start": "2025-01",
+        "end": null
+      },
+      "details": [
+        "Azure deployment, management, security, and cloud-native application practice."
+      ]
+    },
+    {
+      "institution": "Alexandria University",
+      "credential": "Tourism Studies",
+      "period": {
+        "start": "2014-02",
+        "end": "2019-02"
+      },
+      "details": []
+    }
+  ],
+  "certifications": [
+    {
+      "name": "IT Essentials",
+      "issuer": "Cisco Networking Academy",
+      "awarded": "2023-01",
+      "isFeatured": true
+    },
+    {
+      "name": "Software Architecture: From Developer to Architect",
+      "issuer": "LinkedIn Learning",
+      "awarded": "2024-07",
+      "isFeatured": true
+    },
+    {
+      "name": "Microservices Design Patterns",
+      "issuer": "LinkedIn Learning",
+      "awarded": "2024-09",
+      "isFeatured": true
+    },
+    {
+      "name": "Azure Microservices with .NET Core for Developers",
+      "issuer": "LinkedIn Learning",
+      "awarded": "2024-08",
+      "isFeatured": true
+    },
+    {
+      "name": "Learning RabbitMQ",
+      "issuer": "LinkedIn Learning",
+      "awarded": "2024-08",
+      "isFeatured": true
+    },
+    {
+      "name": "Building a Cloud Architecture Diagram",
+      "issuer": "LinkedIn Learning",
+      "awarded": "2024-08"
+    },
+    {
+      "name": "Sustainable Software Architecture",
+      "issuer": "LinkedIn Learning",
+      "awarded": "2024-07"
+    },
+    {
+      "name": "Getting Started as an ASP.NET Core Developer",
+      "issuer": "LinkedIn Learning",
+      "awarded": "2023-04"
+    },
+    {
+      "name": "Microsoft SQL Server 2022 Essential Training",
+      "issuer": "LinkedIn Learning",
+      "awarded": "2023-04"
+    },
+    {
+      "name": "Migrating to Azure",
+      "issuer": "LinkedIn Learning",
+      "awarded": "2023-04"
+    },
+    {
+      "name": "Advanced Web APIs with ASP.NET Core in .NET 6",
+      "issuer": "LinkedIn Learning",
+      "awarded": "2023-03"
+    },
+    {
+      "name": ".NET 6 Deep Dive",
+      "issuer": "LinkedIn Learning",
+      "awarded": "2023-03"
+    },
+    {
+      "name": "Microsoft SQL Server",
+      "issuer": "Udemy",
+      "awarded": "2023-01"
+    },
+    {
+      "name": "Database Fundamentals",
+      "issuer": "Mahara-Tech",
+      "awarded": "2023-01"
+    },
+    {
+      "name": "HTML5 & CSS3",
+      "issuer": "Mahara-Tech",
+      "awarded": "2023-01"
+    },
+    {
+      "name": "Web Development Challenger Track",
+      "issuer": "Ministry of Communications and Information Technology",
+      "awarded": "2022-10"
+    },
+    {
+      "name": "Entrepreneurship",
+      "issuer": "Ministry of Youth and Sports",
+      "awarded": "2022-10"
+    }
+  ],
+  "caseStudies": [
+    {
+      "slug": "legacy-modernization",
+      "title": "Removing DTC from a distributed orchestrator",
+      "summary": "Re-architected a Temporal orchestrator to drop its distributed transaction coordinator dependency, unblocking a fleet of legacy .NET services and halving the upgrade cycle.",
+      "organisation": "Andalusia Business Solutions",
+      "displayOrder": 1,
+      "problem": "The platform's orchestration layer depended on a distributed transaction coordinator to keep multi-service operations consistent. That dependency pinned services to old runtimes — .NET Core 2.2 and .NET Framework 4.5 — because the coordinator's behaviour could not be carried forward cleanly. Every attempted upgrade risked correctness, so the estate stayed frozen and the cost of change kept rising. Understanding and upgrading a single system cycle took 5 to 7 working days.",
+      "approach": "I led the re-architecture of the orchestrator so that consistency no longer relied on a distributed transaction coordinator, replacing ambient transactional guarantees with explicit orchestration. Rather than treat each service as a one-off, I authored a transformation project template and the rules governing it, so every later module started from a known-good shape instead of a blank page. I then built a set of AI skills and a workflow over them that guided engineers through the transformation — encoding the decisions that were otherwise re-derived by hand on every module. I led the rollout inside my own team and ran sessions with other teams migrating the same way.",
+      "outcomes": [
+        "A single upgrade cycle fell from 5-7 working days to a maximum of 3.",
+        "5 modules modernized, with a repeatable template for the rest.",
+        "Company award for the resulting time and cost saving.",
+        "Other teams adopted the same template and workflow."
+      ],
+      "stack": [
+        "C#",
+        ".NET",
+        "Temporal orchestration",
+        "Distributed transactions",
+        "AI-guided workflows"
+      ],
+      "mermaidDiagram": "flowchart LR\n  subgraph Before[\"Before — DTC-bound\"]\n    A1[Service A<br/>.NET Framework 4.5] --> D[(Distributed Transaction<br/>Coordinator)]\n    A2[Service B<br/>.NET Core 2.2] --> D\n    A3[Service C] --> D\n    D --> DB1[(Database)]\n  end\n  subgraph After[\"After — explicit orchestration\"]\n    O[Orchestrator] --> B1[Service A<br/>modernized]\n    O --> B2[Service B<br/>modernized]\n    O --> B3[Service C]\n    B1 --> DB2[(Database)]\n    B2 --> DB2\n    B3 --> DB2\n  end\n  Before -->|\"template + AI-guided workflow\"| After"
+    },
+    {
+      "slug": "ai-enablement",
+      "title": "Making AI usable by engineers and non-engineers alike",
+      "summary": "An AI training course for non-technical departments, an autonomous Copilot Studio agent, and the AI-guided workflow behind a halved engineering cycle.",
+      "organisation": "Andalusia Business Solutions",
+      "displayOrder": 2,
+      "problem": "AI tooling was available but unevenly used. Engineers applied it ad hoc with inconsistent results, and non-technical departments such as HR had no route into it at all — the tools assumed a technical vocabulary their work never required.",
+      "approach": "I treated this as two different problems rather than one. For non-technical staff I designed and delivered a course pitched at their actual workflows instead of at the tooling, which is what earned the subject matter expert recognition. For engineering I went further than training: I built AI skills and an orchestrating workflow that encoded the modernization decisions directly, so the guidance lived in the process rather than in someone's memory. Alongside this I shipped an autonomous agent on Microsoft Copilot Studio.",
+      "outcomes": [
+        "Subject matter expert recognition for the AI training course.",
+        "Autonomous agent delivered on Microsoft Copilot Studio.",
+        "AI-guided modernization workflow that cut the upgrade cycle from 5-7 days to a maximum of 3.",
+        "Development team mentored on applying AI tooling to daily engineering work."
+      ],
+      "stack": [
+        "Microsoft Copilot Studio",
+        "AI agent design",
+        "Workflow orchestration",
+        "Curriculum design"
+      ]
+    },
+    {
+      "slug": "windoor-wizard-builder",
+      "title": "Windoor Wizard Builder — a fabrication engine that has to be exactly right",
+      "summary": "A multi-tenant SaaS for Egyptian UPVC window and door workshops, merging a commercial quoting and production platform with a cutting-optimisation engine verified against a real shop floor.",
+      "organisation": "Personal project",
+      "displayOrder": 3,
+      "problem": "Egyptian UPVC workshops run on WhatsApp, Excel, and paper. Quotes are priced by hand, cut lists are worked out per job, and the profile offcuts that decide whether a job is profitable are estimated rather than calculated. Generic ERP does not help because it does not model the domain — it has no concept of a frame deduction registry, bar nesting, or the glass area and steel reinforcement that drive real cost. A workshop running generic software still does the hard part on paper.",
+      "approach": "Three decisions carry this system. First, lengths are stored as exact integer tenths of a millimetre rather than as decimals: the shop cuts half-millimetres — 44 of 195 verified rows — and a rounded cut list produces a window that does not fit. The value type deliberately exposes no decimal factory, so rounding cannot enter the model at all; the wrong thing is unrepresentable rather than merely discouraged. Second, bar nesting is one-dimensional bin packing, so it uses First-Fit-Decreasing, with the three details that separate a real implementation from the textbook one: saw kerf charged per cut, loud failure on a piece longer than a bar rather than a best-effort list that cannot be executed, and a stable sort so two runs over one order produce identical cut lists. Every constant — bar length, end trim, kerf, minimum reusable offcut — is supplied by the caller, so a different workshop is configuration rather than code. Third, the engine became a bounded context inside the SaaS rather than a service beside it, because its calculations always run inside a tenant's quote and share that transaction; a network boundary would have bought overhead and returned nothing. Tenant isolation is enforced by EF Core global query filters, not by a WHERE clause every query is trusted to remember.",
+      "outcomes": [
+        "Two half-built systems merged into one .NET 10 monorepo: the SaaS had a stubbed pricing engine, the engine had no tenancy or persistence.",
+        "491 unit tests passing across domain, application, API, and infrastructure.",
+        "Cutting engine oracle-verified against real orders from a working workshop, not against assumptions derived from the same understanding that wrote the code.",
+        "72 pre-existing pricing failures kept and documented as the integration specification rather than deleted to make the suite green.",
+        "Arabic right-to-left throughout, in the interface and in generated PDFs."
+      ],
+      "stack": [
+        ".NET 10",
+        "Clean Architecture",
+        "MediatR CQRS",
+        "EF Core",
+        "Multi-tenancy",
+        "JWT",
+        "QuestPDF",
+        "Angular 18",
+        "NgRx Signals",
+        ".NET Aspire",
+        "Arabic RTL"
+      ],
+      "mermaidDiagram": "flowchart TB\n  subgraph Before[\"Two systems, each incomplete\"]\n    direction LR\n    S[\"SaaS shell<br/>auth · tenancy · quotes · orders<br/><b>pricing: stubbed</b>\"]\n    E[\"Fabrication engine<br/>cut lists · nesting · glass · steel<br/><b>storage: JSON files</b>\"]\n  end\n  subgraph After[\"One product\"]\n    direction TB\n    API[\"WWB.Api\"] --> APP[\"WWB.Application<br/>MediatR · CQRS\"]\n    APP --> DOM[\"WWB.Domain\"]\n    APP --> FAB[\"WWB.Fabrication<br/>bounded context\"]\n    APP --> INF[\"WWB.Infrastructure<br/>EF Core · tenant query filters\"]\n    FAB -.->|\"tenant-scoped repositories\"| INF\n  end\n  Before ==> After",
+      "writeupUrl": "/work/windoor-wizard-builder"
+    },
+    {
+      "slug": "payment-gateway-middleware",
+      "title": "Payment middleware across 9 countries",
+      "summary": "A middleware reverse proxy unifying payment gateway integration across nine national markets, built on Clean Architecture with Strategy and Pipeline patterns.",
+      "organisation": "PS Digital",
+      "displayOrder": 4,
+      "problem": "Payment integration had to work across nine countries, each with its own providers, rules, and failure modes. Integrating each market directly into the products would have multiplied the same logic nine times over and made every provider change a cross-cutting edit.",
+      "approach": "I architected a middleware reverse proxy that gave the products one payment interface regardless of market. Provider-specific behaviour sits behind the Strategy pattern, so adding a country means adding a strategy rather than editing shared code. Cross-cutting concerns — validation, logging, error translation — run through a Pipeline. The whole thing follows Clean Architecture with CQRS, keeping the payment domain independent of both transport and provider SDKs.",
+      "outcomes": [
+        "One integration surface serving 9 countries.",
+        "New providers onboarded by adding a strategy, without touching shared logic.",
+        "Cross-cutting concerns handled once in the pipeline rather than per provider."
+      ],
+      "stack": [
+        "C#",
+        "ASP.NET Core",
+        "Clean Architecture",
+        "CQRS",
+        "Strategy pattern",
+        "Pipeline pattern",
+        "Reverse proxy"
+      ],
+      "mermaidDiagram": "flowchart TD\n  C[Client applications] --> MW[Payment middleware<br/>reverse proxy]\n  MW --> P[Pipeline<br/>validation · logging · error translation]\n  P --> S{Provider strategy<br/>resolved per country}\n  S --> G1[Gateway · Country 1]\n  S --> G2[Gateway · Country 2]\n  S --> G3[... 9 markets]"
+    },
+    {
+      "slug": "mvc-to-webapi-rebuild",
+      "title": "Rebuilding a legacy MVC application as a .NET Web API",
+      "summary": "A full rebuild of an ageing MVC application into a modern Web API, including a data access migration from Entity Framework to Dapper and a move onto Azure.",
+      "organisation": "PS Digital",
+      "displayOrder": 5,
+      "problem": "An existing MVC application had accumulated enough structural debt that routine changes were slow and risky. Its data access layer and database schema had grown organically rather than by design, and query performance had become a recurring complaint.",
+      "approach": "Rather than patch around it, I led a rebuild into a .NET Web API with a redesigned database structure. I replaced Entity Framework with Dapper in the hot paths, trading ORM convenience for explicit control over the SQL where performance mattered. I then supported the migration onto Azure, moving data processing and storage onto managed services.",
+      "outcomes": [
+        "Legacy MVC application replaced by a maintainable Web API.",
+        "Query performance improved by moving hot paths from Entity Framework to Dapper.",
+        "Database structure redesigned to match how the system is actually used.",
+        "Application migrated onto Azure managed services."
+      ],
+      "stack": [
+        "C#",
+        "ASP.NET Core Web API",
+        "Dapper",
+        "Entity Framework",
+        "SQL Server",
+        "Microsoft Azure"
+      ]
+    }
+  ]
+}

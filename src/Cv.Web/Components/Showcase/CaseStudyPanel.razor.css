@@ -1,0 +1,128 @@
+.case {
+    padding: 1.6rem 1.5rem 1.75rem;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    scroll-margin-top: 76px;
+}
+
+.case + .case {
+    margin-top: 1.25rem;
+}
+
+.case__head .eyebrow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.case__index {
+    font-variant-numeric: tabular-nums;
+    color: var(--line);
+    font-size: 1.5rem;
+    letter-spacing: 0;
+}
+
+.case__title {
+    font-size: clamp(1.15rem, 1.02rem + 0.6vw, 1.45rem);
+    letter-spacing: -0.015em;
+}
+
+.case__summary {
+    margin: 0.55rem 0 0;
+    color: var(--ink-soft);
+    max-width: var(--measure);
+}
+
+.case__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+}
+
+.case__block h4 {
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 0.45rem;
+}
+
+.case__block p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+}
+
+.case__block--outcomes {
+    margin-top: 1.35rem;
+    padding: 1rem 1.15rem;
+    background: var(--paper-alt);
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+}
+
+.outcomes {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.95rem;
+}
+
+.outcomes li::marker {
+    color: var(--accent-bright);
+}
+
+.stack {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+}
+
+.case__diagram {
+    margin-top: 1.35rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+}
+
+/* The canvas and fallback are full-width siblings of the buttons in the same flex row. */
+.case__diagram > .scroll-x,
+.case__diagram > .diagram__fallback {
+    flex-basis: 100%;
+}
+
+.diagram__canvas {
+    margin-top: 1rem;
+    padding: 1.25rem;
+    background: var(--paper-alt);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    text-align: center;
+    min-height: 80px;
+}
+
+.diagram__fallback {
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+}
+
+.diagram__fallback pre {
+    overflow-x: auto;
+    padding: 0.9rem;
+    background: var(--paper-sunken);
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    line-height: 1.45;
+}

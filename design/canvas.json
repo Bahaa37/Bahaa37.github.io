@@ -1,0 +1,64 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "title": "Hero — Direction A · Diagram-led (dark)", "x": 0, "y": 0, "w": 1280, "h": 900 },
+    { "file": "HeroEditorial.dc.html", "title": "Hero — Direction B · Editorial (light)", "x": 1400, "y": 0, "w": 1280, "h": 760 },
+
+    { "file": "Skills.dc.html", "title": "Skills with evidence", "x": 0, "y": 1020, "w": 1280, "h": 780 },
+    { "file": "Timeline.dc.html", "title": "Career timeline", "x": 1400, "y": 1020, "w": 1280, "h": 1020 },
+
+    { "file": "CaseStudy.dc.html", "title": "Case study — WWB, with architecture", "x": 0, "y": 1920, "w": 1280, "h": 1180 },
+    { "file": "Credentials.dc.html", "title": "Credentials + contact", "x": 1400, "y": 2160, "w": 1280, "h": 1280 }
+  ],
+
+  "annotations": [
+    {
+      "id": "read-this-first",
+      "x": -560, "y": 0, "w": 470,
+      "text": "START HERE — two hero directions, pick one.\n\nBoth use the same type system (Space Grotesk display / IBM Plex Sans body / IBM Plex Mono for labels and metrics) and the same tokens as the built site, so either can ship without re-theming.\n\nEverything below the heroes is drawn in Direction A's dark treatment. Whichever hero you pick, the sections follow it — they are not locked to A."
+    },
+    {
+      "id": "direction-a",
+      "x": -560, "y": 300, "w": 470,
+      "text": "DIRECTION A — Diagram-led (dark)\n\nThe hero itself carries the before/after architecture. An architect reader sees you think in systems within the first two seconds, before reading a word of prose.\n\nTradeoff: the diagram competes with the headline for attention, and it only works because you have one genuinely strong architectural story. If the flagship ever changes, this hero has to be redrawn.\n\nRecommended for the analyst/architect target."
+    },
+    {
+      "id": "direction-b",
+      "x": -560, "y": 620, "w": 470,
+      "text": "DIRECTION B — Editorial (light)\n\nThe metric IS the headline: \"An upgrade cycle of 5–7 days, cut to three.\" Quieter, more classical, reads like a consultancy.\n\nTradeoff: it asks the reader to take the claim on trust for one more scroll before any evidence appears. Stronger for recruiters and hiring managers, slightly weaker for an architect peer.\n\nAlso shown in light so you can judge both themes."
+    },
+
+    {
+      "id": "motion-hero",
+      "x": 1400, "y": -190, "w": 520,
+      "text": "MOTION — hero (the one deliberate moment)\n\nOn load: headline lines rise 12px and fade in, staggered ~60ms apart; the stat tiles follow as one group ~200ms later. Total under 700ms.\n\nDirection A only: the before/after diagram draws itself — the two panels fade in, then the arrow between them extends left-to-right. This is the single animation worth building; it literally shows the transformation the page is about.\n\nOne orchestrated reveal, not scattered micro-interactions. Restraint is what reads as senior here."
+    },
+    {
+      "id": "motion-sections",
+      "x": -560, "y": 1020, "w": 470,
+      "text": "MOTION — sections\n\nScroll-triggered reveal on section entry: opacity 0→1 with a 10px rise, once, never replayed. IntersectionObserver at ~15% visibility.\n\nTimeline: nodes light up in sequence as the rail scrolls into view — it mirrors the passage of time, so the motion carries meaning rather than decorating.\n\nNothing parallax. No counting-up numbers. Those read junior to the audience you are targeting."
+    },
+    {
+      "id": "motion-reduced",
+      "x": -560, "y": 1400, "w": 470,
+      "text": "MOTION — the non-negotiable\n\nEverything above sits behind prefers-reduced-motion: reduce. app.css already has that block, so animations must be written to be disabled by it, not to bypass it.\n\nA portfolio for an accessibility-aware audience that ignores the setting is a worse signal than no animation at all."
+    },
+
+    {
+      "id": "note-skills",
+      "x": -560, "y": 1700, "w": 470,
+      "text": "SKILLS — the idea worth keeping\n\nEach skill names the employers whose achievement record actually mentions it. That converts the least-trusted section of any CV into citations.\n\nSkills with no evidence are shown plainly, without a badge — the gap is honest and visible rather than hidden."
+    },
+    {
+      "id": "note-casestudy",
+      "x": -560, "y": 1980, "w": 470,
+      "text": "CASE STUDY — why the code snippet, not a screenshot\n\nFor an architect audience the reasoning in the Millimetres type is stronger evidence than any UI screenshot: it shows a decision, its cost, and why the wrong thing was made unrepresentable rather than merely discouraged.\n\nThe bounded-context diagram beneath it answers the second question an architect asks — where did you draw the boundary, and why."
+    },
+    {
+      "id": "note-open",
+      "x": -560, "y": 2320, "w": 470,
+      "text": "STILL OPEN\n\n· The accent is a tweak chip on every artboard — try the four options before settling.\n· Credentials shows 10 of 17 certifications for space; the built page renders all of them.\n· No photo anywhere. Add one if you want it; it is a deliberate omission, not an oversight."
+    }
+  ],
+
+  "launch": { "view": "canvas" }
+}

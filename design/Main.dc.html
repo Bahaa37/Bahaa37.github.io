@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; }
+    a { color: #8ec6ea; text-decoration: none; }
+    a:hover { color: #a9d7f5; }
+    .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+    .display { font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif; }
+  </style>
+</helmet>
+
+<div style="width: 1280px; background: #0d151c; color: #e6edf3; padding: 0 0 72px;">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 72px; border-bottom: 1px solid #223039;">
+    <span class="display" style="font-weight: 700; font-size: 15px; letter-spacing: -0.01em;">Bahaa Aldeen Mohamed</span>
+    <div style="display: flex; gap: 28px; font-size: 13.5px; color: #a9b8c6;">
+      <span>Skills</span><span>Experience</span><span>Selected work</span><span>Credentials</span>
+      <span style="color: #8ec6ea;">CV</span>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; padding: 76px 72px 0;">
+
+    <div>
+      <div class="mono" style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #6f8496;">
+        Alexandria, Egypt &nbsp;·&nbsp; Open to architecture roles
+      </div>
+
+      <h1 class="display" style="margin: 20px 0 0; font-size: 62px; line-height: 1.0; letter-spacing: -0.035em; font-weight: 700;">
+        I remove the<br><span style="color: {{accent}};">constraint</span> that<br>froze the estate.
+      </h1>
+
+      <p style="margin: 26px 0 0; max-width: 46ch; font-size: 17px; line-height: 1.62; color: #a9b8c6; text-wrap: pretty;">
+        Solution architect and systems analyst in the .NET ecosystem. I take the
+        architectural decisions on systems people have stopped touching — then write
+        the template, the rules, and the workflow that let the next team repeat it.
+      </p>
+
+      <div style="display: flex; gap: 12px; margin-top: 34px;">
+        <span class="display" style="display: inline-flex; align-items: center; padding: 13px 22px; border-radius: 8px; background: {{accent}}; color: #0d151c; font-weight: 700; font-size: 14.5px;">Read the CV</span>
+        <span class="display" style="display: inline-flex; align-items: center; padding: 13px 22px; border-radius: 8px; border: 1px solid #2f3f4c; color: #e6edf3; font-weight: 600; font-size: 14.5px;">Selected work</span>
+      </div>
+    </div>
+
+    <div style="border: 1px solid #223039; border-radius: 14px; background: #111b23; padding: 26px 28px 30px;">
+      <div class="mono" style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6f8496; margin-bottom: 20px;">
+        The decision, in one diagram
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 34px 1fr; gap: 14px; align-items: center;">
+
+        <div style="border: 1px solid #3a2b2b; border-radius: 10px; padding: 16px 14px; background: #161b1e;">
+          <div class="mono" style="font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #b07b6b; margin-bottom: 12px;">Before</div>
+          <div style="display: flex; flex-direction: column; gap: 7px;">
+            <div style="border: 1px solid #33414c; border-radius: 6px; padding: 7px 9px; font-size: 11.5px; color: #a9b8c6;">Service · .NET FW 4.5</div>
+            <div style="border: 1px solid #33414c; border-radius: 6px; padding: 7px 9px; font-size: 11.5px; color: #a9b8c6;">Service · Core 2.2</div>
+            <div style="border: 1px solid #33414c; border-radius: 6px; padding: 7px 9px; font-size: 11.5px; color: #a9b8c6;">Service</div>
+            <div style="display: flex; justify-content: center; color: #55636e; font-size: 13px;">↓</div>
+            <div style="border: 1px dashed #7d5b52; border-radius: 6px; padding: 9px; text-align: center; font-size: 11.5px; color: #d19a86;">
+              Distributed Transaction<br>Coordinator
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; color: #55636e;">
+          <div class="mono" style="font-size: 9px; letter-spacing: 0.08em; color: #6f8496; writing-mode: vertical-rl; transform: rotate(180deg);">template</div>
+          <div style="font-size: 20px; color: {{accent}};">→</div>
+        </div>
+
+        <div style="border: 1px solid #24404f; border-radius: 10px; padding: 16px 14px; background: #101d25;">
+          <div class="mono" style="font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #6fa8c9; margin-bottom: 12px;">After</div>
+          <div style="display: flex; flex-direction: column; gap: 7px;">
+            <div style="border: 1px solid {{accent}}; border-radius: 6px; padding: 9px; text-align: center; font-size: 11.5px; color: {{accent}};">Orchestrator</div>
+            <div style="display: flex; justify-content: center; color: #55636e; font-size: 13px;">↓</div>
+            <div style="border: 1px solid #33414c; border-radius: 6px; padding: 7px 9px; font-size: 11.5px; color: #a9b8c6;">Service · modernized</div>
+            <div style="border: 1px solid #33414c; border-radius: 6px; padding: 7px 9px; font-size: 11.5px; color: #a9b8c6;">Service · modernized</div>
+            <div style="border: 1px solid #33414c; border-radius: 6px; padding: 7px 9px; font-size: 11.5px; color: #a9b8c6;">Service</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; padding: 56px 72px 0;">
+
+    <div style="border: 1px solid #4a3d1c; border-radius: 12px; padding: 18px 20px; background: #1e1a10;">
+      <div class="mono" style="font-size: 10.5px; letter-spacing: 0.13em; text-transform: uppercase; color: #a08346;">Upgrade cycle</div>
+      <div class="display" style="margin-top: 8px; font-size: 27px; font-weight: 700; color: #e0b95f; letter-spacing: -0.02em;">5–7 d → 3</div>
+      <div style="margin-top: 6px; font-size: 11.5px; color: #8d7c53;">Company award</div>
+    </div>
+
+    <div style="border: 1px solid #223039; border-radius: 12px; padding: 18px 20px; background: #111b23;">
+      <div class="mono" style="font-size: 10.5px; letter-spacing: 0.13em; text-transform: uppercase; color: #6f8496;">Payment markets</div>
+      <div class="display" style="margin-top: 8px; font-size: 27px; font-weight: 700; letter-spacing: -0.02em;">9 countries</div>
+      <div style="margin-top: 6px; font-size: 11.5px; color: #6f8496;">One integration surface</div>
+    </div>
+
+    <div style="border: 1px solid #223039; border-radius: 12px; padding: 18px 20px; background: #111b23;">
+      <div class="mono" style="font-size: 10.5px; letter-spacing: 0.13em; text-transform: uppercase; color: #6f8496;">Experience</div>
+      <div class="display" style="margin-top: 8px; font-size: 27px; font-weight: 700; letter-spacing: -0.02em;">3.5+ years</div>
+      <div style="margin-top: 6px; font-size: 11.5px; color: #6f8496;">Computed from dates</div>
+    </div>
+
+    <div style="border: 1px solid #223039; border-radius: 12px; padding: 18px 20px; background: #111b23;">
+      <div class="mono" style="font-size: 10.5px; letter-spacing: 0.13em; text-transform: uppercase; color: #6f8496;">Recognition</div>
+      <div class="display" style="margin-top: 8px; font-size: 27px; font-weight: 700; letter-spacing: -0.02em;">2 awards</div>
+      <div style="margin-top: 6px; font-size: 11.5px; color: #6f8496;">Delivery · AI enablement</div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#8ec6ea","options":["#8ec6ea","#7fd1b9","#c3a6f0","#e0b95f"]}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#8ec6ea' };
+  }
+}
+</script>
+</body>
+</html>
