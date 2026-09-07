@@ -40,3 +40,8 @@ desktop.ini
 
 # Seeded design canvas output (regenerated from design/*.dc.html)
 design/portfolio-landing-page.html
+
+# Superseded source CVs. Kept locally for reference; never published — they carry
+# an old phone number and content that output/ now supersedes.
+/resume 2-9-26.pdf
+/Bahaa Aldeen Mohamed.pdf
