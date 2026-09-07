@@ -58,6 +58,17 @@ jobs:
       - name: Add SPA fallback
         run: cp publish/wwwroot/index.html publish/wwwroot/404.html
 
+      # The 404 fallback renders correctly for a person, but the response still carries a
+      # 404 STATUS — and crawlers and link-preview bots refuse to preview those. Writing a
+      # real index.html at each known route makes them answer 200 with identical content.
+      # Add a line here whenever a route is added to the app.
+      - name: Materialize routes so deep links answer 200
+        run: |
+          for route in cv work/windoor-wizard-builder; do
+            mkdir -p "publish/wwwroot/$route"
+            cp publish/wwwroot/index.html "publish/wwwroot/$route/index.html"
+          done
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
