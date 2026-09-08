@@ -11,23 +11,30 @@
         <div class="hero__grid">
 
             <div class="hero__lede">
-                <p class="mono hero__eyebrow rise" style="animation-delay: 60ms">
+                <p class="mono hero__eyebrow">
                     @Profile.Location <span class="dot">·</span> Open to architecture roles
                 </p>
 
-                <h1 class="hero__headline rise" style="animation-delay: 120ms">
-                    I remove the <span class="hero__accent">constraint</span><br />
-                    that froze the estate.
+                @*
+                    Each line is its own clipping box so the headline can rise line by
+                    line rather than fading in as one block. The break points are set
+                    here rather than left to the wrap, so the emphasis lands on
+                    "constraint" on its own line at every width.
+                *@
+                <h1 class="hero__headline">
+                    <span class="line"><span>I remove the</span></span>
+                    <span class="line"><span class="hero__accent">constraint</span></span>
+                    <span class="line"><span>that froze the estate.</span></span>
                 </h1>
 
-                <p class="hero__pitch rise" style="animation-delay: 200ms">
+                <p class="hero__pitch">
                     Solution architect and systems analyst in the .NET ecosystem. I take the
                     architectural decisions on systems people have stopped touching — then
                     write the template, the rules, and the workflow that let the next team
                     repeat it.
                 </p>
 
-                <div class="hero__actions rise" style="animation-delay: 280ms">
+                <div class="hero__actions">
                     <a class="btn btn--primary" href="/cv">Read the CV</a>
                     <a class="btn btn--ghost" href="#work">Selected work</a>
                     @if (!string.IsNullOrWhiteSpace(Profile.GitHub))
@@ -37,7 +44,7 @@
                 </div>
             </div>
 
-            <figure class="diagram rise" style="animation-delay: 340ms">
+            <figure class="diagram">
                 <figcaption class="mono diagram__label">The decision, in one diagram</figcaption>
 
                 <div class="diagram__body">
@@ -71,15 +78,20 @@
             </figure>
         </div>
 
-        <dl class="stats rise" style="animation-delay: 420ms">
+        @*
+            Counters carry their final value in the markup. If the script never runs the
+            correct figure is already on screen, so the animation can only ever be an
+            enhancement — never the difference between a number and a zero.
+        *@
+        <dl class="stats">
             <div class="stat stat--feature">
                 <dt class="mono">Upgrade cycle</dt>
-                <dd>5–7 d &rarr; 3</dd>
+                <dd>5–7 d &rarr; <span data-count-to="3" data-count-from="7">3</span></dd>
                 <p class="stat__note">Company award</p>
             </div>
             <div class="stat">
                 <dt class="mono">Payment markets</dt>
-                <dd>9 countries</dd>
+                <dd><span data-count-to="9">9</span> countries</dd>
                 <p class="stat__note">One integration surface</p>
             </div>
             <div class="stat">
@@ -89,7 +101,7 @@
             </div>
             <div class="stat">
                 <dt class="mono">Recognition</dt>
-                <dd>@AwardCount awards</dd>
+                <dd><span data-count-to="@AwardCount">@AwardCount</span> awards</dd>
                 <p class="stat__note">Delivery · AI enablement</p>
             </div>
         </dl>

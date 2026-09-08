@@ -15,9 +15,11 @@
         </p>
 
         <ol class="timeline">
-            @foreach (var role in Roles)
+            @foreach (var (role, index) in Roles.Select((role, index) => (role, index)))
             {
-                <li class="entry @(role.Period.IsOngoing ? "entry--current" : null)">
+                @* --i staggers both the card and the rail that draws down to it. *@
+                <li class="entry stagger @(role.Period.IsOngoing ? "entry--current" : null)"
+                    style="--i: @index">
                     <div class="entry__rail" aria-hidden="true"></div>
                     <div class="entry__body">
                         <p class="entry__period">

@@ -13,19 +13,32 @@
             the employers are named beside it.
         </p>
 
+        @*
+            Each group cascades in a beat after the one above it, so the section arrives
+            as a sequence rather than as one block of boxes. --i is the stagger index the
+            shared .stagger rule reads.
+        *@
         <div class="groups">
-            @foreach (var group in Groups)
+            @foreach (var (group, index) in Groups.Select((group, index) => (group, index)))
             {
-                <div class="group">
+                <div class="group stagger" style="--i: @index">
                     <h3 class="group__title">@group.Category</h3>
-                    <ul class="skills">
+                    <ul class="chips">
                         @foreach (var skill in SkillEvidence.For(group, Experience))
                         {
-                            <li class="skill @(skill.HasEvidence ? "skill--evidenced" : null)">
-                                <span class="skill__name">@skill.Skill</span>
+                            @*
+                                The evidence is summarised to one employer plus a count.
+                                Spelling out all three inside a pill wrapped it onto
+                                three lines on a phone, which made the chip bigger than
+                                the claim it was supporting. The full list stays
+                                available as the title, and in full on the CV.
+                            *@
+                            <li class="chip @(skill.HasEvidence ? "chip--evidenced" : null)"
+                                title="@(skill.HasEvidence ? string.Join(" · ", skill.UsedAt) : null)">
+                                <span>@skill.Skill</span>
                                 @if (skill.HasEvidence)
                                 {
-                                    <span class="skill__where">@string.Join(" · ", skill.UsedAt)</span>
+                                    <span class="chip__where">@Evidence(skill)</span>
                                 }
                             </li>
                         }
@@ -42,4 +55,15 @@
 
     [Parameter, EditorRequired]
     public required IReadOnlyList<ExperienceEntry> Experience { get; set; }
+
+    /// <summary>
+    /// The employer evidence in the compact form a chip can carry: the first employer,
+    /// plus a count of the others. The complete list is on the element's title.
+    /// </summary>
+    private static string Evidence(SkillWithEvidence skill)
+    {
+        var first = skill.UsedAt[0];
+
+        return skill.UsedAt.Count > 1 ? $"{first} +{skill.UsedAt.Count - 1}" : first;
+    }
 }

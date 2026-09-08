@@ -25,6 +25,61 @@
     background-size: 2px 14px;
 }
 
+/*
+    The accent spine that draws down the rail as the section is reached, one entry after
+    another, so the career reads as something traversed rather than a static list.
+
+    It is a separate ::after over the grey rail rather than an animation of the rail
+    itself: the rail's own background doubles as the last-entry stub, and animating that
+    would fight the background-size rule above.
+*/
+.entry__rail::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 6px;
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(var(--accent-bright), color-mix(in srgb, var(--accent-bright) 25%, transparent));
+    transform-origin: top center;
+    transform: scaleY(0);
+}
+
+.entry:last-child .entry__rail::after {
+    height: 14px;
+}
+
+.js-motion .reveal.is-visible .entry__rail::after {
+    animation: draw-y .85s cubic-bezier(.3, .7, .3, 1) forwards;
+    animation-delay: calc(var(--i, 0) * 130ms + 120ms);
+}
+
+/* Without the script the spine is simply already drawn. */
+.entry__rail::after {
+    transform: scaleY(1);
+}
+
+.js-motion .entry__rail::after {
+    transform: scaleY(0);
+}
+
+/* The current role is the one thing on the timeline still in progress, so its node is
+   the only one that keeps moving. */
+.entry--current .entry__rail::before {
+    animation: pulse-node 2.6s ease-in-out infinite;
+}
+
+@keyframes pulse-node {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-bright) 45%, transparent); }
+    50%      { box-shadow: 0 0 0 6px transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .entry--current .entry__rail::before {
+        animation: none;
+    }
+}
+
 .entry__rail::before {
     content: "";
     position: absolute;

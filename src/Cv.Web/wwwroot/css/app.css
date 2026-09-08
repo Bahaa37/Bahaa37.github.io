@@ -23,6 +23,11 @@
     --accent-wash: #e6eff6;
     --gold: #8a6116;
     --gold-wash: #fbf3e2;
+    /* The blocker colour earned its own token once the diagram animated it: it was
+       previously the literal #b4634c repeated in three component rules. */
+    --alarm: #b0432c;
+    --alarm-wash: #fbeae6;
+    --glow: rgba(29, 111, 165, .18);
 
     --measure: 68ch;
     --page: 1120px;
@@ -50,6 +55,9 @@
         --accent-wash: #16242f;
         --gold: #e0b95f;
         --gold-wash: #2a2213;
+        --alarm: #e5806a;
+        --alarm-wash: #2c1a15;
+        --glow: rgba(169, 215, 245, .22);
         --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px rgba(0, 0, 0, .3);
     }
 }
@@ -62,6 +70,12 @@ html,
 body {
     margin: 0;
     padding: 0;
+}
+
+/* The nav is all in-page anchors, so jumping instantly loses the reader's place.
+   Reset to auto under reduced motion in the block at the foot of this file. */
+html {
+    scroll-behavior: smooth;
 }
 
 body {
@@ -92,23 +106,84 @@ h1, h2, h3, h4 {
    is additive to a page that already works without it.
 */
 
-/* Sections start hidden ONLY once the observer has claimed them. Without this guard a
+/* Sections start hidden ONLY once motion.js has claimed them. Without this guard a
    viewer with JavaScript disabled, or one who loads before the script runs, would be
-   left with permanently invisible content. */
-.js-reveal .reveal {
+   left with permanently invisible content.
+
+   Reveals move on `translate`, not `transform`, deliberately: `transform` is spent on
+   hover lifts, and an element holding a filled transform from a reveal would pin its
+   own hover state to none. The two are separate properties and compose cleanly. */
+.js-motion .reveal {
     opacity: 0;
-    transform: translateY(10px);
-    transition: opacity .5s ease, transform .5s ease;
+    translate: 0 14px;
+    transition: opacity .6s cubic-bezier(.2, .7, .3, 1), translate .6s cubic-bezier(.2, .7, .3, 1);
 }
 
-.js-reveal .reveal.is-visible {
+.js-motion .reveal.is-visible {
     opacity: 1;
-    transform: none;
+    translate: 0 0;
+}
+
+/* Items inside a revealed section cascade rather than arriving as one block. Each sets
+   --i to its index; the section's own reveal is what triggers them. */
+.js-motion .reveal .stagger {
+    opacity: 0;
+    translate: 0 12px;
+    transition:
+        opacity .5s cubic-bezier(.2, .7, .3, 1) calc(var(--i, 0) * 45ms),
+        translate .5s cubic-bezier(.2, .7, .3, 1) calc(var(--i, 0) * 45ms);
+}
+
+.js-motion .reveal.is-visible .stagger {
+    opacity: 1;
+    translate: 0 0;
 }
 
 @keyframes rise-in {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: none; }
+}
+
+/* Each headline line rides up from behind its own clipping box. */
+@keyframes line-rise {
+    from { transform: translateY(105%); }
+    to   { transform: none; }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes node-in {
+    from { opacity: 0; transform: translateY(8px) scale(.97); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes draw-x {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+}
+
+@keyframes draw-y {
+    from { transform: scaleY(0); }
+    to   { transform: scaleY(1); }
+}
+
+/* The blocker is flagged before it is removed, so the eye is on it when it goes. */
+@keyframes flag {
+    0%, 100% { box-shadow: 0 0 0 0 transparent; }
+    40%      { box-shadow: 0 0 0 5px color-mix(in srgb, var(--alarm) 22%, transparent); }
+}
+
+@keyframes dissolve {
+    from { opacity: 1; }
+    to   { opacity: .26; filter: grayscale(1); }
+}
+
+@keyframes drift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to   { transform: translate3d(0, -18px, 0) scale(1.06); }
 }
 
 .rise {
@@ -146,25 +221,31 @@ a {
     background: var(--paper-alt);
 }
 
+/* Section headings carry real weight now. They were set barely larger than body copy,
+   which left the page with no scanning rhythm — every band read as the same slab. */
 .band__title {
-    font-size: clamp(1.35rem, 1.1rem + 1.1vw, 1.8rem);
-    letter-spacing: -0.01em;
-    margin-bottom: 0.4rem;
+    font-size: clamp(1.75rem, 1.15rem + 2.3vw, 2.75rem);
+    letter-spacing: -0.028em;
+    margin-bottom: 0.55rem;
 }
 
 .band__lede {
     color: var(--ink-soft);
     max-width: var(--measure);
     margin-bottom: 2rem;
+    font-size: 1.03rem;
 }
 
+/* The eyebrow is the one place each band takes the accent colour, so a reader
+   scrolling fast still gets a fix on where they are. */
 .eyebrow {
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--ink-faint);
-    margin-bottom: 0.6rem;
+    color: var(--accent-bright);
+    margin-bottom: 0.7rem;
 }
 
 /* ---------- site chrome ---------- */
@@ -203,14 +284,60 @@ a {
 }
 
 .site-nav a {
+    position: relative;
     color: var(--ink-soft);
     text-decoration: none;
     font-size: 0.92rem;
     white-space: nowrap;
+    padding-bottom: 3px;
+    transition: color .22s ease;
+}
+
+/* An underline that wipes in from the left, rather than a colour swap alone. */
+.site-nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1.5px;
+    background: var(--accent-bright);
+    border-radius: 2px;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform .28s cubic-bezier(.2, .7, .3, 1);
 }
 
 .site-nav a:hover {
     color: var(--accent-bright);
+}
+
+.site-nav a:hover::after,
+.site-nav a:focus-visible::after {
+    transform: scaleX(1);
+}
+
+/*
+    Reading-progress bar.
+
+    Scroll-driven, so it needs no script and no markup — it is the document's own scroll
+    progress expressed as a transform, running on the compositor. Browsers without
+    scroll-driven animations simply never draw it, which is why it lives entirely inside
+    the @supports block rather than degrading to a static full-width bar.
+*/
+@supports (animation-timeline: scroll()) {
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0 0 auto 0;
+        height: 2px;
+        z-index: 100;
+        background: linear-gradient(90deg, var(--accent-bright), var(--gold));
+        transform: scaleX(0);
+        transform-origin: left center;
+        animation: draw-x linear both;
+        animation-timeline: scroll(root block);
+    }
 }
 
 /*
@@ -267,6 +394,21 @@ a {
     text-decoration: none;
     cursor: pointer;
     background: none;
+    transition:
+        transform .22s cubic-bezier(.2, .7, .3, 1),
+        box-shadow .22s ease,
+        border-color .22s ease,
+        background-color .22s ease,
+        color .22s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px var(--glow);
+}
+
+.btn:active {
+    transform: translateY(0);
 }
 
 .btn--primary {
@@ -292,6 +434,63 @@ a {
 .btn--ghost:hover {
     border-color: var(--accent-bright);
     color: var(--accent-bright);
+}
+
+/* ---------- chips ----------
+
+   Shared by the skill matrix and anywhere else a short label needs to read as a
+   discrete, scannable object rather than a row in a list.
+*/
+
+.chips {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    /* A chip must never be the thing that widens the page on a narrow screen. */
+    max-width: 100%;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--ink-soft);
+    font-size: 0.88rem;
+    transition:
+        transform .2s cubic-bezier(.2, .7, .3, 1),
+        border-color .2s ease,
+        box-shadow .2s ease,
+        color .2s ease;
+}
+
+.chip:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-bright);
+    box-shadow: 0 4px 16px var(--glow);
+    color: var(--ink);
+}
+
+/* An evidenced skill outranks an unevidenced one, so it carries the ink and the
+   employer that backs it. */
+.chip--evidenced {
+    color: var(--ink);
+    font-weight: 600;
+    border-color: color-mix(in srgb, var(--accent-bright) 34%, var(--line));
+    background: color-mix(in srgb, var(--accent-wash) 55%, var(--paper));
+}
+
+.chip__where {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--ink-faint);
 }
 
 /* ---------- misc shared ---------- */
@@ -387,18 +586,39 @@ code {
 }
 
 @media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
     *,
     *::before,
     *::after {
         animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
 
-    /* Zeroing the durations is not enough on its own: the reveal rule sets opacity: 0
+    /* Zeroing the durations is not enough on its own: the reveal rules set opacity: 0
        as a starting state, so without this the content would simply stay invisible for
-       anyone who asked for less motion. */
-    .js-reveal .reveal {
+       anyone who asked for less motion. Every element that any rule above starts hidden
+       must be restored here, including the hero sequence and the diagram nodes. */
+    .js-motion .reveal,
+    .js-motion .reveal .stagger,
+    .js-motion .hero .line > span,
+    .js-motion .hero__eyebrow,
+    .js-motion .hero__pitch,
+    .js-motion .hero__actions,
+    .js-motion .diagram,
+    .js-motion .stats,
+    .js-motion .node,
+    .js-motion .arrow,
+    .js-motion .bridge__arrow {
         opacity: 1 !important;
         transform: none !important;
+        translate: none !important;
+        filter: none !important;
     }
+
+    .js-motion .bridge__line { transform: scaleX(1) !important; }
+    .js-motion .entry__rail::after { transform: scaleY(1) !important; }
 }

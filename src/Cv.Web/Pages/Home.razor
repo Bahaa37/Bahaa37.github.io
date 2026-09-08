@@ -76,7 +76,7 @@ else
     private IReadOnlyList<ExperienceEntry> roles = [];
     private IReadOnlyList<string> employers = [];
     private string experiencePhrase = string.Empty;
-    private IJSObjectReference? reveal;
+    private IJSObjectReference? motion;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -87,14 +87,14 @@ else
             return;
         }
 
-        if (reveal is null)
+        if (motion is null)
         {
-            reveal = await JS.InvokeAsync<IJSObjectReference>("import", "./js/reveal.js");
-            await reveal.InvokeVoidAsync("start");
+            motion = await JS.InvokeAsync<IJSObjectReference>("import", "./js/motion.js");
+            await motion.InvokeVoidAsync("start");
         }
         else
         {
-            await reveal.InvokeVoidAsync("observe");
+            await motion.InvokeVoidAsync("observe");
         }
     }
 

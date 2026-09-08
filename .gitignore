@@ -4,8 +4,9 @@ obj/
 [Dd]ebug/
 [Rr]elease/
 artifacts/
-publish/
-publish-test*/
+# Any local publish directory. Broadened from publish/ + publish-test*/ so a new
+# verification build (publish-verify/, etc.) cannot be committed by accident.
+publish*/
 
 # IDE
 .vs/

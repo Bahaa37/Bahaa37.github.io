@@ -1,8 +1,29 @@
 .hero {
-    padding: clamp(2.5rem, 1.6rem + 4vw, 4.5rem) 0 clamp(2.5rem, 2rem + 3vw, 4rem);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: clamp(3rem, 1.8rem + 5vw, 5.5rem) 0 clamp(2.5rem, 2rem + 3vw, 4rem);
+    background: var(--paper);
+}
+
+/*
+    Ambient depth behind the hero. Two slow colour fields drifting against each other,
+    which is what stops the opening screen reading as a flat slab. It carries no
+    information, so it is decoration in the strict sense — and is switched off entirely
+    under reduced motion, where it becomes a static wash.
+*/
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: -35% -15% auto -20%;
+    height: 145%;
+    z-index: -1;
+    pointer-events: none;
     background:
-        radial-gradient(120% 90% at 10% -14%, var(--accent-wash), transparent 62%),
-        var(--paper);
+        radial-gradient(42% 48% at 16% 10%, color-mix(in srgb, var(--accent-bright) 20%, transparent), transparent 70%),
+        radial-gradient(36% 44% at 84% 2%, color-mix(in srgb, var(--gold) 13%, transparent), transparent 72%);
+    animation: drift 19s ease-in-out infinite alternate;
+    will-change: transform;
 }
 
 .hero__grid {
@@ -26,10 +47,22 @@
 
 .hero__headline {
     margin: 1.1rem 0 0;
-    font-size: clamp(2.1rem, 1.2rem + 3.6vw, 3.7rem);
-    line-height: 1.02;
-    letter-spacing: -0.035em;
+    font-size: clamp(2.4rem, 1.1rem + 5.2vw, 4.6rem);
+    line-height: 1.03;
+    letter-spacing: -0.042em;
     font-weight: 700;
+}
+
+/* Each line clips its own content so the text can rise from behind the mask. The
+   padding keeps descenders from being shaved off by that same clip. */
+.line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.06em;
+}
+
+.line > span {
+    display: block;
 }
 
 .hero__accent {
@@ -87,7 +120,7 @@
 }
 
 .panel--before {
-    border-color: color-mix(in srgb, #b4634c 30%, var(--line));
+    border-color: color-mix(in srgb, var(--alarm) 30%, var(--line));
 }
 
 .panel--after {
@@ -119,8 +152,9 @@
 
 .node--blocker {
     border-style: dashed;
-    border-color: color-mix(in srgb, #b4634c 55%, var(--line));
-    color: #b4634c;
+    border-color: color-mix(in srgb, var(--alarm) 55%, var(--line));
+    color: var(--alarm);
+    background: var(--alarm-wash);
 }
 
 .node--lead {
@@ -147,35 +181,100 @@
 /*
     The bridge is the one piece of motion that carries meaning rather than decorating:
     the line grows left-to-right, so the diagram performs the transformation the whole
-    page is about instead of just depicting it.
+    page is about instead of just depicting it. It is now one beat of the hero sequence
+    below rather than an animation that fires on its own timer.
 */
 .bridge__line {
     width: 100%;
     height: 2px;
     background: var(--accent-bright);
     transform-origin: left center;
-    animation: bridge-draw .7s cubic-bezier(.3, .7, .3, 1) both;
-    animation-delay: 900ms;
 }
 
 .bridge__arrow {
     font-size: 1.05rem;
     color: var(--accent-bright);
-    animation: rise-in .4s ease both;
-    animation-delay: 1500ms;
 }
 
-@keyframes bridge-draw {
-    from { transform: scaleX(0); }
-    to   { transform: scaleX(1); }
+/* =========================================================================
+   THE HERO SEQUENCE
+
+   One orchestrated moment: the headline unmasks, the legacy estate builds, the
+   blocker is flagged, the bridge draws, the modernized services arrive, and only
+   then does the blocker dissolve. The motion states the argument before any prose
+   is read.
+
+   Every rule is gated on BOTH .js-motion (set by motion.js) and .is-playing. If the
+   script never runs, nothing here applies and the hero renders as plain static
+   content — an unconditional opacity:0 would leave it blank forever instead.
+   ========================================================================= */
+
+.js-motion .hero .line > span,
+.js-motion .hero__eyebrow,
+.js-motion .hero__pitch,
+.js-motion .hero__actions,
+.js-motion .diagram,
+.js-motion .stats,
+.js-motion .node,
+.js-motion .arrow,
+.js-motion .bridge__arrow {
+    opacity: 0;
 }
+
+.js-motion .bridge__line {
+    transform: scaleX(0);
+}
+
+.js-motion .hero.is-playing .line > span {
+    opacity: 1;
+    animation: line-rise .8s cubic-bezier(.16, .84, .28, 1) both;
+}
+
+.js-motion .hero.is-playing .line:nth-of-type(1) > span { animation-delay: 120ms; }
+.js-motion .hero.is-playing .line:nth-of-type(2) > span { animation-delay: 220ms; }
+.js-motion .hero.is-playing .line:nth-of-type(3) > span { animation-delay: 320ms; }
+
+.js-motion .hero.is-playing .hero__eyebrow { animation: rise-in .5s ease both; }
+.js-motion .hero.is-playing .hero__pitch   { animation: rise-in .6s cubic-bezier(.2, .7, .3, 1) both 480ms; }
+.js-motion .hero.is-playing .hero__actions { animation: rise-in .6s cubic-bezier(.2, .7, .3, 1) both 580ms; }
+.js-motion .hero.is-playing .diagram       { animation: rise-in .7s cubic-bezier(.2, .7, .3, 1) both 400ms; }
+.js-motion .hero.is-playing .stats         { animation: fade-in .6s ease both 2150ms; }
+
+/*
+    nth-child counts every sibling in .panel__stack, and the arrow spans sit in that
+    count. These are DOM positions, not node ordinals:
+        BEFORE  node, node, node, arrow, blocker
+        AFTER   lead, arrow, node, node, node
+    Getting this off by one leaves a node stranded at opacity:0 permanently.
+*/
+.js-motion .hero.is-playing .panel--before .node:nth-child(1) { animation: node-in .45s ease both 720ms; }
+.js-motion .hero.is-playing .panel--before .node:nth-child(2) { animation: node-in .45s ease both 810ms; }
+.js-motion .hero.is-playing .panel--before .node:nth-child(3) { animation: node-in .45s ease both 900ms; }
+.js-motion .hero.is-playing .panel--before .arrow             { animation: fade-in .35s ease both 1020ms; }
+
+/* dissolve fills FORWARDS, not both: a backwards fill would paint the blocker fully
+   opaque across the whole delay and mask its own entrance. */
+.js-motion .hero.is-playing .panel--before .node--blocker {
+    animation:
+        node-in .45s ease both 1140ms,
+        flag 1s ease 1600ms 1,
+        dissolve .7s ease forwards 2350ms;
+}
+
+.js-motion .hero.is-playing .bridge__line  { animation: draw-x .5s cubic-bezier(.6, 0, .3, 1) both 1620ms; }
+.js-motion .hero.is-playing .bridge__arrow { animation: fade-in .35s ease both 2050ms; }
+
+.js-motion .hero.is-playing .panel--after .node:nth-child(1) { animation: node-in .5s ease both 1800ms; }
+.js-motion .hero.is-playing .panel--after .arrow             { animation: fade-in .35s ease both 1900ms; }
+.js-motion .hero.is-playing .panel--after .node:nth-child(3) { animation: node-in .5s ease both 1980ms; }
+.js-motion .hero.is-playing .panel--after .node:nth-child(4) { animation: node-in .5s ease both 2070ms; }
+.js-motion .hero.is-playing .panel--after .node:nth-child(5) { animation: node-in .5s ease both 2160ms; }
 
 @media (prefers-reduced-motion: reduce) {
-    .bridge__line,
-    .bridge__arrow {
+    /* The drifting field becomes a still wash rather than disappearing, so the hero
+       keeps its depth for readers who simply do not want movement. */
+    .hero::before {
         animation: none;
-        opacity: 1;
-        transform: none;
     }
 }
 
@@ -209,9 +308,11 @@
 .stat dd {
     margin: 0.3rem 0 0;
     font-family: var(--font-display);
-    font-size: 1.42rem;
+    font-size: clamp(1.5rem, 1.25rem + 0.9vw, 1.95rem);
     font-weight: 700;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.03em;
+    /* Digits change during the count-up; tabular figures stop the row twitching. */
+    font-variant-numeric: tabular-nums;
 }
 
 .stat__note {
