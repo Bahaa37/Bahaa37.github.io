@@ -13,13 +13,21 @@
     Placement is by grid-area, so the DOM order — and therefore the reading order — is
     identical at both widths.
 */
+/*
+    Narrow: the rail runs down the left and spans both rows, with the period above the
+    body. Wide: the period moves into a column of its own (see the media query below).
+
+    The gutter is deliberately tight on a phone. At 1.25rem the rail pushed every entry
+    34px right of the section heading, which read as the section being misaligned and cost
+    a third of an already-narrow text column.
+*/
 .entry {
     display: grid;
     grid-template-columns: 14px 1fr;
     grid-template-areas:
         "rail period"
         "rail body";
-    column-gap: 1.25rem;
+    column-gap: 0.7rem;
     padding-bottom: 2rem;
 }
 
@@ -120,16 +128,25 @@
     }
 }
 
+/*
+    The node sits ON TOP of the spine, not under it.
+
+    ::after paints above ::before, so the accent spine was drawing straight through the
+    middle of every dot — and because the dot's border was --line (near-invisible on the
+    dark ground) each node read as a bisected smudge rather than a point on a timeline.
+    z-index lifts the dot; the accent border makes it legible on both grounds.
+*/
 .entry__rail::before {
     content: "";
     position: absolute;
+    z-index: 1;
     top: 6px;
     left: 0;
     width: 14px;
     height: 14px;
     border-radius: 50%;
     background: var(--paper);
-    border: 2px solid var(--line);
+    border: 2px solid color-mix(in srgb, var(--accent-bright) 55%, var(--line));
 }
 
 .entry--current .entry__rail::before {
