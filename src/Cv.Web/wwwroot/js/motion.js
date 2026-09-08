@@ -19,6 +19,46 @@
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
 
 let observer = null;
+let sweepQueued = false;
+let sweepBound = false;
+
+/**
+ * Reveals anything that has ended up above the viewport without ever intersecting.
+ *
+ * An IntersectionObserver only reports a CHANGE in intersection. Every anchor in the
+ * site nav jumps the reader over whole sections, and a section that goes straight from
+ * "below the viewport" to "above the viewport" in one jump is never intersecting at any
+ * sampled frame — so no callback fires for it at all and it stays at opacity:0 for the
+ * rest of the visit, blank if the reader scrolls back up.
+ *
+ * Cheap by construction: rAF-throttled, and the selector stops matching once everything
+ * has been revealed, at which point the listener detaches itself.
+ */
+function sweepScrolledPast() {
+    if (sweepQueued) {
+        return;
+    }
+
+    sweepQueued = true;
+
+    requestAnimationFrame(() => {
+        sweepQueued = false;
+
+        const pending = document.querySelectorAll('.reveal:not(.is-visible)');
+
+        for (const element of pending) {
+            if (element.getBoundingClientRect().bottom < 0) {
+                element.classList.add('is-visible');
+                observer?.unobserve(element);
+            }
+        }
+
+        if (pending.length === 0 && sweepBound) {
+            window.removeEventListener('scroll', sweepScrolledPast);
+            sweepBound = false;
+        }
+    });
+}
 
 function prefersReducedMotion() {
     return window.matchMedia?.(REDUCED_MOTION).matches === true;
@@ -88,6 +128,11 @@ export function observe() {
         */
         { threshold: 0, rootMargin: '0px 0px -80px 0px' },
     );
+
+    if (!sweepBound) {
+        window.addEventListener('scroll', sweepScrolledPast, { passive: true });
+        sweepBound = true;
+    }
 
     for (const element of document.querySelectorAll('.reveal:not(.is-visible)')) {
         /*

@@ -338,6 +338,14 @@ a {
         animation: draw-x linear both;
         animation-timeline: scroll(root block);
     }
+
+    /* app.css is global, so without this the bar — being position:fixed — would print
+       as a 2px gradient rule across the top of the first page of the CV. */
+    @media print {
+        body::before {
+            display: none;
+        }
+    }
 }
 
 /*

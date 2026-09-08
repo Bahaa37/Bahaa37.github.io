@@ -4,11 +4,51 @@
     padding: 0;
 }
 
+/*
+    Narrow: the rail runs down the left and spans both rows, with the period above the
+    body. Wide: the period moves into a column of its own (see the media query below),
+    which is what stops a 1120px shell holding one 68ch column of text and a lot of
+    empty space to its right.
+
+    Placement is by grid-area, so the DOM order — and therefore the reading order — is
+    identical at both widths.
+*/
 .entry {
     display: grid;
     grid-template-columns: 14px 1fr;
-    gap: 1.25rem;
+    grid-template-areas:
+        "rail period"
+        "rail body";
+    column-gap: 1.25rem;
     padding-bottom: 2rem;
+}
+
+.entry__period { grid-area: period; }
+.entry__rail   { grid-area: rail; }
+.entry__body   { grid-area: body; }
+
+@media (min-width: 940px) {
+    .entry {
+        grid-template-columns: 10.5rem 14px 1fr;
+        grid-template-areas: "period rail body";
+        column-gap: 1.5rem;
+    }
+
+    /*
+        Right-aligned against the rail, so the dates form a clean edge down the page.
+
+        align-self: start is load-bearing. A grid item stretches to its row by default,
+        and this row is as tall as the whole achievement list — which left the date
+        floating vertically centred halfway down the entry, with the badge stranded
+        further down still.
+    */
+    .entry__period {
+        align-self: start;
+        justify-content: flex-end;
+        align-items: flex-start;
+        text-align: right;
+        padding-top: 0.15rem;
+    }
 }
 
 .entry:last-child {

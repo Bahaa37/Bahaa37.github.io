@@ -20,19 +20,25 @@
                 @* --i staggers both the card and the rail that draws down to it. *@
                 <li class="entry stagger @(role.Period.IsOngoing ? "entry--current" : null)"
                     style="--i: @index">
+                    @*
+                        The period is a direct grid child rather than part of the body, so
+                        that on a wide screen it can move into its own left-hand column.
+                        Placement is by grid-area, so the reading order stays the same at
+                        every width.
+                    *@
+                    <p class="entry__period">
+                        @role.Period.ToDisplayString()
+                        @if (role.Period.IsOngoing)
+                        {
+                            <span class="badge badge--now">Current</span>
+                        }
+                        @if (IsReturn(role))
+                        {
+                            <span class="badge badge--return">Returned</span>
+                        }
+                    </p>
                     <div class="entry__rail" aria-hidden="true"></div>
                     <div class="entry__body">
-                        <p class="entry__period">
-                            @role.Period.ToDisplayString()
-                            @if (role.Period.IsOngoing)
-                            {
-                                <span class="badge badge--now">Current</span>
-                            }
-                            @if (IsReturn(role))
-                            {
-                                <span class="badge badge--return">Returned</span>
-                            }
-                        </p>
                         <h3 class="entry__role">@role.Role</h3>
                         <p class="entry__company">
                             @role.Company@(role.Location is null ? "" : $" · {role.Location}")
