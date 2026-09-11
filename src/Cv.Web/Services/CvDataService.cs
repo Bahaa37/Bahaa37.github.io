@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using Cv.Application;
 using Cv.Domain;
+using Microsoft.AspNetCore.Components.WebAssembly.Http;
 
 namespace Cv.Web.Services;
 
@@ -25,10 +26,36 @@ public sealed class CvDataService(HttpClient httpClient)
     {
         // Deliberately not thread-safe: Blazor WebAssembly is single-threaded, so a lock
         // here would be ceremony without benefit.
-        cached ??= await httpClient.GetFromJsonAsync<CvDocument>(DataPath, CvJson.Options, cancellationToken)
-                   ?? throw new InvalidOperationException($"'{DataPath}' deserialized to null.");
+        cached ??= await GetFreshAsync<CvDocument>(DataPath, cancellationToken);
 
         return cached;
+    }
+
+    /// <summary>
+    /// Fetches a data file, forcing the browser to revalidate it rather than serve a
+    /// cached copy.
+    /// </summary>
+    /// <remarks>
+    /// The framework's assets carry a fingerprint in their URL, and the prerenderer
+    /// appends a content hash to the stylesheets — but these files are fetched by path
+    /// from here, so neither mechanism reaches them. Without this, a returning browser
+    /// runs new application code against an old CV: the site showed a job title that had
+    /// already been replaced, and silently dropped the profile fields added alongside it.
+    ///
+    /// NoCache revalidates rather than re-downloads. An unchanged file answers 304 and
+    /// costs a conditional request; only a changed one is transferred. Staleness on a
+    /// document whose entire purpose is being current is not worth saving that.
+    /// </remarks>
+    private async Task<T> GetFreshAsync<T>(string path, CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, path);
+        request.SetBrowserRequestCache(BrowserRequestCache.NoCache);
+
+        using var response = await httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadFromJsonAsync<T>(CvJson.Options, cancellationToken)
+               ?? throw new InvalidOperationException($"'{path}' deserialized to null.");
     }
 
     /// <summary>
@@ -43,9 +70,7 @@ public sealed class CvDataService(HttpClient httpClient)
     public async Task<IReadOnlyList<DecisionRecord>> GetDecisionsAsync(
         CancellationToken cancellationToken = default)
     {
-        cachedDecisions ??= (await httpClient.GetFromJsonAsync<DecisionFile>(
-                                DecisionsPath, CvJson.Options, cancellationToken))?.Decisions
-                            ?? throw new InvalidOperationException($"'{DecisionsPath}' deserialized to null.");
+        cachedDecisions ??= (await GetFreshAsync<DecisionFile>(DecisionsPath, cancellationToken)).Decisions;
 
         return cachedDecisions;
     }

@@ -28,6 +28,7 @@ Usage:  python _tools/prerender.py <publish-dir> [--base-url https://example.com
 from __future__ import annotations
 
 import argparse
+import hashlib
 import html
 import json
 import os
@@ -437,9 +438,58 @@ OG_URL_RE = re.compile(r'<meta\s+property="og:url"[^>]*>')
 APP_DIV_RE = re.compile(r'(<div id="app">)(.*?)(</div>)', re.DOTALL)
 
 
-def render(route: Route, shell: str, base_url: str) -> str:
+# Assets referenced from index.html by bare path. The framework's own script already
+# carries a fingerprint; nothing else did, which is the bug this fixes.
+VERSIONED_ASSETS = [
+    "css/app.css",
+    "css/print.css",
+    "Cv.Web.styles.css",
+    "favicon.png",
+    "manifest.webmanifest",
+]
+
+
+def asset_versions(publish: Path) -> dict[str, str]:
+    """Map each versionable asset to a short hash of its own contents.
+
+    Hashing the content rather than stamping the build is the point: an asset that did
+    not change keeps its URL and stays cached, so a deploy only invalidates what it
+    actually touched.
+    """
+    versions: dict[str, str] = {}
+
+    for asset in VERSIONED_ASSETS:
+        path = publish / asset
+        if path.exists():
+            digest = hashlib.sha256(path.read_bytes()).hexdigest()[:10]
+            versions[asset] = digest
+
+    return versions
+
+
+def version_asset_urls(page: str, versions: dict[str, str]) -> str:
+    """Append ?v=<hash> to every versioned asset reference in the page.
+
+    Without this a returning browser runs new HTML and new WebAssembly against a cached
+    stylesheet and a cached cv.json — which is not a cosmetic problem on a document whose
+    entire purpose is being current. It showed up as a theme button rendering unstyled
+    and a footer displaying a job title that had been replaced.
+    """
+    for asset, digest in versions.items():
+        # Match the asset only as a complete href/src value, so "css/app.css" cannot also
+        # rewrite a longer path that happens to start with it.
+        page = re.sub(
+            rf'((?:href|src)=")({re.escape(asset)})(")',
+            rf"\g<1>\g<2>?v={digest}\g<3>",
+            page,
+        )
+
+    return page
+
+
+def render(route: Route, shell: str, base_url: str, versions: dict[str, str] | None = None) -> str:
     url = route.url.format(base=base_url)
-    page = shell
+    page = version_asset_urls(shell, versions or {})
 
     page = TITLE_RE.sub(lambda _: f"<title>{e(route.title)}</title>", page, count=1)
     page = DESCRIPTION_RE.sub(
@@ -592,10 +642,11 @@ def main() -> int:
         else []
     )
 
+    versions = asset_versions(publish)
     routes = build_routes(cv, base_url, decisions)
 
     for route in routes:
-        page = render(route, shell, base_url)
+        page = render(route, shell, base_url, versions)
 
         if route.path == "":
             target = publish / "index.html"
@@ -615,10 +666,52 @@ def main() -> int:
     write_llms_txt(cv, routes, base_url, publish / "llms.txt")
     print("  sitemap.xml, robots.txt, llms.txt")
 
-    return verify(routes)
+    if versions:
+        print("  versioned: " + ", ".join(f"{a}?v={v}" for a, v in versions.items()))
+
+    return verify(routes, publish)
 
 
-def verify(routes: list[Route]) -> int:
+CV_PDF_NAME = "Bahaa-Aldeen-Mohamed-CV.pdf"
+
+# A one-page CV with a text layer does not come out under ~20 KB. Anything smaller is a
+# renderer that produced a blank rather than a document.
+MIN_PDF_BYTES = 20_000
+
+
+def verify(routes: list[Route], publish: Path) -> int:
+    """Fail the build on the defects that are invisible from the rendered site."""
+    failures = verify_routes_are_distinct(routes) + verify_downloads(publish)
+
+    if failures:
+        print("\nFAIL  Publish-time checks did not pass:", file=sys.stderr)
+        for failure in failures:
+            print(f"  {failure}", file=sys.stderr)
+        return 1
+
+    print(f"\nOK    {len(routes)} routes, each with its own title, description and canonical.")
+    return 0
+
+
+def verify_downloads(publish: Path) -> list[str]:
+    """The CV download is linked from two pages; nothing else checks it is really there.
+
+    A missing file is served by GitHub Pages as the 404 page, so the link does not break
+    visibly — it just quietly stops being a CV.
+    """
+    pdf = publish / CV_PDF_NAME
+
+    if not pdf.exists():
+        return [f"{CV_PDF_NAME} is not in the published output, but /cv and / both link to it."]
+
+    size = pdf.stat().st_size
+    if size < MIN_PDF_BYTES:
+        return [f"{CV_PDF_NAME} is only {size:,} bytes, which is too small to be the real CV."]
+
+    return []
+
+
+def verify_routes_are_distinct(routes: list[Route]) -> list[str]:
     """Fail the build if two routes would look like the same page to a crawler.
 
     This is the defect this script exists to fix, and it is invisible from the rendered
@@ -643,14 +736,7 @@ def verify(routes: list[Route]) -> int:
         if not route.description.strip():
             failures.append(f"description: /{route.path} is empty")
 
-    if failures:
-        print("\nFAIL  Routes are not distinguishable to a crawler:", file=sys.stderr)
-        for failure in failures:
-            print(f"  {failure}", file=sys.stderr)
-        return 1
-
-    print(f"\nOK    {len(routes)} routes, each with its own title, description and canonical.")
-    return 0
+    return failures
 
 
 if __name__ == "__main__":

@@ -67,7 +67,15 @@ else
                     than in plain text on the page most likely to be scraped.
                 *@
                 <a class="btn btn--ghost" href="/cv">Printable CV</a>
-                <a class="btn btn--ghost" href="/Bahaa-Aldeen-Mohamed-CV.pdf" download>Download PDF</a>
+                @*
+                    target is load-bearing, not decoration: Blazor's router claims
+                    same-origin anchor clicks and tries to resolve them as routes, and a
+                    PDF matches none — so the link did nothing. An anchor carrying a
+                    target is left to the browser. Opening in a tab also suits a
+                    recruiter, who usually wants to look before saving.
+                *@
+                <a class="btn btn--ghost" href="/Bahaa-Aldeen-Mohamed-CV.pdf"
+                   target="_blank" rel="noopener" download>Download PDF</a>
             </div>
 
             @*

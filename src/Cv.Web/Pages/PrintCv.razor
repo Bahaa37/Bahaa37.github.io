@@ -26,7 +26,9 @@ else
         print dialog alone was never a download — it produced nothing to attach.
     *@
     <div class="cv-actions no-print">
-        <a class="cv-download" href="/Bahaa-Aldeen-Mohamed-CV.pdf" download>Download CV (PDF)</a>
+        @* target keeps this out of Blazor's router — see the note in Home.razor. *@
+        <a class="cv-download" href="/Bahaa-Aldeen-Mohamed-CV.pdf"
+           target="_blank" rel="noopener" download>Download CV (PDF)</a>
         <button type="button" @onclick="PrintAsync">Save as PDF</button>
         <span>Choose "Save as PDF" in the print dialog. Margins: default. Background graphics: off.</span>
     </div>

@@ -448,9 +448,6 @@ a {
 
     .site-nav {
         grid-area: nav;
-    }
-
-    .site-nav {
         justify-content: flex-start;
         flex-wrap: nowrap;
         gap: 1.1rem;
