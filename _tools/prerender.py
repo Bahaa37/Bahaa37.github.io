@@ -382,12 +382,18 @@ def render(route: Route, shell: str, base_url: str) -> str:
     if not route.indexable:
         head_additions.append('<meta name="robots" content="noindex" />')
 
-    # Cloudflare Web Analytics: cookieless, so it needs no consent banner, and injected
-    # only when a token is actually configured. Keeping it out of index.html means the
-    # repo never carries a placeholder token that looks live and is not.
+    # Cloudflare Web Analytics: cookieless, so no consent banner is required.
+    #
+    # The token is not a credential — Cloudflare serves it in the page source of every
+    # site that uses it — so it lives in the workflow rather than in a secret. It is read
+    # from the environment anyway so that CI builds, which set nothing, never report
+    # traffic from a test run as if it were a real visit.
+    #
+    # The tag matches the snippet Cloudflare issues, type="module" included.
     if token := os.environ.get("CF_ANALYTICS_TOKEN", "").strip():
         head_additions.append(
-            '<script defer src="https://static.cloudflareinsights.com/beacon.min.js" '
+            "<!-- Cloudflare Web Analytics -->"
+            '<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" '
             f"data-cf-beacon='{{\"token\": \"{e(token)}\"}}'></script>"
         )
 

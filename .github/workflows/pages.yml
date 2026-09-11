@@ -28,6 +28,11 @@ env:
   # file — not a find-and-replace across the repo.
   SITE_BASE_URL: https://bahaa37.github.io
 
+  # Cloudflare Web Analytics. Not a credential: Cloudflare serves this token in the page
+  # source of every site that uses it, so there is nothing to hide by putting it in a
+  # secret. CI deliberately does not set it, so a test build never reports traffic.
+  CF_ANALYTICS_TOKEN: 53bc60af839e42acb9716f250e74d3c0
+
 # Let an in-flight deploy finish rather than cancelling it mid-publish.
 concurrency:
   group: pages
@@ -74,10 +79,6 @@ jobs:
         run: |
           python -m pip install --quiet --upgrade pip
           python _tools/prerender.py publish/wwwroot --base-url "$SITE_BASE_URL"
-        env:
-          # Set this repository secret to switch on Cloudflare Web Analytics. Without it
-          # the beacon is simply not injected — no placeholder token ever ships.
-          CF_ANALYTICS_TOKEN: ${{ secrets.CF_ANALYTICS_TOKEN }}
 
       # Render the downloadable CV from the build that is about to ship, rather than
       # shipping a file someone exported by hand months ago. The PDF a recruiter
