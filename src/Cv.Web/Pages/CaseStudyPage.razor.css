@@ -1,0 +1,125 @@
+.study {
+    padding: clamp(2rem, 1.5rem + 3vw, 4rem) 0 clamp(3rem, 2rem + 4vw, 5rem);
+}
+
+.study__shell {
+    /* Prose measure, not page width: long-form argument is the whole point of this
+       page, and a 1120px line length would make it unreadable. */
+    max-width: calc(var(--measure) + 8rem);
+}
+
+.crumbs {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    margin-bottom: 2rem;
+}
+
+.crumbs a {
+    color: var(--ink-faint);
+}
+
+.crumbs a:hover {
+    color: var(--accent-bright);
+}
+
+.study__head {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.study__title {
+    margin: 0.5rem 0 0;
+    font-size: clamp(1.9rem, 1.3rem + 3vw, 3rem);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+}
+
+.study__summary {
+    margin: 1rem 0 0;
+    max-width: var(--measure);
+    font-size: clamp(1.02rem, 0.98rem + 0.3vw, 1.15rem);
+    color: var(--ink-soft);
+}
+
+.study__block {
+    margin-top: 2.75rem;
+}
+
+.study__block h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.1rem;
+    letter-spacing: 0.01em;
+}
+
+.study__block p {
+    margin: 0;
+    max-width: var(--measure);
+    color: var(--ink-soft);
+    line-height: 1.65;
+}
+
+.study__writeup {
+    margin-top: 2.5rem;
+}
+
+/*
+    Previous / next. auto-fit rather than two fixed columns so the first and last case
+    studies, which have only one neighbour, do not leave a hole where the other would be.
+*/
+.study__nav {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: 1rem;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+}
+
+.study__link {
+    display: block;
+    padding: 1rem 1.15rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    text-decoration: none;
+    background: var(--paper);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.study__link:hover {
+    border-color: var(--accent-bright);
+    translate: 0 -2px;
+}
+
+.study__link--next {
+    text-align: right;
+}
+
+.study__link-label {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+}
+
+.study__link-title {
+    display: block;
+    margin-top: 0.3rem;
+    color: var(--ink);
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .study__link {
+        transition: none;
+    }
+
+    .study__link:hover {
+        translate: none;
+    }
+}

@@ -1,0 +1,96 @@
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+@*
+    A Mermaid diagram, drawn only if someone asks for it.
+
+    Mermaid is 3.5 MB. Loading it on first paint to render a picture most visitors never
+    open would cost every reader for the benefit of a few, so the module is imported on
+    the first toggle and not before.
+
+    This lives in its own component because both the showcase panel and the case study
+    page need it, and the deferred-render dance below is fiddly enough that two copies
+    would drift.
+*@
+
+<button type="button" class="btn btn--ghost diagram__toggle" @onclick="ToggleAsync">
+    @(showDiagram ? "Hide architecture diagram" : "Show architecture diagram")
+</button>
+
+@if (showDiagram)
+{
+    <div class="scroll-x diagram__canvas" @ref="diagramElement"></div>
+
+    @if (failed)
+    {
+        @*
+            The source is still the diagram. If the renderer is unavailable, showing the
+            Mermaid text is a worse experience but not a broken one — and a reader who
+            knows Mermaid loses nothing at all.
+        *@
+        <details class="diagram__fallback" open>
+            <summary>Diagram source (renderer unavailable)</summary>
+            <pre><code>@Source</code></pre>
+        </details>
+    }
+}
+
+@code {
+    /// <summary>Stable id for the rendered diagram; must be unique on the page.</summary>
+    [Parameter, EditorRequired]
+    public required string Id { get; set; }
+
+    [Parameter, EditorRequired]
+    public required string? Source { get; set; }
+
+    private ElementReference diagramElement;
+    private IJSObjectReference? module;
+    private bool showDiagram;
+    private bool failed;
+    private bool needsRender;
+
+    private void ToggleAsync()
+    {
+        showDiagram = !showDiagram;
+        failed = false;
+
+        // The canvas element does not exist until after this toggle has rendered, so the
+        // actual draw is deferred to OnAfterRenderAsync.
+        needsRender = showDiagram;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!needsRender)
+        {
+            return;
+        }
+
+        needsRender = false;
+
+        module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/diagram-interop.js");
+
+        var drawn = await module.InvokeAsync<bool>("renderDiagram", diagramElement, Id, Source);
+
+        if (!drawn)
+        {
+            failed = true;
+            StateHasChanged();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (module is not null)
+        {
+            try
+            {
+                await module.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // The browser is already gone; nothing to release.
+            }
+        }
+    }
+}

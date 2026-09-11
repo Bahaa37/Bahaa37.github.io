@@ -41,8 +41,19 @@
     color-scheme: light dark;
 }
 
+/*
+    Three theme states, not two: an explicit choice stamps data-theme on <html>, and the
+    default — no attribute — follows the operating system.
+
+    The dark tokens are therefore written twice. The media query is guarded with
+    :not([data-theme="light"]) so a reader who picks light gets light on a dark OS, and
+    the attribute rule follows it so a reader who picks dark gets dark on a light OS.
+    Plain CSS has no way to share one declaration list between the two selectors, and
+    combining them into a single rule would break the guard — so the duplication is
+    deliberate. Any token change has to be made in both.
+*/
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
         --ink: #e6edf3;
         --ink-soft: #a9b8c6;
         --ink-faint: #7d8d9c;
@@ -59,7 +70,32 @@
         --alarm-wash: #2c1a15;
         --glow: rgba(169, 215, 245, .22);
         --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px rgba(0, 0, 0, .3);
+        color-scheme: dark;
     }
+}
+
+:root[data-theme="dark"] {
+    --ink: #e6edf3;
+    --ink-soft: #a9b8c6;
+    --ink-faint: #7d8d9c;
+    --paper: #0f151b;
+    --paper-alt: #151d26;
+    --paper-sunken: #1c2731;
+    --line: #2a3742;
+    --accent: #8ec6ea;
+    --accent-bright: #a9d7f5;
+    --accent-wash: #16242f;
+    --gold: #e0b95f;
+    --gold-wash: #2a2213;
+    --alarm: #e5806a;
+    --alarm-wash: #2c1a15;
+    --glow: rgba(169, 215, 245, .22);
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px rgba(0, 0, 0, .3);
+    color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+    color-scheme: light;
 }
 
 * {
@@ -275,6 +311,38 @@ a {
     white-space: nowrap;
 }
 
+/*
+    The theme control. It is a single button rather than a three-way picker: "follow the
+    system" is the default and stays reachable by clearing site data, while a reader who
+    wants the other one wants it in one click, not two.
+*/
+.theme-toggle {
+    display: grid;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    padding: 0;
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--ink-soft);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.theme-toggle:hover {
+    color: var(--accent-bright);
+    border-color: var(--accent-bright);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .theme-toggle {
+        transition: none;
+    }
+}
+
 .site-nav {
     display: flex;
     gap: 1.25rem;
@@ -354,15 +422,30 @@ a {
     and let the nav scroll sideways within its own strip instead.
 */
 @media (max-width: 720px) {
+    /* Grid rather than a column of flex items, so the theme button keeps the name's row
+       instead of becoming a third stacked strip of its own. */
     .site-header__inner {
-        flex-direction: column;
-        align-items: stretch;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+            "name toggle"
+            "nav  nav";
+        align-items: center;
         gap: 0;
         padding-top: 0.5rem;
     }
 
     .site-header__name {
+        grid-area: name;
         padding-bottom: 0.4rem;
+    }
+
+    .theme-toggle {
+        grid-area: toggle;
+    }
+
+    .site-nav {
+        grid-area: nav;
     }
 
     .site-nav {
@@ -424,10 +507,15 @@ a {
     color: #fff;
 }
 
+/* Paired with the token rules above; see the note there on why this is written twice. */
 @media (prefers-color-scheme: dark) {
-    .btn--primary {
+    :root:not([data-theme="light"]) .btn--primary {
         color: #0f151b;
     }
+}
+
+:root[data-theme="dark"] .btn--primary {
+    color: #0f151b;
 }
 
 .btn--primary:hover {

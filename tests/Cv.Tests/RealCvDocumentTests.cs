@@ -195,6 +195,23 @@ public class RealCvDocumentTests
     }
 
     [Fact]
+    public void EveryCaseStudyHasATitleThatSurvivesASearchResult()
+    {
+        // Google cuts a result title at roughly sixty characters, and the site appends
+        // " — Bahaa Aldeen Mohamed" to every case study title. The name is the part that
+        // must survive, so the written short title has to leave room for it.
+        const int suffix = 23;
+
+        foreach (var study in LoadDocument().CaseStudies)
+        {
+            Assert.True(
+                study.DisplayTitle.Length + suffix <= 70,
+                $"'{study.Slug}' renders a {study.DisplayTitle.Length + suffix}-character page title. " +
+                "Add or shorten its shortTitle.");
+        }
+    }
+
+    [Fact]
     public void TheDataFileHasNoByteOrderMark()
     {
         // A BOM breaks strict JSON parsers, and Windows tooling adds one readily.

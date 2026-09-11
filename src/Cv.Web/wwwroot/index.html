@@ -43,6 +43,54 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" />
 
+    <!--
+        Theme, applied before first paint.
+
+        This is inline and ahead of the stylesheet on purpose: a saved dark preference
+        read any later — from a separate file, or from the app once WebAssembly has
+        booted — shows the reader a white flash first. Three states are stored: "dark",
+        "light", or nothing at all, which follows the operating system.
+
+        Every access is wrapped, because localStorage throws rather than returning null
+        in a private window or with site data blocked, and a theme preference is never
+        worth taking the page down for.
+    -->
+    <script>
+        (function () {
+            var saved = null;
+            try { saved = localStorage.getItem("theme"); } catch (e) { }
+            if (saved === "dark" || saved === "light") {
+                document.documentElement.setAttribute("data-theme", saved);
+            }
+
+            window.themeControl = {
+                current: function () {
+                    return document.documentElement.getAttribute("data-theme") || "system";
+                },
+                set: function (value) {
+                    if (value === "system") {
+                        document.documentElement.removeAttribute("data-theme");
+                    } else {
+                        document.documentElement.setAttribute("data-theme", value);
+                    }
+                    try {
+                        if (value === "system") { localStorage.removeItem("theme"); }
+                        else { localStorage.setItem("theme", value); }
+                    } catch (e) { }
+                    return value;
+                },
+                // What the reader is actually looking at right now, which is what the
+                // toggle has to invert — "system" on a dark OS means the next click
+                // should go to light, not to dark.
+                effective: function () {
+                    var attr = document.documentElement.getAttribute("data-theme");
+                    if (attr) { return attr; }
+                    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+                }
+            };
+        })();
+    </script>
+
     <link rel="stylesheet" href="css/app.css" />
     <link rel="stylesheet" href="css/print.css" />
     <link rel="icon" type="image/png" href="favicon.png" />

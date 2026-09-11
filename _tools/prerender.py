@@ -296,20 +296,22 @@ def build_routes(cv: dict, base_url: str) -> list[Route]:
         ),
     ]
 
-    # Case studies that have a write-up page of their own. Derived from cv.json rather
-    # than listed by hand, so adding a write-up adds its route, its sitemap entry and its
-    # llms.txt line in one edit.
+    # Every case study has a page. Derived from cv.json rather than listed by hand, so
+    # adding one adds its route, its sitemap entry and its llms.txt line in a single edit.
+    #
+    # Where a hand-written long-form write-up exists, its URL is the canonical page for
+    # that work and the generated /work/{slug} route is not emitted separately — the app
+    # routes the same path to the write-up component, because Blazor matches a literal
+    # segment ahead of a parameter. Two URLs for one piece of work would split its
+    # ranking and give a reader a choice with no right answer.
     for study in sorted(cv.get("caseStudies", []), key=lambda s: s.get("displayOrder", 0)):
-        writeup = study.get("writeupUrl")
-        if not writeup:
-            continue
-
-        path = writeup.strip("/")
+        path = (study.get("writeupUrl") or f"/work/{study['slug']}").strip("/")
 
         # Case study titles are written as full sentences for the page heading, which is
-        # too long for a <title> — a search result truncates at roughly sixty characters,
-        # and the name is the part that must survive. Keep the clause before the dash.
-        short_title = study["title"].split(" — ")[0].strip()
+        # too long for a <title>: a search result truncates at roughly sixty characters,
+        # and the name is the part that must survive. shortTitle is the written-down
+        # version of that, rather than a truncation that reads like a mistake.
+        short_title = study.get("shortTitle") or study["title"]
 
         routes.append(
             Route(

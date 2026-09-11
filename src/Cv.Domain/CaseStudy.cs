@@ -15,6 +15,20 @@ public sealed record CaseStudy
 
     public required string Title { get; init; }
 
+    /// <summary>
+    /// A compact form of the title for browser tabs, search results and link previews,
+    /// where the full sentence is cut off mid-word. Falls back to <see cref="Title"/>.
+    /// </summary>
+    /// <remarks>
+    /// Written rather than computed on purpose: truncating a title at a word boundary
+    /// produces something that reads like a mistake, and this is the line a recruiter
+    /// sees in a Google result before they see anything else.
+    /// </remarks>
+    public string? ShortTitle { get; init; }
+
+    /// <summary>The short title where one is written, otherwise the full one.</summary>
+    public string DisplayTitle => string.IsNullOrWhiteSpace(ShortTitle) ? Title : ShortTitle;
+
     /// <summary>One-line description, used on cards and in link previews.</summary>
     public required string Summary { get; init; }
 

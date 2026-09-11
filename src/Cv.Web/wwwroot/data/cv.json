@@ -504,6 +504,7 @@
     {
       "slug": "legacy-modernization",
       "title": "Removing DTC from a distributed orchestrator",
+      "shortTitle": "Removing DTC from an orchestrator",
       "summary": "Re-architected a Temporal orchestrator to drop its distributed transaction coordinator dependency, unblocking a fleet of legacy .NET services and halving the upgrade cycle.",
       "organisation": "Andalusia Business Solutions",
       "displayOrder": 1,
@@ -527,6 +528,7 @@
     {
       "slug": "ai-enablement",
       "title": "Making AI usable by engineers and non-engineers alike",
+      "shortTitle": "Making AI usable across a company",
       "summary": "An AI training course for non-technical departments, an autonomous Copilot Studio agent, and the AI-guided workflow behind a halved engineering cycle.",
       "organisation": "Andalusia Business Solutions",
       "displayOrder": 2,
@@ -548,6 +550,7 @@
     {
       "slug": "windoor-wizard-builder",
       "title": "Windoor Wizard Builder — a fabrication engine that has to be exactly right",
+      "shortTitle": "Windoor Wizard Builder",
       "summary": "A multi-tenant SaaS for Egyptian UPVC window and door workshops, merging a commercial quoting and production platform with a cutting-optimisation engine verified against a real shop floor.",
       "organisation": "Personal project",
       "displayOrder": 3,
@@ -579,6 +582,7 @@
     {
       "slug": "payment-gateway-middleware",
       "title": "Payment middleware across 9 countries",
+      "shortTitle": "Payment middleware across 9 countries",
       "summary": "A middleware reverse proxy unifying payment gateway integration across nine national markets, built on Clean Architecture with Strategy and Pipeline patterns.",
       "organisation": "PS Digital",
       "displayOrder": 4,
@@ -603,6 +607,7 @@
     {
       "slug": "mvc-to-webapi-rebuild",
       "title": "Rebuilding a legacy MVC application as a .NET Web API",
+      "shortTitle": "Rebuilding legacy MVC as a Web API",
       "summary": "A full rebuild of an ageing MVC application into a modern Web API, including a data access migration from Entity Framework to Dapper and a move onto Azure.",
       "organisation": "PS Digital",
       "displayOrder": 5,

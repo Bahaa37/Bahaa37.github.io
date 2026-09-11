@@ -1,6 +1,3 @@
-@implements IAsyncDisposable
-@inject IJSRuntime JS
-
 @*
     One case study, told as problem → approach → outcome.
 
@@ -52,34 +49,24 @@
         </ul>
     }
 
-    @if (Study.HasDiagram || Study.HasWriteup)
-    {
-        <div class="case__diagram">
-            @if (Study.HasWriteup)
-            {
-                <a class="btn btn--primary" href="@Study.WriteupUrl">Read the full write-up</a>
-            }
-            @if (Study.HasDiagram)
-            {
-                <button type="button" class="btn btn--ghost diagram__toggle" @onclick="ToggleDiagramAsync">
-                    @(showDiagram ? "Hide architecture diagram" : "Show architecture diagram")
-                </button>
-            }
+    @*
+        Every case study now has a page of its own, so each card has somewhere to go.
+        Where a deeper write-up exists it is offered as well — those are different
+        documents, not two links to the same one.
+    *@
+    <div class="case__diagram">
+        <a class="btn btn--primary" href="@($"/work/{Study.Slug}")">Read the case study</a>
 
-            @if (showDiagram)
-            {
-                <div class="scroll-x diagram__canvas" @ref="diagramElement"></div>
+        @if (Study.HasWriteup)
+        {
+            <a class="btn btn--ghost" href="@Study.WriteupUrl">Full technical write-up</a>
+        }
 
-                @if (diagramFailed)
-                {
-                    <details class="diagram__fallback" open>
-                        <summary>Diagram source (renderer unavailable)</summary>
-                        <pre><code>@Study.MermaidDiagram</code></pre>
-                    </details>
-                }
-            }
-        </div>
-    }
+        @if (Study.HasDiagram)
+        {
+            <ArchitectureDiagram Id="@($"panel-{Study.Slug}")" Source="@Study.MermaidDiagram" />
+        }
+    </div>
 </article>
 
 @code {
@@ -88,57 +75,4 @@
 
     [Parameter]
     public int Index { get; set; }
-
-    private ElementReference diagramElement;
-    private IJSObjectReference? module;
-    private bool showDiagram;
-    private bool diagramFailed;
-    private bool needsRender;
-
-    private async Task ToggleDiagramAsync()
-    {
-        showDiagram = !showDiagram;
-        diagramFailed = false;
-
-        // The canvas element does not exist until after this toggle has rendered, so the
-        // actual draw is deferred to OnAfterRenderAsync.
-        needsRender = showDiagram;
-        await Task.CompletedTask;
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!needsRender)
-        {
-            return;
-        }
-
-        needsRender = false;
-
-        module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/diagram-interop.js");
-
-        var drawn = await module.InvokeAsync<bool>(
-            "renderDiagram", diagramElement, Study.Slug, Study.MermaidDiagram);
-
-        if (!drawn)
-        {
-            diagramFailed = true;
-            StateHasChanged();
-        }
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (module is not null)
-        {
-            try
-            {
-                await module.DisposeAsync();
-            }
-            catch (JSDisconnectedException)
-            {
-                // The browser is already gone; nothing to release.
-            }
-        }
-    }
 }

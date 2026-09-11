@@ -11,13 +11,26 @@
 <header class="site-header">
     <div class="shell site-header__inner">
         <a class="site-header__name" href="/">@(profile?.Name ?? "Portfolio")</a>
+        @*
+            Root-relative, not bare fragments. These sections live on the home page, and
+            a bare "#work" from /work/legacy-modernization scrolls nowhere — the links
+            only worked while the home page was the only page with chrome.
+        *@
         <nav class="site-nav">
-            <a href="#skills">Skills</a>
-            <a href="#timeline">Experience</a>
-            <a href="#work">Selected work</a>
-            <a href="#credentials">Credentials</a>
+            <a href="/#skills">Skills</a>
+            <a href="/#timeline">Experience</a>
+            <a href="/#work">Selected work</a>
+            <a href="/#credentials">Credentials</a>
             <a href="/cv">CV</a>
         </nav>
+
+        <button type="button"
+                class="theme-toggle"
+                @onclick="ToggleThemeAsync"
+                aria-label="@(isDark ? "Switch to light theme" : "Switch to dark theme")"
+                title="@(isDark ? "Switch to light theme" : "Switch to dark theme")">
+            <span aria-hidden="true">@(isDark ? "☀" : "☾")</span>
+        </button>
     </div>
 </header>
 
@@ -50,7 +63,38 @@
 </footer>
 
 @code {
+    [Inject]
+    private IJSRuntime JS { get; set; } = default!;
+
     private Profile? profile;
+    private bool isDark;
 
     protected override async Task OnInitializedAsync() => profile = (await CvData.GetAsync()).Profile;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        // The theme is applied by an inline script before first paint, so by the time
+        // this runs the page is already correct. All that is read here is which icon the
+        // button should show.
+        var effective = await JS.InvokeAsync<string>("themeControl.effective");
+        isDark = effective == "dark";
+        StateHasChanged();
+    }
+
+    private async Task ToggleThemeAsync()
+    {
+        // Inverting what is on screen, rather than the stored value: with no stored
+        // preference on a dark OS, the reader is looking at dark, and one click should
+        // take them to light.
+        var effective = await JS.InvokeAsync<string>("themeControl.effective");
+        var next = effective == "dark" ? "light" : "dark";
+
+        await JS.InvokeVoidAsync("themeControl.set", next);
+        isDark = next == "dark";
+    }
 }
