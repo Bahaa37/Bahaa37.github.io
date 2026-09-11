@@ -1,0 +1,70 @@
+@page "/architecture"
+@inject CvDataService CvData
+
+@*
+    The index of architecture decision records.
+
+    The CV claims solution architecture documents, SRS and low-level design. Claiming it
+    is not evidence of it, and until this page existed there was nothing on the site that
+    showed the practice — only assertions that it was practised. A hiring architect wants
+    to see how a system gets specified far more than they want an opinion about
+    specifying systems.
+
+    These records are about this repository, which is the one system whose decisions can
+    be published in full without redacting an employer's detail out of them.
+*@
+
+<PageTitle>Architecture decisions — Bahaa Aldeen Mohamed</PageTitle>
+
+<section class="band">
+    <div class="shell">
+        <p class="eyebrow">Architecture</p>
+        <h1 class="band__title">Decision records</h1>
+        <p class="band__lede">
+            Each of these is a decision taken on this site, written in the standard form:
+            what forced the decision, what else was on the table, what was chosen, and what
+            it cost. The rejected options are the part worth reading — an ADR that lists
+            only the option that won is a press release.
+        </p>
+
+        @if (decisions is null)
+        {
+            <p class="booting">Loading…</p>
+        }
+        else
+        {
+            <ol class="adr-list">
+                @foreach (var record in decisions)
+                {
+                    <li>
+                        <a class="adr-card" href="@($"/architecture/{record.Slug}")">
+                            <p class="adr-card__meta">
+                                <span class="mono">@record.Id</span>
+                                <span class="adr-card__status">@record.Status</span>
+                            </p>
+                            <h2 class="adr-card__title">@record.Title</h2>
+                            <p class="adr-card__situation">@Excerpt(record.Situation)</p>
+                        </a>
+                    </li>
+                }
+            </ol>
+        }
+    </div>
+</section>
+
+@code {
+    private IReadOnlyList<DecisionRecord>? decisions;
+
+    protected override async Task OnInitializedAsync() =>
+        decisions = [.. (await CvData.GetDecisionsAsync()).OrderBy(d => d.DisplayOrder)];
+
+    /// <summary>
+    /// First sentence of the situation, as the card's teaser. Cutting at the sentence
+    /// rather than at a character count avoids a card that ends mid-word.
+    /// </summary>
+    private static string Excerpt(string text)
+    {
+        var stop = text.IndexOf(". ", StringComparison.Ordinal);
+        return stop > 0 ? text[..(stop + 1)] : text;
+    }
+}

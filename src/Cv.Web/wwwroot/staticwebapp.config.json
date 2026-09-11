@@ -3,7 +3,18 @@
 
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/_framework/*", "/css/*", "/js/*", "/lib/*", "/data/*", "*.{png,jpg,svg,ico,pdf}"]
+    "exclude": [
+      "/_framework/*",
+      "/css/*",
+      "/js/*",
+      "/lib/*",
+      "/data/*",
+      "*.{png,jpg,svg,ico,pdf}",
+      "/robots.txt",
+      "/llms.txt",
+      "/sitemap.xml",
+      "/manifest.webmanifest"
+    ]
   },
 
   "mimeTypes": {
@@ -11,7 +22,8 @@
     ".webcil": "application/octet-stream",
     ".blat": "application/octet-stream",
     ".dat": "application/octet-stream",
-    ".json": "application/json"
+    ".json": "application/json",
+    ".webmanifest": "application/manifest+json"
   },
 
   "routes": [

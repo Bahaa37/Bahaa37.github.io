@@ -1,8 +1,3 @@
-.booting {
-    padding: 4rem 1.25rem;
-    color: var(--ink-faint);
-}
-
 .summary {
     max-width: 78ch;
     font-size: clamp(1.02rem, 0.98rem + 0.3vw, 1.15rem);
@@ -14,4 +9,33 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
+}
+
+/* Auto-fit rather than a fixed column count: the facts are optional, so the row has to
+   look deliberate whether four of them render or one does. */
+.contact__facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1.1rem 2rem;
+    margin: 2rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+}
+
+.contact__facts dt {
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+}
+
+.contact__overlap {
+    color: var(--ink-faint);
+}
+
+.contact__facts dd {
+    margin: 0.3rem 0 0;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+    line-height: 1.5;
 }

@@ -61,9 +61,56 @@ else
                 <a class="btn btn--primary" href="mailto:@document.Profile.Email">
                     @document.Profile.Email
                 </a>
-                <a class="btn btn--ghost" href="@document.Profile.PhoneHref">@document.Profile.Phone</a>
+                @*
+                    The phone number is deliberately not here. It stays on /cv, where a
+                    recruiter who has decided to get in touch will look for it, rather
+                    than in plain text on the page most likely to be scraped.
+                *@
                 <a class="btn btn--ghost" href="/cv">Printable CV</a>
+                <a class="btn btn--ghost" href="/Bahaa-Aldeen-Mohamed-CV.pdf" download>Download PDF</a>
             </div>
+
+            @*
+                The facts a recruiter asks for in their first reply. Answering them here
+                removes a round trip, and for a remote or relocation role it is often the
+                question that decides whether the reply comes at all.
+            *@
+            <dl class="contact__facts">
+                @if (!string.IsNullOrWhiteSpace(document.Profile.Timezone))
+                {
+                    <div>
+                        <dt class="mono">Timezone</dt>
+                        <dd>
+                            @document.Profile.Timezone
+                            @if (!string.IsNullOrWhiteSpace(document.Profile.WorkingOverlap))
+                            {
+                                <span class="contact__overlap">— @document.Profile.WorkingOverlap</span>
+                            }
+                        </dd>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(document.Profile.Availability))
+                {
+                    <div>
+                        <dt class="mono">Availability</dt>
+                        <dd>@document.Profile.Availability</dd>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(document.Profile.Relocation))
+                {
+                    <div>
+                        <dt class="mono">Location</dt>
+                        <dd>@document.Profile.Relocation</dd>
+                    </div>
+                }
+                @if (document.Profile.Languages.Count > 0)
+                {
+                    <div>
+                        <dt class="mono">Languages</dt>
+                        <dd>@string.Join(" · ", document.Profile.Languages)</dd>
+                    </div>
+                }
+            </dl>
         </div>
     </section>
 }

@@ -15,8 +15,10 @@ namespace Cv.Web.Services;
 public sealed class CvDataService(HttpClient httpClient)
 {
     private const string DataPath = "data/cv.json";
+    private const string DecisionsPath = "data/decisions.json";
 
     private CvDocument? cached;
+    private IReadOnlyList<DecisionRecord>? cachedDecisions;
 
     /// <summary>The canonical document, fetched once per session.</summary>
     public async Task<CvDocument> GetAsync(CancellationToken cancellationToken = default)
@@ -28,6 +30,27 @@ public sealed class CvDataService(HttpClient httpClient)
 
         return cached;
     }
+
+    /// <summary>
+    /// The architecture decision records, fetched once per session.
+    /// </summary>
+    /// <remarks>
+    /// Held separately from the CV rather than folded into it. They are a different kind
+    /// of document with a different audience — nothing here belongs on a printed CV or
+    /// in an ATS — and keeping them apart means the CV's schema, its validator and its
+    /// text-extraction gate stay about the CV.
+    /// </remarks>
+    public async Task<IReadOnlyList<DecisionRecord>> GetDecisionsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        cachedDecisions ??= (await httpClient.GetFromJsonAsync<DecisionFile>(
+                                DecisionsPath, CvJson.Options, cancellationToken))?.Decisions
+                            ?? throw new InvalidOperationException($"'{DecisionsPath}' deserialized to null.");
+
+        return cachedDecisions;
+    }
+
+    private sealed record DecisionFile(IReadOnlyList<DecisionRecord> Decisions);
 
     /// <summary>Replaces the in-memory document. Used by the editor's live preview.</summary>
     /// <remarks>

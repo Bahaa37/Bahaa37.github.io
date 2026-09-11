@@ -103,28 +103,6 @@
     border: 1px solid var(--line);
 }
 
-.outcomes {
-    margin: 0;
-    padding-left: 1.1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    font-size: 0.95rem;
-}
-
-.outcomes li::marker {
-    color: var(--accent-bright);
-}
-
-.stack {
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin: 1.25rem 0 0;
-    padding: 0;
-}
-
 .case__diagram {
     margin-top: 1.35rem;
     display: flex;

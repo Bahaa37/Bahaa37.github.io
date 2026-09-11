@@ -7,8 +7,8 @@
     <!-- Static title and description: crawlers and search engines read these without
          executing the WebAssembly runtime, so they must match the site's positioning
          rather than lag behind it. -->
-    <title>Bahaa Aldeen Mohamed — Solution Architecture &amp; Systems Analysis</title>
-    <meta name="description" content="Solution architect and systems analyst in the .NET ecosystem. Removed a distributed transaction coordinator dependency that had frozen a service estate, cutting an upgrade cycle from 5-7 days to 3. Clean Architecture, CQRS, payment infrastructure across 9 countries." />
+    <title>Bahaa Aldeen Mohamed — .NET Architecture &amp; Modernization</title>
+    <meta name="description" content="Senior .NET engineer working at architecture level. Removed a distributed transaction coordinator dependency that had frozen a service estate, cutting an upgrade cycle from 5-7 days to 3. Clean Architecture, CQRS, payment infrastructure across 9 countries." />
     <base href="/" />
 
     <!--
@@ -22,7 +22,7 @@
     <meta property="og:type" content="profile" />
     <meta property="og:site_name" content="Bahaa Aldeen Mohamed" />
     <meta property="og:url" content="https://bahaa37.github.io/" />
-    <meta property="og:title" content="Bahaa Aldeen Mohamed — Solution Architecture &amp; Systems Analysis" />
+    <meta property="og:title" content="Bahaa Aldeen Mohamed — .NET Architecture &amp; Modernization" />
     <meta property="og:description" content="I remove the constraint that froze the estate. Removed a distributed transaction coordinator dependency and cut an upgrade cycle from 5-7 days to 3. .NET, Clean Architecture, CQRS." />
 
     <!-- Absolute, not relative. LinkedIn, WhatsApp and Slack crawlers routinely ignore a
@@ -43,9 +43,61 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" />
 
+    <!--
+        Theme, applied before first paint.
+
+        This is inline and ahead of the stylesheet on purpose: a saved dark preference
+        read any later — from a separate file, or from the app once WebAssembly has
+        booted — shows the reader a white flash first. Three states are stored: "dark",
+        "light", or nothing at all, which follows the operating system.
+
+        Every access is wrapped, because localStorage throws rather than returning null
+        in a private window or with site data blocked, and a theme preference is never
+        worth taking the page down for.
+    -->
+    <script>
+        (function () {
+            var saved = null;
+            try { saved = localStorage.getItem("theme"); } catch (e) { }
+            if (saved === "dark" || saved === "light") {
+                document.documentElement.setAttribute("data-theme", saved);
+            }
+
+            window.themeControl = {
+                current: function () {
+                    return document.documentElement.getAttribute("data-theme") || "system";
+                },
+                set: function (value) {
+                    if (value === "system") {
+                        document.documentElement.removeAttribute("data-theme");
+                    } else {
+                        document.documentElement.setAttribute("data-theme", value);
+                    }
+                    try {
+                        if (value === "system") { localStorage.removeItem("theme"); }
+                        else { localStorage.setItem("theme", value); }
+                    } catch (e) { }
+                    return value;
+                },
+                // What the reader is actually looking at right now, which is what the
+                // toggle has to invert — "system" on a dark OS means the next click
+                // should go to light, not to dark.
+                effective: function () {
+                    var attr = document.documentElement.getAttribute("data-theme");
+                    if (attr) { return attr; }
+                    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+                }
+            };
+        })();
+    </script>
+
     <link rel="stylesheet" href="css/app.css" />
     <link rel="stylesheet" href="css/print.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
+    <!-- display: "browser" — this is a document, not an app, and a standalone window
+         would only take the back button away from someone reading a CV. -->
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#14425f" />
     <link href="Cv.Web.styles.css" rel="stylesheet" />
     <script type="importmap"></script>
 </head>

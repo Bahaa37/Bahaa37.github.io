@@ -1,0 +1,161 @@
+@page "/work/{Slug}"
+@inject CvDataService CvData
+@inject NavigationManager Navigation
+
+@*
+    One case study, on a page of its own.
+
+    Four of the five case studies previously had nowhere to go: they were cards on the
+    showcase page and that was the end of the thread. A reader who found the DTC removal
+    interesting — which is the single most persuasive piece of work here — had no way to
+    go deeper, and a search engine had nothing to index for it.
+
+    The content comes from cv.json, so adding a case study adds its page, its sitemap
+    entry and its llms.txt line with no new code. The route is parameterized, but
+    /work/windoor-wizard-builder stays with WwbWriteup.razor: Blazor matches a literal
+    segment ahead of a parameter, so the hand-written long form wins where it exists.
+*@
+
+<PageTitle>@(study?.DisplayTitle ?? "Case study") — Bahaa Aldeen Mohamed</PageTitle>
+
+@if (document is null)
+{
+    <p class="booting">Loading…</p>
+}
+else if (study is null)
+{
+    <section class="band">
+        <div class="shell">
+            <h1 class="band__title">No such case study</h1>
+            <p class="band__lede">
+                Nothing here matches "@Slug".
+                <a href="/#work">See the selected work</a> instead.
+            </p>
+        </div>
+    </section>
+}
+else
+{
+    <article class="study">
+        <div class="shell study__shell">
+
+            <nav class="crumbs" aria-label="Breadcrumb">
+                <a href="/">Home</a>
+                <span aria-hidden="true">/</span>
+                <a href="/#work">Selected work</a>
+            </nav>
+
+            <header class="study__head">
+                <p class="eyebrow">@(study.Organisation ?? "Project")</p>
+                <h1 class="study__title">@study.Title</h1>
+                <p class="study__summary">@study.Summary</p>
+
+                @if (study.Stack.Count > 0)
+                {
+                    <ul class="stack">
+                        @foreach (var item in study.Stack)
+                        {
+                            <li class="tag">@item</li>
+                        }
+                    </ul>
+                }
+            </header>
+
+            <section class="study__block">
+                <h2>The problem</h2>
+                <p>@study.Problem</p>
+            </section>
+
+            <section class="study__block">
+                <h2>What I did</h2>
+                <p>@study.Approach</p>
+            </section>
+
+            @if (study.Outcomes.Count > 0)
+            {
+                <section class="study__block">
+                    <h2>Outcome</h2>
+                    <ul class="outcomes">
+                        @foreach (var outcome in study.Outcomes)
+                        {
+                            <li>@outcome</li>
+                        }
+                    </ul>
+                </section>
+            }
+
+            @if (study.HasDiagram)
+            {
+                <section class="study__block">
+                    <h2>Architecture</h2>
+                    <ArchitectureDiagram Id="@($"study-{study.Slug}")" Source="@study.MermaidDiagram" />
+                </section>
+            }
+
+            @if (study.HasWriteup)
+            {
+                <p class="study__writeup">
+                    <a class="btn btn--primary" href="@study.WriteupUrl">Read the full technical write-up</a>
+                </p>
+            }
+
+            @*
+                Previous and next rather than a bare "back": someone who read one case
+                study to the end is the reader most likely to read a second, and asking
+                them to return to the index to find it loses most of them.
+            *@
+            <nav class="study__nav" aria-label="Other case studies">
+                @if (previous is not null)
+                {
+                    <a class="study__link" href="@($"/work/{previous.Slug}")">
+                        <span class="study__link-label">Previous</span>
+                        <span class="study__link-title">@previous.Title</span>
+                    </a>
+                }
+                @if (next is not null)
+                {
+                    <a class="study__link study__link--next" href="@($"/work/{next.Slug}")">
+                        <span class="study__link-label">Next</span>
+                        <span class="study__link-title">@next.Title</span>
+                    </a>
+                }
+            </nav>
+        </div>
+    </article>
+}
+
+@code {
+    [Parameter]
+    public string? Slug { get; set; }
+
+    private CvDocument? document;
+    private CaseStudy? study;
+    private CaseStudy? previous;
+    private CaseStudy? next;
+
+    protected override async Task OnInitializedAsync()
+    {
+        document = await CvData.GetAsync();
+        Select();
+    }
+
+    // Navigating between two /work/{slug} routes reuses this component instance rather
+    // than creating a new one, so the parameter change has to be picked up here as well
+    // — otherwise the previous/next links would render the study you just left.
+    protected override void OnParametersSet() => Select();
+
+    private void Select()
+    {
+        if (document is null)
+        {
+            return;
+        }
+
+        var ordered = document.CaseStudies.OrderBy(c => c.DisplayOrder).ToList();
+        var index = ordered.FindIndex(c => string.Equals(c.Slug, Slug, StringComparison.OrdinalIgnoreCase));
+
+        study = index >= 0 ? ordered[index] : null;
+        previous = index > 0 ? ordered[index - 1] : null;
+        next = index >= 0 && index < ordered.Count - 1 ? ordered[index + 1] : null;
+    }
+}

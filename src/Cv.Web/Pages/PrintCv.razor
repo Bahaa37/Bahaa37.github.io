@@ -19,7 +19,14 @@
 }
 else
 {
+    @*
+        Two routes to a file, because they serve different people. The download hands a
+        recruiter something they can drag straight into an applicant tracking system; the
+        print button is for anyone who wants the current page exactly as rendered. The
+        print dialog alone was never a download — it produced nothing to attach.
+    *@
     <div class="cv-actions no-print">
+        <a class="cv-download" href="/Bahaa-Aldeen-Mohamed-CV.pdf" download>Download CV (PDF)</a>
         <button type="button" @onclick="PrintAsync">Save as PDF</button>
         <span>Choose "Save as PDF" in the print dialog. Margins: default. Background graphics: off.</span>
     </div>
@@ -51,11 +58,25 @@ else
                     <a class="cv-portfolio" href="@document.Profile.Website">@StripScheme(document.Profile.Website)</a>
                 }
             </p>
+            @*
+                Plain text on one line, no table and no icons: an ATS reads this as a
+                continuation of the contact block, which is exactly where a screener
+                looks for it.
+            *@
+            @if (AvailabilityLine(document.Profile) is { Length: > 0 } availability)
+            {
+                <p class="cv-availability">@availability</p>
+            }
         </header>
 
         <section>
+            @*
+                The long summary, not the short one. The showcase page is skimmed and gets
+                the brief version; this document is parsed in full by an ATS and read by
+                someone who has already chosen to open it.
+            *@
             <h2>Professional Summary</h2>
-            <p>@document.Summary</p>
+            <p>@(document.SummaryExtended ?? document.Summary)</p>
         </section>
 
         <section>
@@ -172,6 +193,24 @@ else
 
     [Inject]
     private IJSRuntime JS { get; set; } = default!;
+
+    /// <summary>
+    /// Timezone, notice, relocation and languages as one pipe-separated line. Every part
+    /// is optional, so the separators are joined rather than written into the markup —
+    /// otherwise a missing field leaves a stray bar on a printed CV.
+    /// </summary>
+    private static string AvailabilityLine(Profile profile)
+    {
+        string?[] parts =
+        [
+            profile.Timezone,
+            profile.Availability,
+            profile.Relocation,
+            profile.Languages.Count > 0 ? string.Join("; ", profile.Languages) : null,
+        ];
+
+        return string.Join(" | ", parts.Where(p => !string.IsNullOrWhiteSpace(p)));
+    }
 
     private static string StripScheme(string url) =>
         url.Replace("https://", string.Empty, StringComparison.OrdinalIgnoreCase)

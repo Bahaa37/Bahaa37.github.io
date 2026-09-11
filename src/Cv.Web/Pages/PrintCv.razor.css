@@ -40,6 +40,24 @@
     background: #1d5b81;
 }
 
+/* The download is the primary action — it is the one that produces a file someone can
+   attach — so the print button is demoted to an outline beside it. */
+.cv-download {
+    padding: 0.5rem 1rem;
+    font: inherit;
+    font-weight: 600;
+    color: #14425f;
+    background: #fff;
+    border: 1px solid #14425f;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.cv-download:hover {
+    color: #fff;
+    background: #14425f;
+}
+
 .cv {
     max-width: 8.5in;
     margin: 0 auto;
@@ -78,6 +96,12 @@
 .cv-contact a {
     color: #14425f;
     text-decoration: none;
+}
+
+.cv-availability {
+    margin: 0.25rem 0 0;
+    font-size: 9pt;
+    color: #555;
 }
 
 .sep {

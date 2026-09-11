@@ -54,8 +54,9 @@ public class RealCvDocumentTests
             .Where(i => i.Severity == IssueSeverity.Error)
             .ToList();
 
-        // GitHub is still missing, which is only a warning. Anything at Error severity
-        // is a defect a recruiter would notice, and must not survive into a build.
+        // Warnings are tolerated — an unquantified bullet is worth seeing, not worth
+        // blocking on. Anything at Error severity is a defect a recruiter would notice,
+        // and must not survive into a build.
         Assert.True(
             errors.Count == 0,
             "Blocking CV issues found:" + Environment.NewLine +
@@ -125,6 +126,89 @@ public class RealCvDocumentTests
         var orders = LoadDocument().CaseStudies.Select(c => c.DisplayOrder).ToList();
 
         Assert.Equal(orders.Count, orders.Distinct().Count());
+    }
+
+    [Fact]
+    public void TheShortSummaryStaysShortEnoughToBeRead()
+    {
+        // The showcase summary is the first prose a recruiter meets, and it competes with
+        // the back button. The long version lives in SummaryExtended and is what the
+        // printed CV renders, so there is no pressure to say everything here.
+        var words = LoadDocument().Summary.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
+
+        Assert.InRange(words, 30, 90);
+    }
+
+    [Fact]
+    public void ThePrintedCvStillCarriesTheLongSummary()
+    {
+        var document = LoadDocument();
+
+        Assert.False(
+            string.IsNullOrWhiteSpace(document.SummaryExtended),
+            "summaryExtended is empty, so /cv would silently fall back to the short summary " +
+            "and the printed CV would lose the depth an ATS indexes.");
+        Assert.True(
+            document.SummaryExtended!.Length > document.Summary.Length,
+            "summaryExtended is no longer than summary, which inverts the point of having both.");
+    }
+
+    [Fact]
+    public void TheProfileAnswersTheFirstQuestionsARecruiterAsks()
+    {
+        // Timezone, notice and languages decide whether a remote or relocation
+        // application gets a reply at all. Their absence is a silent conversion loss,
+        // which is exactly the kind of defect this suite exists to make loud.
+        var profile = LoadDocument().Profile;
+
+        Assert.False(string.IsNullOrWhiteSpace(profile.Timezone));
+        Assert.False(string.IsNullOrWhiteSpace(profile.Availability));
+        Assert.False(string.IsNullOrWhiteSpace(profile.Relocation));
+        Assert.NotEmpty(profile.Languages);
+    }
+
+    [Fact]
+    public void TheSkillsListStaysShortEnoughToReadAsASpecialism()
+    {
+        // Ten flat categories read as a developer's inventory; a handful reads as a
+        // practitioner with a specialty. The cap is the whole point of the regrouping,
+        // so it is enforced rather than left to discipline.
+        var groups = LoadDocument().SkillGroups;
+
+        Assert.InRange(groups.Count, 4, 7);
+    }
+
+    [Fact]
+    public void TheSkillsListKeepsNoDuplicatesAcrossGroups()
+    {
+        // A skill in two groups is a regrouping that was half-finished, and it shows up
+        // on the page as the same chip twice.
+        var skills = LoadDocument().SkillGroups.SelectMany(g => g.Skills).ToList();
+
+        var duplicated = skills
+            .GroupBy(s => s, StringComparer.OrdinalIgnoreCase)
+            .Where(g => g.Count() > 1)
+            .Select(g => g.Key)
+            .ToList();
+
+        Assert.True(duplicated.Count == 0, "Skills listed in more than one group: " + string.Join(", ", duplicated));
+    }
+
+    [Fact]
+    public void EveryCaseStudyHasATitleThatSurvivesASearchResult()
+    {
+        // Google cuts a result title at roughly sixty characters, and the site appends
+        // " — Bahaa Aldeen Mohamed" to every case study title. The name is the part that
+        // must survive, so the written short title has to leave room for it.
+        const int suffix = 23;
+
+        foreach (var study in LoadDocument().CaseStudies)
+        {
+            Assert.True(
+                study.DisplayTitle.Length + suffix <= 70,
+                $"'{study.Slug}' renders a {study.DisplayTitle.Length + suffix}-character page title. " +
+                "Add or shorten its shortTitle.");
+        }
     }
 
     [Fact]

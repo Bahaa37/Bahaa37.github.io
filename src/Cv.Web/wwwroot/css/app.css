@@ -6,8 +6,10 @@
     framework to a recruiter who will read the page once is a poor trade on a page
     whose entire job is loading fast.
 
-    Colours are defined once as tokens on :root and overridden only inside the dark
-    media query, so no colour has its sole definition inside a conditional block.
+    Colours are defined once as tokens on :root, so no colour has its sole definition
+    inside a conditional block. They are overridden in two places — the dark media query
+    and the data-theme attribute rule — which is what makes an explicit theme choice
+    possible without giving up the system default. See the note above those rules.
 */
 
 :root {
@@ -41,8 +43,19 @@
     color-scheme: light dark;
 }
 
+/*
+    Three theme states, not two: an explicit choice stamps data-theme on <html>, and the
+    default — no attribute — follows the operating system.
+
+    The dark tokens are therefore written twice. The media query is guarded with
+    :not([data-theme="light"]) so a reader who picks light gets light on a dark OS, and
+    the attribute rule follows it so a reader who picks dark gets dark on a light OS.
+    Plain CSS has no way to share one declaration list between the two selectors, and
+    combining them into a single rule would break the guard — so the duplication is
+    deliberate. Any token change has to be made in both.
+*/
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
         --ink: #e6edf3;
         --ink-soft: #a9b8c6;
         --ink-faint: #7d8d9c;
@@ -59,7 +72,32 @@
         --alarm-wash: #2c1a15;
         --glow: rgba(169, 215, 245, .22);
         --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px rgba(0, 0, 0, .3);
+        color-scheme: dark;
     }
+}
+
+:root[data-theme="dark"] {
+    --ink: #e6edf3;
+    --ink-soft: #a9b8c6;
+    --ink-faint: #7d8d9c;
+    --paper: #0f151b;
+    --paper-alt: #151d26;
+    --paper-sunken: #1c2731;
+    --line: #2a3742;
+    --accent: #8ec6ea;
+    --accent-bright: #a9d7f5;
+    --accent-wash: #16242f;
+    --gold: #e0b95f;
+    --gold-wash: #2a2213;
+    --alarm: #e5806a;
+    --alarm-wash: #2c1a15;
+    --glow: rgba(169, 215, 245, .22);
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px rgba(0, 0, 0, .3);
+    color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+    color-scheme: light;
 }
 
 * {
@@ -275,6 +313,38 @@ a {
     white-space: nowrap;
 }
 
+/*
+    The theme control. It is a single button rather than a three-way picker: "follow the
+    system" is the default and stays reachable by clearing site data, while a reader who
+    wants the other one wants it in one click, not two.
+*/
+.theme-toggle {
+    display: grid;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    padding: 0;
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--ink-soft);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.theme-toggle:hover {
+    color: var(--accent-bright);
+    border-color: var(--accent-bright);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .theme-toggle {
+        transition: none;
+    }
+}
+
 .site-nav {
     display: flex;
     gap: 1.25rem;
@@ -354,15 +424,30 @@ a {
     and let the nav scroll sideways within its own strip instead.
 */
 @media (max-width: 720px) {
+    /* Grid rather than a column of flex items, so the theme button keeps the name's row
+       instead of becoming a third stacked strip of its own. */
     .site-header__inner {
-        flex-direction: column;
-        align-items: stretch;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+            "name toggle"
+            "nav  nav";
+        align-items: center;
         gap: 0;
         padding-top: 0.5rem;
     }
 
     .site-header__name {
+        grid-area: name;
         padding-bottom: 0.4rem;
+    }
+
+    .theme-toggle {
+        grid-area: toggle;
+    }
+
+    .site-nav {
+        grid-area: nav;
     }
 
     .site-nav {
@@ -424,10 +509,15 @@ a {
     color: #fff;
 }
 
+/* Paired with the token rules above; see the note there on why this is written twice. */
 @media (prefers-color-scheme: dark) {
-    .btn--primary {
+    :root:not([data-theme="light"]) .btn--primary {
         color: #0f151b;
     }
+}
+
+:root[data-theme="dark"] .btn--primary {
+    color: #0f151b;
 }
 
 .btn--primary:hover {
@@ -593,6 +683,67 @@ code {
     content: var(--blazor-load-percentage-text, "Loading");
 }
 
+/*
+    Prerendered content.
+
+    _tools/prerender.py writes each route's real text into #app at publish time, so that
+    crawlers which never execute WebAssembly — and the assistants people now ask instead
+    of searching — read the CV rather than an empty shell. Blazor clears #app when it
+    boots, so this is also what a person sees for the second before the runtime arrives.
+
+    It is therefore styled, not hidden. Hiding it would be cloaking, and a blank second
+    was the thing worth fixing. The type is deliberately plain: this is the document
+    underneath the design, and it should read as one.
+*/
+#app:has(.prerendered) .loading-progress,
+#app:has(.prerendered) .loading-progress-text {
+    display: none;
+}
+
+.prerendered {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 3rem 1.25rem 4rem;
+    color: var(--ink-soft);
+}
+
+.prerendered h1 {
+    font-size: clamp(1.6rem, 1.2rem + 2vw, 2.4rem);
+    color: var(--ink);
+    margin: 0 0 0.4rem;
+}
+
+.prerendered h2 {
+    margin: 2.5rem 0 0.75rem;
+    color: var(--ink);
+}
+
+.prerendered h3 {
+    margin: 1.5rem 0 0.35rem;
+    font-size: 1.02rem;
+    color: var(--ink);
+}
+
+.prerendered dt {
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: 0.6rem;
+}
+
+.prerendered dd {
+    margin: 0.1rem 0 0;
+}
+
+.prerendered ul {
+    padding-left: 1.1rem;
+}
+
+.prerendered li {
+    margin-bottom: 0.3rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
     html {
         scroll-behavior: auto;
@@ -629,4 +780,286 @@ code {
 
     .js-motion .bridge__line { transform: scaleX(1) !important; }
     .js-motion .entry__rail::after { transform: scaleY(1) !important; }
+}
+
+/* =========================================================================
+   LONG-FORM DOCUMENT PAGES
+
+   Shared by the case study pages and the architecture decision records. These
+   live here rather than in a component stylesheet because Blazor's CSS
+   isolation scopes a .razor.css file to its own component, and three pages now
+   render the same document shape. Isolation is right for a component that owns
+   its look; it is wrong for a layout two routes share.
+   ========================================================================= */
+
+.booting {
+    padding: 4rem 1.25rem;
+    color: var(--ink-faint);
+}
+
+.study {
+    padding: clamp(2rem, 1.5rem + 3vw, 4rem) 0 clamp(3rem, 2rem + 4vw, 5rem);
+}
+
+.study__shell {
+    /* Prose measure, not page width: long-form argument is the point of these
+       pages, and a 1120px line length would make them unreadable. */
+    max-width: calc(var(--measure) + 8rem);
+}
+
+.crumbs {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    margin-bottom: 2rem;
+}
+
+.crumbs a {
+    color: var(--ink-faint);
+}
+
+.crumbs a:hover {
+    color: var(--accent-bright);
+}
+
+.study__head {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.study__title {
+    margin: 0.5rem 0 0;
+    font-size: clamp(1.9rem, 1.3rem + 3vw, 3rem);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+}
+
+.study__summary {
+    margin: 1rem 0 0;
+    max-width: var(--measure);
+    font-size: clamp(1.02rem, 0.98rem + 0.3vw, 1.15rem);
+    color: var(--ink-soft);
+}
+
+.study__block {
+    margin-top: 2.75rem;
+}
+
+.study__block h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.1rem;
+    letter-spacing: 0.01em;
+}
+
+.study__block > p {
+    margin: 0;
+    max-width: var(--measure);
+    color: var(--ink-soft);
+    line-height: 1.65;
+}
+
+.study__writeup {
+    margin-top: 2.5rem;
+}
+
+.outcomes {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    max-width: var(--measure);
+    color: var(--ink-soft);
+    line-height: 1.6;
+}
+
+.outcomes li::marker {
+    color: var(--accent-bright);
+}
+
+.stack {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+}
+
+/*
+    Previous / next. auto-fit rather than two fixed columns, so the first and last
+    entries — which have only one neighbour — do not leave a hole where the other
+    would be.
+*/
+.study__nav {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: 1rem;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+}
+
+.study__link {
+    display: block;
+    padding: 1rem 1.15rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    text-decoration: none;
+    background: var(--paper);
+    transition: border-color .2s ease, translate .2s ease;
+}
+
+.study__link:hover {
+    border-color: var(--accent-bright);
+    translate: 0 -2px;
+}
+
+.study__link--next {
+    text-align: right;
+}
+
+.study__link-label {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+}
+
+.study__link-title {
+    display: block;
+    margin-top: 0.3rem;
+    color: var(--ink);
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+/* ---------- decision records ---------- */
+
+.adr-list {
+    list-style: none;
+    margin: 2.5rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.9rem;
+}
+
+.adr-card {
+    display: block;
+    padding: 1.35rem 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper);
+    text-decoration: none;
+    transition: border-color .2s ease, translate .2s ease;
+}
+
+.adr-card:hover {
+    border-color: var(--accent-bright);
+    translate: 0 -2px;
+}
+
+.adr-card__meta {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin: 0;
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+}
+
+.adr-card__status {
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    background: var(--accent-wash);
+    color: var(--accent);
+    letter-spacing: 0.06em;
+}
+
+.adr-card__title {
+    margin: 0.55rem 0 0;
+    font-size: 1.12rem;
+    line-height: 1.35;
+    color: var(--ink);
+    text-wrap: balance;
+}
+
+.adr-card__situation {
+    margin: 0.45rem 0 0;
+    max-width: var(--measure);
+    color: var(--ink-soft);
+    font-size: 0.94rem;
+    line-height: 1.55;
+}
+
+.adr-options {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+    max-width: var(--measure);
+}
+
+.adr-option {
+    padding: 1rem 1.15rem;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper-alt);
+}
+
+/* The chosen option is marked on its edge rather than by colouring the whole
+   card: the rejected options are the substance of the record, and washing them
+   out would bury the part worth reading. */
+.adr-option--chosen {
+    border-left-color: var(--accent-bright);
+    background: var(--accent-wash);
+}
+
+.adr-option__name {
+    margin: 0;
+    font-weight: 600;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.adr-option__badge {
+    font-size: 0.68rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 0.12rem 0.5rem;
+    border-radius: 999px;
+    background: var(--accent-bright);
+    color: var(--paper);
+}
+
+.adr-option__assessment {
+    margin: 0.4rem 0 0;
+    color: var(--ink-soft);
+    font-size: 0.94rem;
+    line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .study__link,
+    .adr-card {
+        transition: none;
+    }
+
+    .study__link:hover,
+    .adr-card:hover {
+        translate: none;
+    }
 }
