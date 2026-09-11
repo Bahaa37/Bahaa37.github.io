@@ -80,6 +80,12 @@
     text-decoration: none;
 }
 
+.cv-availability {
+    margin: 0.25rem 0 0;
+    font-size: 9pt;
+    color: #555;
+}
+
 .sep {
     color: #999;
     padding: 0 0.25rem;

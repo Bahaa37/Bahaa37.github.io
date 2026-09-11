@@ -180,13 +180,14 @@
         </p>
 
         <p>
-            One finding from the merge is worth recording for how it was treated. After
-            restructuring, 72 tests failed — all value assertions against the SaaS's stubbed
-            pricing service. None were "type not found" errors, which is what a bad copy
-            produces. These failures were pre-existing and <em>diagnostic</em>: they specify
-            exactly which multipliers the real engine must satisfy once wired in. They were left
-            failing and documented as the acceptance criteria for integration, rather than
-            deleted to make the suite green.
+            Alongside those, 72 tests are held deliberately red as the integration specification
+            — and how that decision was reached is worth recording. After restructuring, those 72
+            failed, all of them value assertions against the SaaS's stubbed pricing service. None
+            were "type not found" errors, which is what a bad copy produces; the failures were
+            pre-existing and <em>diagnostic</em>, specifying exactly which multipliers the real
+            engine must satisfy once wired in. Deleting them would have made the suite green while
+            destroying the only written record of that contract, so they were kept failing and
+            documented as the acceptance criteria for integration.
         </p>
 
         <h2>Stack</h2>

@@ -1,15 +1,23 @@
 {
   "profile": {
     "name": "Bahaa Aldeen Mohamed",
-    "title": "Senior .NET Engineer — Solution Architecture & Systems Analysis",
+    "title": "Senior .NET Engineer — Legacy Modernization & Solution Architecture",
     "location": "Alexandria, Egypt",
+    "timezone": "EET (UTC+2)",
+    "workingOverlap": "Full overlap with EU hours; mornings overlap with US Eastern",
+    "languages": [
+      "Arabic — native",
+      "English — professional working proficiency"
+    ],
+    "availability": "Open to opportunities — 2 months' notice",
+    "relocation": "Open to relocation (Gulf, EU) and to fully remote work",
     "phone": "+20 105 555 3796",
     "email": "BahaaMohamed37@gmail.com",
     "linkedIn": "https://linkedin.com/in/bahaamohamed-dev",
     "gitHub": "https://github.com/Bahaa37",
     "website": "https://bahaa37.github.io"
   },
-  "summary": "Software architect and systems analyst working in the .NET ecosystem, with a track record of taking architectural decisions on systems that were considered too risky to change. Led the re-architecture of a distributed orchestrator to remove its transaction-coordinator dependency — the constraint that had frozen an entire service estate on unsupported runtimes — then authored the transformation template, its governing rules, and the AI-guided workflow that let other teams repeat it. A single upgrade cycle fell from 5-7 working days to a maximum of 3, with a company award for the time and cost saved. Designs and documents systems as well as building them: solution architecture documents, SRS and low-level design, and Mermaid workflow modelling. Architected payment middleware serving 9 countries on Clean Architecture with CQRS, Strategy, and Pipeline. Separately awarded as a subject matter expert for AI enablement across non-technical departments. Completing diplomas in microservices architecture and Azure, and targeting systems analysis and architecture roles.",
+  "summary": "Senior .NET engineer working at architecture level. I led the re-architecture that removed a distributed transaction coordinator from a platform orchestrator — the constraint that had frozen an entire service estate on unsupported runtimes — then authored the template, the rules and the AI-guided workflow that let other teams repeat it. A single upgrade cycle fell from 5-7 working days to a maximum of 3. Targeting solution architecture and systems analysis roles.",
   "skillGroups": [
     {
       "category": "Architecture & Patterns",
@@ -23,7 +31,6 @@
         "Microservices",
         "Distributed Transactions / DTC removal",
         "Workflow Orchestration",
-        "OOP",
         "SOLID"
       ]
     },
@@ -45,40 +52,24 @@
       "skills": [
         "Framework upgrade strategy",
         "Incremental migration",
+        ".NET Framework",
+        ".NET Core",
+        "ASP.NET MVC",
         "Project templating & rule authoring",
         "Refactoring at scale",
         "Cross-team transformation leadership"
       ]
     },
     {
-      "category": "AI Engineering & Enablement",
-      "skills": [
-        "Microsoft Copilot Studio",
-        "Autonomous agent development",
-        "AI-guided development workflows",
-        "Claude Code",
-        "GitHub Copilot",
-        "AI training & curriculum design"
-      ]
-    },
-    {
-      "category": "Languages & Frameworks",
+      "category": ".NET Platform & Data",
       "skills": [
         "C#",
         ".NET 9 / .NET 10",
-        ".NET Core",
-        ".NET Framework",
         "ASP.NET Core",
-        "ASP.NET MVC",
         "Web API",
         "Entity Framework Core",
         "Dapper",
-        "Blazor"
-      ]
-    },
-    {
-      "category": "Data & Messaging",
-      "skills": [
+        "Blazor",
         "Microsoft SQL Server",
         "LINQ",
         "Query optimization",
@@ -87,46 +78,39 @@
       ]
     },
     {
-      "category": "Cloud & DevOps",
-      "skills": [
-        "Microsoft Azure",
-        "Azure Static Web Apps",
-        "Azure DevOps",
-        "Team Foundation Server",
-        "Git",
-        "CI/CD pipelines"
-      ]
-    },
-    {
       "category": "APIs & Integration",
       "skills": [
         "RESTful APIs",
         "Payment gateway integration",
         "JWT authentication",
+        "SMS & email gateways",
         "Google Maps API",
         "reCAPTCHA",
-        "SMS & email gateways"
+        "FluentValidation",
+        "API documentation"
       ]
     },
     {
-      "category": "Frontend",
+      "category": "Cloud, Delivery & AI Engineering",
+      "skills": [
+        "Microsoft Azure",
+        "Azure DevOps",
+        "CI/CD pipelines",
+        "Git",
+        "Microsoft Copilot Studio",
+        "Autonomous agent development",
+        "AI-guided development workflows",
+        "Claude Code",
+        "GitHub Copilot",
+        "AI training & curriculum design",
+        "Agile / Scrum"
+      ]
+    },
+    {
+      "category": "Frontend (working proficiency)",
       "skills": [
         "Angular",
-        "React",
-        "Blazor",
-        "HTML5",
-        "CSS3",
-        "JavaScript",
-        "jQuery",
-        "Ajax"
-      ]
-    },
-    {
-      "category": "Practice & Documentation",
-      "skills": [
-        "Agile / Scrum",
-        "API documentation",
-        "FluentValidation"
+        "React"
       ]
     }
   ],
@@ -385,6 +369,7 @@
         "end": "2023-03"
       },
       "details": [
+        "Career change into software engineering: entered ITI's competitive-entry programme after a first degree outside computer science.",
         "Intensive 4-month bootcamp on the Microsoft stack, covering computer science fundamentals.",
         "C# and .NET: built web applications and APIs.",
         "SQL Server: relational database design and management.",
@@ -638,5 +623,6 @@
         "Microsoft Azure"
       ]
     }
-  ]
+  ],
+  "summaryExtended": "Senior .NET engineer working at architecture level, with a track record of taking architectural decisions on systems that were considered too risky to change. Led the re-architecture of a distributed orchestrator to remove its transaction-coordinator dependency — the constraint that had frozen an entire service estate on unsupported runtimes — then authored the transformation template, its governing rules, and the AI-guided workflow that let other teams repeat it. A single upgrade cycle fell from 5-7 working days to a maximum of 3, with a company award for the time and cost saved. Designs and documents systems as well as building them: solution architecture documents, SRS and low-level design, and Mermaid workflow modelling. Architected payment middleware serving 9 countries on Clean Architecture with CQRS, Strategy, and Pipeline. Separately awarded as a subject matter expert for AI enablement across non-technical departments. Completing diplomas in microservices architecture and Azure, and targeting systems analysis and architecture roles."
 }
