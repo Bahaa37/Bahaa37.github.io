@@ -19,7 +19,14 @@
 }
 else
 {
+    @*
+        Two routes to a file, because they serve different people. The download hands a
+        recruiter something they can drag straight into an applicant tracking system; the
+        print button is for anyone who wants the current page exactly as rendered. The
+        print dialog alone was never a download — it produced nothing to attach.
+    *@
     <div class="cv-actions no-print">
+        <a class="cv-download" href="/Bahaa-Aldeen-Mohamed-CV.pdf" download>Download CV (PDF)</a>
         <button type="button" @onclick="PrintAsync">Save as PDF</button>
         <span>Choose "Save as PDF" in the print dialog. Margins: default. Background graphics: off.</span>
     </div>

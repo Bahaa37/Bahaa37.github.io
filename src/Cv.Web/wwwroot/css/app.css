@@ -593,6 +593,67 @@ code {
     content: var(--blazor-load-percentage-text, "Loading");
 }
 
+/*
+    Prerendered content.
+
+    _tools/prerender.py writes each route's real text into #app at publish time, so that
+    crawlers which never execute WebAssembly — and the assistants people now ask instead
+    of searching — read the CV rather than an empty shell. Blazor clears #app when it
+    boots, so this is also what a person sees for the second before the runtime arrives.
+
+    It is therefore styled, not hidden. Hiding it would be cloaking, and a blank second
+    was the thing worth fixing. The type is deliberately plain: this is the document
+    underneath the design, and it should read as one.
+*/
+#app:has(.prerendered) .loading-progress,
+#app:has(.prerendered) .loading-progress-text {
+    display: none;
+}
+
+.prerendered {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 3rem 1.25rem 4rem;
+    color: var(--ink-soft);
+}
+
+.prerendered h1 {
+    font-size: clamp(1.6rem, 1.2rem + 2vw, 2.4rem);
+    color: var(--ink);
+    margin: 0 0 0.4rem;
+}
+
+.prerendered h2 {
+    margin: 2.5rem 0 0.75rem;
+    color: var(--ink);
+}
+
+.prerendered h3 {
+    margin: 1.5rem 0 0.35rem;
+    font-size: 1.02rem;
+    color: var(--ink);
+}
+
+.prerendered dt {
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: 0.6rem;
+}
+
+.prerendered dd {
+    margin: 0.1rem 0 0;
+}
+
+.prerendered ul {
+    padding-left: 1.1rem;
+}
+
+.prerendered li {
+    margin-bottom: 0.3rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
     html {
         scroll-behavior: auto;

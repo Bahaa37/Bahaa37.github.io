@@ -61,8 +61,13 @@ else
                 <a class="btn btn--primary" href="mailto:@document.Profile.Email">
                     @document.Profile.Email
                 </a>
-                <a class="btn btn--ghost" href="@document.Profile.PhoneHref">@document.Profile.Phone</a>
+                @*
+                    The phone number is deliberately not here. It stays on /cv, where a
+                    recruiter who has decided to get in touch will look for it, rather
+                    than in plain text on the page most likely to be scraped.
+                *@
                 <a class="btn btn--ghost" href="/cv">Printable CV</a>
+                <a class="btn btn--ghost" href="/Bahaa-Aldeen-Mohamed-CV.pdf" download>Download PDF</a>
             </div>
 
             @*

@@ -7,7 +7,7 @@
     <!-- Static title and description: crawlers and search engines read these without
          executing the WebAssembly runtime, so they must match the site's positioning
          rather than lag behind it. -->
-    <title>Bahaa Aldeen Mohamed — .NET Legacy Modernization &amp; Solution Architecture</title>
+    <title>Bahaa Aldeen Mohamed — .NET Architecture &amp; Modernization</title>
     <meta name="description" content="Senior .NET engineer working at architecture level. Removed a distributed transaction coordinator dependency that had frozen a service estate, cutting an upgrade cycle from 5-7 days to 3. Clean Architecture, CQRS, payment infrastructure across 9 countries." />
     <base href="/" />
 
@@ -22,7 +22,7 @@
     <meta property="og:type" content="profile" />
     <meta property="og:site_name" content="Bahaa Aldeen Mohamed" />
     <meta property="og:url" content="https://bahaa37.github.io/" />
-    <meta property="og:title" content="Bahaa Aldeen Mohamed — .NET Legacy Modernization &amp; Solution Architecture" />
+    <meta property="og:title" content="Bahaa Aldeen Mohamed — .NET Architecture &amp; Modernization" />
     <meta property="og:description" content="I remove the constraint that froze the estate. Removed a distributed transaction coordinator dependency and cut an upgrade cycle from 5-7 days to 3. .NET, Clean Architecture, CQRS." />
 
     <!-- Absolute, not relative. LinkedIn, WhatsApp and Slack crawlers routinely ignore a
@@ -46,6 +46,10 @@
     <link rel="stylesheet" href="css/app.css" />
     <link rel="stylesheet" href="css/print.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
+    <!-- display: "browser" — this is a document, not an app, and a standalone window
+         would only take the back button away from someone reading a CV. -->
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#14425f" />
     <link href="Cv.Web.styles.css" rel="stylesheet" />
     <script type="importmap"></script>
 </head>

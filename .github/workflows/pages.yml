@@ -53,21 +53,35 @@ jobs:
       - name: Disable Jekyll processing
         run: touch publish/wwwroot/.nojekyll
 
-      # Pages has no SPA fallback, so a deep link like /cv would 404 on refresh. Serving
-      # the app shell as the 404 page makes the client router pick the route up instead.
-      - name: Add SPA fallback
-        run: cp publish/wwwroot/index.html publish/wwwroot/404.html
-
-      # The 404 fallback renders correctly for a person, but the response still carries a
-      # 404 STATUS — and crawlers and link-preview bots refuse to preview those. Writing a
-      # real index.html at each known route makes them answer 200 with identical content.
-      # Add a line here whenever a route is added to the app.
-      - name: Materialize routes so deep links answer 200
+      # Write a real page for every route: its own title, description, canonical, Open
+      # Graph tags, JSON-LD and text content — plus sitemap.xml, robots.txt and llms.txt.
+      #
+      # This replaces an earlier step that copied index.html to each route verbatim. That
+      # gave deep links a 200 status, which was the point, but it also gave /cv and the
+      # case study the SAME title, the SAME description and an og:url pointing at the
+      # site root. To a crawler the site was three copies of one page.
+      #
+      # The route table lives in the script and is derived from cv.json, so adding a
+      # write-up adds its page, its sitemap entry and its llms.txt line in one edit —
+      # there is no longer a hand-maintained list here to forget.
+      - name: Prerender routes
         run: |
-          for route in cv work/windoor-wizard-builder; do
-            mkdir -p "publish/wwwroot/$route"
-            cp publish/wwwroot/index.html "publish/wwwroot/$route/index.html"
-          done
+          python -m pip install --quiet --upgrade pip
+          python _tools/prerender.py publish/wwwroot --base-url https://bahaa37.github.io
+
+      # Render the downloadable CV from the build that is about to ship, rather than
+      # shipping a file someone exported by hand months ago. The PDF a recruiter
+      # downloads then cannot disagree with the page they downloaded it from.
+      #
+      # ats_check.py is the acceptance criterion, not a formality: an applicant tracking
+      # system reads the text layer, and a CV whose text does not extract is filtered out
+      # before a person sees it. A failure here stops the deploy.
+      - name: Render and gate the CV PDF
+        run: |
+          python -m pip install --quiet playwright pypdf
+          python -m playwright install --with-deps chromium
+          python _tools/make_cv_pdf.py publish/wwwroot publish/wwwroot/Bahaa-Aldeen-Mohamed-CV.pdf
+          python _tools/ats_check.py publish/wwwroot/Bahaa-Aldeen-Mohamed-CV.pdf
 
       - uses: actions/configure-pages@v5
 
