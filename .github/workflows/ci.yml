@@ -47,16 +47,20 @@ jobs:
       # the branch rather than while deploying. prerender.py fails the build if two
       # routes would look like the same page to a crawler; ats_check.py fails it if the
       # generated CV's text layer does not extract.
-      - name: Prerender routes
-        # No analytics token here: CI must never emit a page that reports traffic.
-        run: python _tools/prerender.py publish/wwwroot --base-url https://bahaa37.github.io
-
+      # The PDF is rendered before the prerender step, not after: prerender.py now
+      # refuses to finish unless the CV it links to is actually in the published output,
+      # so the file has to exist by then. The PDF renderer does not need the prerendered
+      # pages — serve_publish.py serves the app shell for /cv either way.
       - name: Render and gate the CV PDF
         run: |
           python -m pip install --quiet playwright pypdf
           python -m playwright install --with-deps chromium
           python _tools/make_cv_pdf.py publish/wwwroot publish/wwwroot/Bahaa-Aldeen-Mohamed-CV.pdf
           python _tools/ats_check.py publish/wwwroot/Bahaa-Aldeen-Mohamed-CV.pdf
+
+      - name: Prerender routes
+        # No analytics token here: CI must never emit a page that reports traffic.
+        run: python _tools/prerender.py publish/wwwroot --base-url https://bahaa37.github.io
 
       - name: Upload the generated CV for inspection
         if: always()

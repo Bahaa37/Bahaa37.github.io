@@ -75,11 +75,6 @@ jobs:
       # The route table lives in the script and is derived from cv.json, so adding a
       # write-up adds its page, its sitemap entry and its llms.txt line in one edit —
       # there is no longer a hand-maintained list here to forget.
-      - name: Prerender routes
-        run: |
-          python -m pip install --quiet --upgrade pip
-          python _tools/prerender.py publish/wwwroot --base-url "$SITE_BASE_URL"
-
       # Render the downloadable CV from the build that is about to ship, rather than
       # shipping a file someone exported by hand months ago. The PDF a recruiter
       # downloads then cannot disagree with the page they downloaded it from.
@@ -87,12 +82,22 @@ jobs:
       # ats_check.py is the acceptance criterion, not a formality: an applicant tracking
       # system reads the text layer, and a CV whose text does not extract is filtered out
       # before a person sees it. A failure here stops the deploy.
+      #
+      # This runs before the prerender because prerender.py refuses to finish unless the
+      # CV its pages link to is really in the published output. The renderer does not
+      # need the prerendered pages: serve_publish.py serves the app shell for /cv either
+      # way, and the PDF is printed from the booted app.
       - name: Render and gate the CV PDF
         run: |
           python -m pip install --quiet playwright pypdf
           python -m playwright install --with-deps chromium
           python _tools/make_cv_pdf.py publish/wwwroot publish/wwwroot/Bahaa-Aldeen-Mohamed-CV.pdf
           python _tools/ats_check.py publish/wwwroot/Bahaa-Aldeen-Mohamed-CV.pdf
+
+      - name: Prerender routes
+        run: |
+          python -m pip install --quiet --upgrade pip
+          python _tools/prerender.py publish/wwwroot --base-url "$SITE_BASE_URL"
 
       - uses: actions/configure-pages@v5
 
