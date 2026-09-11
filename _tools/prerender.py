@@ -30,6 +30,7 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import os
 import re
 import sys
 from dataclasses import dataclass, field
@@ -378,6 +379,15 @@ def render(route: Route, shell: str, base_url: str) -> str:
     head_additions = [f'<link rel="canonical" href="{e(url)}" />']
     if not route.indexable:
         head_additions.append('<meta name="robots" content="noindex" />')
+
+    # Cloudflare Web Analytics: cookieless, so it needs no consent banner, and injected
+    # only when a token is actually configured. Keeping it out of index.html means the
+    # repo never carries a placeholder token that looks live and is not.
+    if token := os.environ.get("CF_ANALYTICS_TOKEN", "").strip():
+        head_additions.append(
+            '<script defer src="https://static.cloudflareinsights.com/beacon.min.js" '
+            f"data-cf-beacon='{{\"token\": \"{e(token)}\"}}'></script>"
+        )
 
     if route.json_ld:
         graph = {"@context": "https://schema.org", "@graph": route.json_ld}

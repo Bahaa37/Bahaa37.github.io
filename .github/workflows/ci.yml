@@ -48,6 +48,7 @@ jobs:
       # routes would look like the same page to a crawler; ats_check.py fails it if the
       # generated CV's text layer does not extract.
       - name: Prerender routes
+        # No analytics token here: CI must never emit a page that reports traffic.
         run: python _tools/prerender.py publish/wwwroot --base-url https://bahaa37.github.io
 
       - name: Render and gate the CV PDF
