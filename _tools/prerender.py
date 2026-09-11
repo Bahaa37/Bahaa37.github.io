@@ -264,7 +264,41 @@ def breadcrumbs(base_url: str, trail: list[tuple[str, str]]) -> dict:
 # --------------------------------------------------------------------------------------
 
 
-def build_routes(cv: dict, base_url: str) -> list[Route]:
+def decision_body(record: dict) -> str:
+    options = "".join(
+        f"<article><h3>{e(option['name'])}"
+        + (" (chosen)" if option.get("chosen") else "")
+        + f"</h3><p>{e(option['assessment'])}</p></article>"
+        for option in record.get("options", [])
+    )
+
+    return f"""
+      <h1>{e(record['title'])}</h1>
+      <p>{e(record['id'])} · {e(record.get('status', ''))} · {e(record.get('decided', ''))}</p>
+      <h2>Situation</h2><p>{e(record['situation'])}</p>
+      <h2>Options considered</h2>{options}
+      <h2>Decision</h2><p>{e(record['decision'])}</p>
+      <h2>Consequences</h2><ul>{bullets(record.get('consequences', []))}</ul>
+    """
+
+
+def architecture_index_body(records: list[dict]) -> str:
+    items = "".join(
+        f"<article><h2>{e(record['title'])}</h2>"
+        f"<p>{e(record['id'])} · {e(record.get('status', ''))}</p>"
+        f"<p>{e(record['situation'][:280])}</p></article>"
+        for record in records
+    )
+
+    return f"""
+      <h1>Architecture decision records</h1>
+      <p>Decisions taken on this site, written as context, options, decision and
+         consequences.</p>
+      {items}
+    """
+
+
+def build_routes(cv: dict, base_url: str, decisions: list[dict] | None = None) -> list[Route]:
     profile = cv["profile"]
     name = profile["name"]
 
@@ -328,6 +362,49 @@ def build_routes(cv: dict, base_url: str) -> list[Route]:
                         "@type": "TechArticle",
                         "headline": study["title"],
                         "description": study.get("summary", ""),
+                        "author": {"@id": f"{base_url}/#person"},
+                    },
+                ],
+            )
+        )
+
+    # Architecture decision records. Same derivation as the case studies: the data file
+    # is the route table, so publishing a record publishes its page.
+    records = sorted(decisions or [], key=lambda r: r.get("displayOrder", 0))
+
+    if records:
+        routes.append(
+            Route(
+                path="architecture",
+                title=f"Architecture decisions — {name}",
+                description=(
+                    "Architecture decision records for this site: what forced each "
+                    "decision, what else was considered, what was chosen and what it cost."
+                ),
+                body=architecture_index_body(records),
+                json_ld=[breadcrumbs(base_url, [("Home", ""), ("Architecture", "architecture")])],
+            )
+        )
+
+    for record in records:
+        path = f"architecture/{record['slug']}"
+        short_title = record.get("shortTitle") or record["title"]
+
+        routes.append(
+            Route(
+                path=path,
+                title=f"{short_title} — {name}",
+                description=f"{record['id']}: {record['situation'][:240]}",
+                body=decision_body(record),
+                json_ld=[
+                    breadcrumbs(
+                        base_url,
+                        [("Home", ""), ("Architecture", "architecture"), (short_title, path)],
+                    ),
+                    {
+                        "@type": "TechArticle",
+                        "headline": record["title"],
+                        "description": record["decision"][:300],
                         "author": {"@id": f"{base_url}/#person"},
                     },
                 ],
@@ -506,7 +583,16 @@ def main() -> int:
     shell = shell_path.read_text(encoding="utf-8")
     cv = json.loads((publish / "data" / "cv.json").read_text(encoding="utf-8"))
 
-    routes = build_routes(cv, base_url)
+    # Decision records are optional: the site works without them, and a build should not
+    # fail because a supplementary document is absent.
+    decisions_path = publish / "data" / "decisions.json"
+    decisions = (
+        json.loads(decisions_path.read_text(encoding="utf-8")).get("decisions", [])
+        if decisions_path.exists()
+        else []
+    )
+
+    routes = build_routes(cv, base_url, decisions)
 
     for route in routes:
         page = render(route, shell, base_url)

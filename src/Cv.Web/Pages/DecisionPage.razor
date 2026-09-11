@@ -1,0 +1,171 @@
+@page "/architecture/{Slug}"
+@inject CvDataService CvData
+
+@*
+    One architecture decision record.
+
+    The order is fixed and conventional — situation, options, decision, consequences —
+    because recognisability is most of the value. A reader should know what they are
+    looking at before they read a word of it.
+*@
+
+<PageTitle>@(record?.DisplayTitle ?? "Decision") — Bahaa Aldeen Mohamed</PageTitle>
+
+@if (decisions is null)
+{
+    <p class="booting">Loading…</p>
+}
+else if (record is null)
+{
+    <section class="band">
+        <div class="shell">
+            <h1 class="band__title">No such decision record</h1>
+            <p class="band__lede">
+                Nothing here matches "@Slug".
+                <a href="/architecture">See all decision records</a> instead.
+            </p>
+        </div>
+    </section>
+}
+else
+{
+    <article class="study">
+        <div class="shell study__shell">
+
+            <nav class="crumbs" aria-label="Breadcrumb">
+                <a href="/">Home</a>
+                <span aria-hidden="true">/</span>
+                <a href="/architecture">Architecture</a>
+            </nav>
+
+            <header class="study__head">
+                <p class="eyebrow">
+                    <span class="mono">@record.Id</span>
+                    <span class="dot">·</span>
+                    @record.Status
+                    <span class="dot">·</span>
+                    @record.Decided
+                    @if (!string.IsNullOrWhiteSpace(record.Context))
+                    {
+                        <span class="dot">·</span>
+                        @record.Context
+                    }
+                </p>
+                <h1 class="study__title">@record.Title</h1>
+            </header>
+
+            <section class="study__block">
+                <h2>Situation</h2>
+                <p>@record.Situation</p>
+            </section>
+
+            @if (record.Options.Count > 0)
+            {
+                <section class="study__block">
+                    <h2>Options considered</h2>
+                    <ul class="adr-options">
+                        @foreach (var option in record.Options)
+                        {
+                            <li class="@(option.Chosen ? "adr-option adr-option--chosen" : "adr-option")">
+                                <p class="adr-option__name">
+                                    @option.Name
+                                    @if (option.Chosen)
+                                    {
+                                        <span class="adr-option__badge">Chosen</span>
+                                    }
+                                </p>
+                                <p class="adr-option__assessment">@option.Assessment</p>
+                            </li>
+                        }
+                    </ul>
+                </section>
+            }
+
+            <section class="study__block">
+                <h2>Decision</h2>
+                <p>@record.Decision</p>
+            </section>
+
+            @if (record.Consequences.Count > 0)
+            {
+                <section class="study__block">
+                    @*
+                        Consequences, not benefits. A record that lists only what a
+                        decision bought and never what it cost is not a decision record.
+                    *@
+                    <h2>Consequences</h2>
+                    <ul class="outcomes">
+                        @foreach (var consequence in record.Consequences)
+                        {
+                            <li>@consequence</li>
+                        }
+                    </ul>
+                </section>
+            }
+
+            @if (record.HasDiagram)
+            {
+                <section class="study__block">
+                    <h2>Diagram</h2>
+                    <ArchitectureDiagram Id="@($"adr-{record.Slug}")" Source="@record.MermaidDiagram" />
+                </section>
+            }
+
+            <nav class="study__nav" aria-label="Other decision records">
+                @if (previous is not null)
+                {
+                    <a class="study__link" href="@($"/architecture/{previous.Slug}")">
+                        <span class="study__link-label">Previous</span>
+                        <span class="study__link-title">@previous.DisplayTitle</span>
+                    </a>
+                }
+                @if (next is not null)
+                {
+                    <a class="study__link study__link--next" href="@($"/architecture/{next.Slug}")">
+                        <span class="study__link-label">Next</span>
+                        <span class="study__link-title">@next.DisplayTitle</span>
+                    </a>
+                }
+            </nav>
+        </div>
+    </article>
+}
+
+@code {
+    [Parameter]
+    public string? Slug { get; set; }
+
+    private IReadOnlyList<DecisionRecord>? decisions;
+    private DecisionRecord? record;
+    private DecisionRecord? previous;
+    private DecisionRecord? next;
+
+    protected override async Task OnInitializedAsync()
+    {
+        decisions = [.. (await CvData.GetDecisionsAsync()).OrderBy(d => d.DisplayOrder)];
+        Select();
+    }
+
+    // Navigating from one record to the next reuses this component instance, so the
+    // parameter change has to be picked up here as well.
+    protected override void OnParametersSet() => Select();
+
+    private void Select()
+    {
+        if (decisions is null)
+        {
+            return;
+        }
+
+        var index = decisions
+            .Select((d, i) => (d, i))
+            .Where(pair => string.Equals(pair.d.Slug, Slug, StringComparison.OrdinalIgnoreCase))
+            .Select(pair => pair.i)
+            .DefaultIfEmpty(-1)
+            .First();
+
+        record = index >= 0 ? decisions[index] : null;
+        previous = index > 0 ? decisions[index - 1] : null;
+        next = index >= 0 && index < decisions.Count - 1 ? decisions[index + 1] : null;
+    }
+}

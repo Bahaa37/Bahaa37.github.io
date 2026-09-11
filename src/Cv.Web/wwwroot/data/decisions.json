@@ -1,0 +1,202 @@
+{
+  "decisions": [
+    {
+      "id": "ADR-0001",
+      "slug": "one-data-file-three-renderers",
+      "title": "Hold the CV as one data file and project every output from it",
+      "shortTitle": "One data file, three renderers",
+      "status": "Accepted",
+      "decided": "2026-08",
+      "context": "This portfolio",
+      "situation": "The same career has to appear in three forms: a showcase page written to be read, a printable CV written to be parsed by applicant tracking software, and a downloadable PDF that gets attached to applications. Maintained separately they diverge within weeks, and the failure is silent — nobody notices that the PDF still says something the site stopped saying two months ago until an interviewer reads both.",
+      "options": [
+        {
+          "name": "Maintain each output separately",
+          "assessment": "Cheapest to start and the default nearly everyone lands on. Rejected because divergence is not a risk here, it is a certainty: three documents edited by hand will disagree, and the one that goes stale is the one already sitting in a recruiter's inbox."
+        },
+        {
+          "name": "Generate the CV from the site's HTML",
+          "assessment": "Rejected. It makes the presentation layer the source of truth, so a styling change can alter the record, and the extracted text inherits whatever the markup happens to be rather than what an ATS needs."
+        },
+        {
+          "name": "One structured data file, several renderers over it",
+          "assessment": "Chosen. The content exists once; each output is a projection with its own concerns — the page optimises for a reader, the print view for a parser.",
+          "chosen": true
+        }
+      ],
+      "decision": "cv.json is the single source of truth. A typed domain model reads it, and the showcase page, the printable CV and the CI validator are three independent projections over that model. No renderer holds content of its own.",
+      "consequences": [
+        "Any fact is corrected in one place and is consistent everywhere on the next build.",
+        "The schema has to absorb genuinely different needs — the page wants a short summary, the printed CV wants a long one — which shows up as fields that only one renderer uses.",
+        "Adding an output is cheap: the PDF renderer was added later without touching the content at all.",
+        "The data file becomes a hard dependency of the build, so a malformed edit breaks everything at once rather than one surface. That is the intended trade: loud and immediate beats quiet and partial."
+      ],
+      "displayOrder": 1
+    },
+    {
+      "id": "ADR-0002",
+      "slug": "validate-content-in-ci",
+      "title": "Fail the build on CV content defects, not only on code defects",
+      "shortTitle": "Validate CV content in CI",
+      "status": "Accepted",
+      "decided": "2026-08",
+      "context": "This portfolio",
+      "situation": "The first version of this CV listed two full-time roles running concurrently, and claimed a .NET 9 Web API built during a role that ended four months before .NET 9 shipped. Both are the kind of mistake that is obvious to a reader and invisible to the author, and both are read as either carelessness or dishonesty rather than as a typo. Proofreading catches them exactly as often as the author happens to be paying attention.",
+      "options": [
+        {
+          "name": "Proofread carefully before each change",
+          "assessment": "Rejected. It is what produced the defects in the first place. The author is the worst available reviewer of their own CV, because they know what it was supposed to say."
+        },
+        {
+          "name": "Ask someone else to review it",
+          "assessment": "Valuable, and orthogonal. A reviewer catches judgement problems — tone, emphasis, what is missing. They will not reliably cross-check twelve date ranges against each other on every edit."
+        },
+        {
+          "name": "Encode the rules as tests and gate the deploy on them",
+          "assessment": "Chosen. These defects are mechanically checkable: overlapping full-time periods, technology claimed before its release date, an unquantified achievement, a phone number that breaks click-to-call.",
+          "chosen": true
+        }
+      ],
+      "decision": "CvValidator runs as part of the test suite, against the live cv.json rather than a fixture, and both workflows gate on it. Content errors and code errors fail the same build. Warnings — an unquantified bullet, for instance — are reported without blocking, because the fix is a judgement call and sometimes the honest answer is that no number exists.",
+      "consequences": [
+        "A CV with a date contradiction cannot reach a recruiter through this pipeline.",
+        "The rules had to be written down, which forced the distinction between a defect and a preference. That line is the hard part, and encoding it is what makes the check trustworthy.",
+        "Every new rule is a constraint on future content, so a legitimate edge case will eventually need the validator changed rather than the CV.",
+        "Never auto-fill a missing metric. A fabricated figure cannot be defended in an interview, so a blank is always preferable to an invention."
+      ],
+      "displayOrder": 2
+    },
+    {
+      "id": "ADR-0003",
+      "slug": "no-css-framework",
+      "title": "Write the design system directly rather than ship a CSS framework",
+      "shortTitle": "No CSS framework",
+      "status": "Accepted",
+      "decided": "2026-08",
+      "context": "This portfolio",
+      "situation": "The project template arrived with Bootstrap — roughly 8.5 MB in the repository and around 200 KB served. The site is a handful of pages with one grid, one card shape and one button.",
+      "options": [
+        {
+          "name": "Keep Bootstrap",
+          "assessment": "Rejected. Nearly all of it would be unused, and a portfolio whose stated subject is engineering judgement should not ship 200 KB of framework to lay out six sections."
+        },
+        {
+          "name": "Add a utility framework instead",
+          "assessment": "Rejected for the same reason at a different size. It also pushes design decisions into markup, which makes the one thing this site must get right — how it looks — harder to reason about."
+        },
+        {
+          "name": "Custom properties and native layout",
+          "assessment": "Chosen. Grid and flexbox cover every layout here, and design tokens on :root give one place to change colour and type.",
+          "chosen": true
+        }
+      ],
+      "decision": "No CSS framework. A token layer on :root, native grid and flexbox for layout, and per-component stylesheets through Blazor's CSS isolation.",
+      "consequences": [
+        "Significantly less shipped CSS, and no unused rules to reason about.",
+        "Things a framework provides free — a focus ring, sensible form defaults, a dark palette — had to be written, which is real work and the reason frameworks exist.",
+        "The token layer made a manual dark-mode toggle a small change rather than a rewrite, because no colour was hard-coded anywhere.",
+        "This only holds at this scale. A larger application with many contributors would be a different decision, and this record should not be read as an argument against frameworks generally."
+      ],
+      "displayOrder": 3
+    },
+    {
+      "id": "ADR-0004",
+      "slug": "trim-the-wasm-payload",
+      "title": "Trim the WebAssembly payload and root only the assemblies that need it",
+      "shortTitle": "Trim the WASM payload",
+      "status": "Accepted",
+      "decided": "2026-08",
+      "context": "This portfolio",
+      "situation": "A Blazor WebAssembly application downloads the .NET runtime before it can render. Untrimmed, that is a multi-megabyte download in front of a CV — and the reader most worth keeping is a recruiter on a phone who will not wait.",
+      "options": [
+        {
+          "name": "Ship untrimmed",
+          "assessment": "Rejected. The payload is the single largest cost this technology choice imposes, and declining to address it makes the choice indefensible."
+        },
+        {
+          "name": "Trim, and disable it wherever something breaks",
+          "assessment": "Rejected. Full trimming broke two things here, and switching it off globally to fix them would have discarded most of the benefit to solve a narrow problem."
+        },
+        {
+          "name": "Trim fully, and root the specific assemblies that need reflection",
+          "assessment": "Chosen. Both failures were understood rather than worked around: Blazor's activator needs component constructors, and System.Text.Json needs reflection over required init-only properties.",
+          "chosen": true
+        }
+      ],
+      "decision": "PublishTrimmed with TrimMode full and InvariantGlobalization, with TrimmerRootAssembly entries for this solution's own three assemblies. Mermaid, at 3.5 MB, is imported dynamically on the first click of a diagram toggle and never on first paint.",
+      "consequences": [
+        "The payload is roughly 1.6 MB Brotli-compressed, and the largest single dependency is not downloaded at all by most visitors.",
+        "Trimming failures appear only in Release, so a Debug build proves little and CI has to publish in Release to be worth anything.",
+        "InvariantGlobalization means no culture-specific formatting. Acceptable here, and would not be in an application that formats currency or dates per locale.",
+        "The reasoning is recorded in the project file itself, because the next person to hit a trimming failure will be reading that file, not this page."
+      ],
+      "displayOrder": 4
+    },
+    {
+      "id": "ADR-0005",
+      "slug": "prerender-routes-at-build",
+      "title": "Prerender every route at build time instead of serving one shell",
+      "shortTitle": "Prerender routes at build",
+      "status": "Accepted",
+      "decided": "2026-09",
+      "context": "This portfolio",
+      "situation": "The site is client-rendered WebAssembly, so its HTML source is an empty shell. Deep links had been made to return 200 by copying index.html to each route, which fixed the status code and left every route serving the same title, the same description and an og:url pointing at the site root. To a crawler the site was three copies of one page. Meanwhile the audience that increasingly answers \"who is this person\" — the crawlers behind assistants rather than search engines — largely does not execute JavaScript at all, let alone WebAssembly.",
+      "options": [
+        {
+          "name": "Accept it and rely on Google rendering JavaScript",
+          "assessment": "Rejected. It is true that Google can render JavaScript, and irrelevant to the assistants that do not. It also leaves link previews — the way a CV is actually shared — showing the wrong page."
+        },
+        {
+          "name": "Move to a server-rendered host",
+          "assessment": "Rejected as disproportionate. It means giving up static hosting, and running a server for a document that never changes between deploys."
+        },
+        {
+          "name": "Generate a real page per route at publish time",
+          "assessment": "Chosen. The content is known at build time — it comes from the same data file the app reads — so there is nothing a server would compute that a build step cannot.",
+          "chosen": true
+        }
+      ],
+      "decision": "A build step writes a real page for every route: its own title, description, canonical and Open Graph tags, JSON-LD, and the route's actual text placed inside the element Blazor clears when it boots. The route table is derived from the data file, and the step fails the build if two routes would look alike to a crawler.",
+      "consequences": [
+        "Non-executing crawlers read the whole CV rather than an empty shell, and each route has metadata of its own.",
+        "A reader now sees real content during the second before the runtime arrives, instead of a spinner.",
+        "The prerendered markup is styled rather than hidden. Hiding it would be cloaking, and the blank second was the thing worth fixing.",
+        "The build owns correctness the browser used to. The self-check exists because this defect is invisible from the rendered site — every page looks right while the metadata is identical."
+      ],
+      "displayOrder": 5
+    },
+    {
+      "id": "ADR-0006",
+      "slug": "render-the-cv-pdf-from-the-build",
+      "title": "Render the downloadable CV from the build that ships it",
+      "shortTitle": "Generate the CV PDF in CI",
+      "status": "Accepted",
+      "decided": "2026-09",
+      "context": "This portfolio",
+      "situation": "The downloadable PDF was produced once, by hand, from a browser's print dialog. Every subsequent edit to the data file moved the site and left the file behind, so the copy attached to an application could disagree with the copy the same person was reading online — and nothing in the process would surface that.",
+      "options": [
+        {
+          "name": "Remember to re-export it",
+          "assessment": "Rejected. It is exactly the discipline that had already failed, and the failure is silent."
+        },
+        {
+          "name": "Build the PDF with a PDF library",
+          "assessment": "Rejected. The printable CV's layout already exists as a component and a print stylesheet. Reimplementing it in a second toolchain creates two documents to keep in step instead of one."
+        },
+        {
+          "name": "Drive the published site with a headless browser and print it",
+          "assessment": "Chosen. It uses the real renderer on the real build, so the PDF cannot be a different document from the page.",
+          "chosen": true
+        }
+      ],
+      "decision": "Every deploy serves the published build to a headless browser, prints the CV route to PDF, and gates it on the existing text-extraction check before publishing. The check is the acceptance criterion, not a formality: applicant tracking software reads the text layer, and a CV whose text does not extract is filtered out before a person sees it.",
+      "consequences": [
+        "The download and the site cannot disagree.",
+        "The deploy now depends on a browser binary, which is a heavier build than a static site would otherwise need.",
+        "A layout change that breaks text extraction fails the deploy rather than reaching a recruiter, which is the correct place for that failure.",
+        "This is the mechanism a CV editor would need anyway, built before the editor rather than after."
+      ],
+      "displayOrder": 6
+    }
+  ]
+}
