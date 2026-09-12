@@ -18,17 +18,26 @@ public sealed class CvDataService(HttpClient httpClient)
     private const string DataPath = "data/cv.json";
     private const string DecisionsPath = "data/decisions.json";
 
-    private CvDocument? cached;
-    private IReadOnlyList<DecisionRecord>? cachedDecisions;
+    private Task<CvDocument>? pending;
+    private Task<IReadOnlyList<DecisionRecord>>? pendingDecisions;
 
     /// <summary>The canonical document, fetched once per session.</summary>
-    public async Task<CvDocument> GetAsync(CancellationToken cancellationToken = default)
+    public Task<CvDocument> GetAsync(CancellationToken cancellationToken = default)
     {
-        // Deliberately not thread-safe: Blazor WebAssembly is single-threaded, so a lock
-        // here would be ceremony without benefit.
-        cached ??= await GetFreshAsync<CvDocument>(DataPath, cancellationToken);
+        // The cache holds the in-flight task, not the result. Blazor WebAssembly is
+        // single-threaded, so a lock would be ceremony — but callers await, and two of
+        // them can both evaluate `??=` before either assignment lands, each starting
+        // its own request. The network trace showed a duplicate cv.json download on
+        // every cold load for exactly this reason. A failed fetch clears the slot so
+        // the next caller retries instead of caching the exception.
+        pending ??= Fetch(cancellationToken);
+        return pending;
 
-        return cached;
+        async Task<CvDocument> Fetch(CancellationToken ct)
+        {
+            try { return await GetFreshAsync<CvDocument>(DataPath, ct); }
+            catch { pending = null; throw; }
+        }
     }
 
     /// <summary>
@@ -67,12 +76,21 @@ public sealed class CvDataService(HttpClient httpClient)
     /// in an ATS — and keeping them apart means the CV's schema, its validator and its
     /// text-extraction gate stay about the CV.
     /// </remarks>
-    public async Task<IReadOnlyList<DecisionRecord>> GetDecisionsAsync(
+    public Task<IReadOnlyList<DecisionRecord>> GetDecisionsAsync(
         CancellationToken cancellationToken = default)
     {
-        cachedDecisions ??= (await GetFreshAsync<DecisionFile>(DecisionsPath, cancellationToken)).Decisions;
+        pendingDecisions ??= FetchDecisions(cancellationToken);
+        return pendingDecisions;
 
-        return cachedDecisions;
+        async Task<IReadOnlyList<DecisionRecord>> FetchDecisions(CancellationToken ct)
+        {
+            try
+            {
+                var file = await GetFreshAsync<DecisionFile>(DecisionsPath, ct);
+                return file.Decisions;
+            }
+            catch { pendingDecisions = null; throw; }
+        }
     }
 
     private sealed record DecisionFile(IReadOnlyList<DecisionRecord> Decisions);
@@ -82,5 +100,5 @@ public sealed class CvDataService(HttpClient httpClient)
     /// This changes only the current session. The committed <c>data/cv.json</c> stays
     /// canonical; the editor's export is what makes a change permanent.
     /// </remarks>
-    public void Replace(CvDocument document) => cached = document;
+    public void Replace(CvDocument document) => pending = Task.FromResult(document);
 }
