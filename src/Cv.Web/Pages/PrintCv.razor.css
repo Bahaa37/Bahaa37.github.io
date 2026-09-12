@@ -6,10 +6,17 @@
     — an ATS reads none of those. Visual richness belongs on the showcase page.
 */
 
+/*
+    These two sit on the page background rather than on the CV sheet, so they follow the
+    theme and their colour has to follow it too. Literal #555 read 2.46:1 against the dark
+    background — below the 4.5:1 floor — while measuring 7.46:1 in light, which is why it
+    survived review. The #555 further down stays literal on purpose: those rules are inside
+    article.cv, which is always white because it is a sheet of paper.
+*/
 .loading {
     padding: 2rem;
     font-family: Georgia, "Times New Roman", serif;
-    color: #555;
+    color: var(--ink-soft);
 }
 
 .cv-actions {
@@ -22,7 +29,7 @@
     flex-wrap: wrap;
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
     font-size: 0.85rem;
-    color: #555;
+    color: var(--ink-soft);
 }
 
 .cv-actions button {
