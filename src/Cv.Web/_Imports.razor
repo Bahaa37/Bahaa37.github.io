@@ -9,5 +9,11 @@
 @using Cv.Web
 @using Cv.Web.Layout
 @using Cv.Web.Services
+@* Without this, <ArchitectureDiagram> resolved only inside Components/Showcase, where it
+   is a namespace neighbour. Pages/ got no component and no error — Razor emitted the tag
+   as literal markup, so every case study with a diagram rendered an "Architecture" heading
+   above nothing. The build said so ("unexpected name 'ArchitectureDiagram'") as a warning,
+   which CI does not fail on. *@
+@using Cv.Web.Components.Showcase
 @using Cv.Domain
 @using Cv.Application
