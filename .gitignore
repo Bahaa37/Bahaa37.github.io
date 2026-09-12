@@ -31,8 +31,13 @@ _tools/__pycache__/
 # simply never committed to the public repository.
 docs/content/
 docs/superpowers/
-docs/PROGRESS.md
-docs/claude-design-prompt.md
+#
+# Loose notes dropped straight into docs/ were caught by name one at a time, which only
+# ever worked for files that already existed: plan.md and resume-prompt.md landed here
+# later and were tracked by nothing, so `git add .` would have published them. Ignore the
+# whole top level instead. Subdirectories are unaffected, which is what keeps the two
+# genuinely published trees — docs/writeups/ and docs/screenshots/ — committable.
+/docs/*.md
 
 # OS
 Thumbs.db
