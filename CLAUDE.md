@@ -98,6 +98,33 @@ cannot share one declaration list between them; change both.
 CSS isolation is right for a component that owns its look and wrong for a layout several
 pages share. The long-form document styles live in `app.css` for that reason.
 
+## Considered and rejected
+
+These were planned and deliberately dropped. The reasons matter more than the decisions —
+without them the next person rebuilds work that was already thought through and discarded.
+
+**Cross-document view transitions.** Blazor WebAssembly routes client-side, so
+`@view-transition` never fires for in-app navigation. It would be dead CSS that looks
+modern in a diff and does nothing on the site.
+
+**Container queries on `CaseStudyPanel` / `SkillMatrix`.** Those components render at one
+width, in one column. Converting them is churn with no visible change.
+
+**Scroll-driving the hero before/after diagram.** It is not static — `Hero.razor.css`
+carries a choreographed ~2.5 second sequence in which the legacy estate builds, the blocker
+is flagged, the bridge draws, the modernized services arrive, and only then does the blocker
+dissolve. A hero is already in view on load; scroll-linking it would be a downgrade, not a
+modernization.
+
+**A `testimonials: []` stub in `cv.json`.** An unrendered schema field is dead weight. The
+full `Testimonial` record is specified properly as part of the control-plane work and should
+arrive with the feature that uses it.
+
+**A number on the `mvc-to-webapi-rebuild` case study.** Every other case study carries one;
+this one does not, because no real figure exists. `CvValidator` flags unquantified
+achievements as a warning and never auto-fills them for exactly this reason — a fabricated
+number cannot be defended in an interview. Leave it qualitative.
+
 ## Style
 
 Comments explain *why*, not *what* — the reasoning that would otherwise be lost, the
