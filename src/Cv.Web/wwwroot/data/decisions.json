@@ -197,6 +197,39 @@
         "This is the mechanism a CV editor would need anyway, built before the editor rather than after."
       ],
       "displayOrder": 6
+    },
+    {
+      "id": "ADR-0007",
+      "slug": "boot-the-runtime-progressively",
+      "title": "Boot the WebAssembly runtime progressively",
+      "shortTitle": "Boot the runtime progressively",
+      "status": "Accepted",
+      "decided": "2026-09",
+      "context": "This portfolio",
+      "situation": "The runtime is ~2 MB transferred, and the host caps HTTP caching at ten minutes, so a returning visitor paid for it again on every visit. On a throttled connection the framework took nearly two minutes to arrive, and until it did the page's interactive controls — the theme toggle above all — were absent. Prerendering had already decoupled the content from the runtime; the site's chrome had not been.",
+      "options": [
+        {
+          "name": "Keep autostarting the runtime",
+          "assessment": "Rejected. Autostart puts the framework download at the front of the page's life, competing with first paint for bandwidth, and treats the runtime's absence as a loading state — which on a slow link is minutes of a page that is, in fact, already readable."
+        },
+        {
+          "name": "Drop WebAssembly for a fully static site",
+          "assessment": "Rejected. It would be the fastest option for visitors and the costliest for the point of the repository: the site is a .NET work sample, and the motion, the architecture diagrams and the shared C# validation all live behind the runtime."
+        },
+        {
+          "name": "Serve the prerendered site as the product, boot on idle, cache the runtime",
+          "assessment": "Chosen. The static layer becomes the complete page — prerendered header, working theme toggle, real navigation — and js/boot.js starts the runtime once the browser is idle, skipping it entirely on data-saver and 2G connections. A service worker caches the immutable framework URLs, so only the first visit ever pays for the download.",
+          "chosen": true
+        }
+      ],
+      "decision": "The Blazor loader starts with autostart disabled, and js/boot.js calls Blazor.start() on idle after load — never when the connection asks to save data. prerender.py injects a static copy of the site header into every prerendered page, so navigation and theming exist before and without the runtime, and registers a service worker that serves /_framework/ and content-hashed assets cache-first while leaving /data/ strictly network-first.",
+      "consequences": [
+        "A first visit downloads the runtime in the background whether or not it is used. A data-saver or 2G visit never downloads it, and sees no motion, diagrams or app rendering.",
+        "The prerendered header duplicates MainLayout.razor's markup. A nav or theme-button change must land in both places, or the site shows different chrome before and after boot.",
+        "Interactivity arrives seconds after load on fast links and arbitrarily later on slow ones. Nothing on a page may depend on the runtime being present — the static layer is the contract.",
+        "The service worker is a caching layer the host does not manage. A staleness bug in it is our bug, not the host's."
+      ],
+      "displayOrder": 7
     }
   ]
 }

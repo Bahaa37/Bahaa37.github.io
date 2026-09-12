@@ -419,9 +419,9 @@ a {
 }
 
 /*
-    Below this width the name and five nav links cannot share a row: flex-wrap
-    interleaves them into a jumble with the name stranded mid-list. Stack into two rows
-    and let the nav scroll sideways within its own strip instead.
+    Below this width the name and six nav links cannot share a row: flex-wrap interleaves
+    them into a jumble with the name stranded mid-list. Stack into two rows instead, the
+    name and theme button on the first and the whole nav on the second.
 */
 @media (max-width: 720px) {
     /* Grid rather than a column of flex items, so the theme button keeps the name's row
@@ -446,19 +446,24 @@ a {
         grid-area: toggle;
     }
 
+    /*
+        Wrap the links rather than scroll them sideways. The strip used to be a single
+        nowrap row with its scrollbar hidden, on the theory that the overflow was
+        discoverable by swiping. It was not: at 390px the row needed 448px, so "Decisions"
+        and "CV" sat off the right edge with nothing on screen to suggest they existed —
+        and /architecture is a page worth finding. Wrapping costs one row of header height
+        and needs no interaction to reveal anything.
+
+        The jumble the scrolling strip avoided came from wrapping the whole header while
+        the name was a sibling of the links. The name has its own grid area now, so the
+        links only ever wrap among themselves.
+    */
     .site-nav {
         grid-area: nav;
         justify-content: flex-start;
-        flex-wrap: nowrap;
-        gap: 1.1rem;
-        overflow-x: auto;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.1rem;
         padding-bottom: 0.55rem;
-        /* Hide the scrollbar; the overflow is discoverable by swiping. */
-        scrollbar-width: none;
-    }
-
-    .site-nav::-webkit-scrollbar {
-        display: none;
     }
 }
 
