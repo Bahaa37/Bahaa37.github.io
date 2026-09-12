@@ -38,10 +38,20 @@
     <link rel="preload" id="webassembly" />
 
     <!-- Google Fonts is the one external host the page loads from; every face has a
-         real fallback stack so the page is readable before they arrive. -->
+         real fallback stack so the page is readable before they arrive.
+
+         The stylesheet is loaded non-blocking on purpose: as a cross-origin stylesheet
+         it would otherwise cost a DNS lookup, a TLS handshake and two round trips
+         before the browser is allowed to paint anything — the difference between first
+         paint under a second and well over it on a cold connection. `display=swap`
+         in the URL makes each face appear the moment it lands. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" media="print" onload="this.media='all'" />
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" />
+    </noscript>
 
     <!--
         Theme, applied before first paint.
@@ -88,6 +98,44 @@
                     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
                 }
             };
+
+            // Prerendered pages carry a static copy of the header's theme button
+            // (injected by prerender.py, mirroring MainLayout.razor), so theming works
+            // during the whole window before the WebAssembly runtime boots — which
+            // boot.js defers until idle, and may skip entirely on data-saver
+            // connections. The wiring is delegated: after boot Blazor replaces #app,
+            // the static button disappears with it, and Blazor's own @onclick takes
+            // over. This listener then matches nothing, so it cannot double-toggle.
+            function paintStaticThemeButtons() {
+                var dark = themeControl.effective() === "dark";
+                var buttons = document.querySelectorAll("[data-static-theme-toggle]");
+                for (var i = 0; i < buttons.length; i++) {
+                    var icon = buttons[i].querySelector("[aria-hidden='true']");
+                    if (icon) { icon.textContent = dark ? "\u2600" : "\u263E"; }
+                    var label = dark ? "Switch to light theme" : "Switch to dark theme";
+                    buttons[i].setAttribute("aria-label", label);
+                    buttons[i].setAttribute("title", label);
+                }
+            }
+
+            document.addEventListener("click", function (ev) {
+                var button = ev.target && ev.target.closest
+                    ? ev.target.closest("[data-static-theme-toggle]")
+                    : null;
+                if (!button) { return; }
+                themeControl.set(themeControl.effective() === "dark" ? "light" : "dark");
+                paintStaticThemeButtons();
+            });
+
+            var colourScheme = window.matchMedia("(prefers-color-scheme: dark)");
+            if (colourScheme.addEventListener) {
+                colourScheme.addEventListener("change", paintStaticThemeButtons);
+            }
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", paintStaticThemeButtons);
+            } else {
+                paintStaticThemeButtons();
+            }
         })();
     </script>
 
@@ -116,7 +164,8 @@
         <a href="." class="reload">Reload</a>
         <span class="dismiss">🗙</span>
     </div>
-    <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
+    <script src="_framework/blazor.webassembly#[.{fingerprint}].js" autostart="false"></script>
+    <script src="js/boot.js"></script>
 </body>
 
 </html>

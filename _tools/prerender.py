@@ -435,7 +435,24 @@ DESCRIPTION_RE = re.compile(r'<meta\s+name="description"[^>]*>')
 OG_TITLE_RE = re.compile(r'<meta\s+property="og:title"[^>]*>')
 OG_DESCRIPTION_RE = re.compile(r'<meta\s+property="og:description"[^>]*>')
 OG_URL_RE = re.compile(r'<meta\s+property="og:url"[^>]*>')
-APP_DIV_RE = re.compile(r'(<div id="app">)(.*?)(</div>)', re.DOTALL)
+# The shell's #app contains the loading spinner and a loading-text div before its own
+# closing tag. A non-greedy `.*?</div>` here would stop at the loading-text div's
+# closing tag instead of #app's, nesting the prerendered content INSIDE the loading
+# indicator — which `#app:has(.prerendered) .loading-progress-text { display: none }`
+# then hides. Every route would ship its content pre-hidden: a blank page until
+# WebAssembly boots, which is precisely the blank second this script exists to remove
+# and precisely the invisible-content class of bug this repository keeps a rule about.
+# So the match runs to #app's own closing tag, and render() re-checks the result.
+APP_DIV_RE = re.compile(
+    r'(<div id="app">)(.*?<div class="loading-progress-text"></div>)(\s*</div>)',
+    re.DOTALL,
+)
+
+# The nesting defect the regex above once produced, detectable in the output text:
+# the prerendered block as the first thing inside the loading-text div.
+BAD_NESTING_RE = re.compile(
+    r'<div class="loading-progress-text">[^<]*<div class="prerendered"'
+)
 
 
 # Assets referenced from index.html by bare path. The framework's own script already
@@ -446,7 +463,44 @@ VERSIONED_ASSETS = [
     "Cv.Web.styles.css",
     "favicon.png",
     "manifest.webmanifest",
+    "js/boot.js",
+    "service-worker.js",
 ]
+
+
+# The nav, as markup, exactly as MainLayout.razor renders it. The prerendered shell
+# must carry this header because booting the runtime is deferred (wwwroot/js/boot.js):
+# until WebAssembly arrives — possibly never, on a data-saver connection — these links
+# and the theme button are the only site chrome a reader has.
+#
+# This is the one deliberate duplication between C# and this script. When the layout's
+# nav or theme button changes, change them here too; both sides carry comments pointing
+# at the other. The classes (site-header, site-nav, theme-toggle) are styled by app.css,
+# which is inlined into the same pages, so the chrome looks identical before and after
+# boot — and Blazor replaces the whole block when it takes over.
+NAV_LINKS = (
+    ("/#skills", "Skills"),
+    ("/#timeline", "Experience"),
+    ("/#work", "Selected work"),
+    ("/#credentials", "Credentials"),
+    ("/architecture", "Decisions"),
+    ("/cv", "CV"),
+)
+
+
+def static_shell_header(cv: dict) -> str:
+    profile_name = cv["profile"]["name"]
+    links = "".join(f'<a href="{href}">{e(label)}</a>' for href, label in NAV_LINKS)
+    return (
+        '<header class="site-header">'
+        '<div class="shell site-header__inner">'
+        f'<a class="site-header__name" href="/">{e(profile_name)}</a>'
+        f'<nav class="site-nav">{links}</nav>'
+        '<button type="button" class="theme-toggle" data-static-theme-toggle '
+        'aria-label="Switch theme" title="Switch theme">'
+        '<span aria-hidden="true">☾</span></button>'
+        "</div></header>"
+    )
 
 
 def asset_versions(publish: Path) -> dict[str, str]:
@@ -465,6 +519,34 @@ def asset_versions(publish: Path) -> dict[str, str]:
             versions[asset] = digest
 
     return versions
+
+
+# The two heaviest files in the boot payload, by far: the WebAssembly runtime and the
+# base class library. Together they are most of what a cold visit downloads. The Blazor
+# loader only requests them after it has been discovered, fetched, parsed and run —
+# measured at well over a second after navigation on the published site — and every
+# millisecond before that is a millisecond the connection sits idle. Preloading them
+# from the document starts the transfer as soon as the HTML is parsed.
+BOOT_PRELOAD_PREFIXES = ("dotnet.native.", "System.Private.CoreLib.")
+
+
+def boot_preloads(publish: Path) -> list[str]:
+    """Fingerprinted URLs of the heaviest framework files, for <link rel=preload>."""
+    framework = publish / "_framework"
+    if not framework.is_dir():
+        return []
+
+    preloads = []
+
+    for prefix in BOOT_PRELOAD_PREFIXES:
+        matches = sorted(framework.glob(f"{prefix}*.wasm"))
+        if matches:
+            # `crossorigin` must match how the loader fetches (CORS mode), or the
+            # preload is not reused and the file downloads twice.
+            name = matches[0].name
+            preloads.append(f'<link rel="preload" href="_framework/{name}" as="fetch" crossorigin />')
+
+    return preloads
 
 
 def version_asset_urls(page: str, versions: dict[str, str]) -> str:
@@ -487,9 +569,85 @@ def version_asset_urls(page: str, versions: dict[str, str]) -> str:
     return page
 
 
-def render(route: Route, shell: str, base_url: str, versions: dict[str, str] | None = None) -> str:
+# --------------------------------------------------------------------------------------
+# First-paint CSS
+#
+# The site's own bar is that content is visible in under a second on a cold visit. A
+# render-blocking stylesheet is the last thing standing between the HTML arriving and
+# the first pixel, because the browser paints nothing until CSS it has been told is
+# render-blocking has been fetched — one more same-origin round trip on a fast
+# connection, several hundred milliseconds on a bad one.
+#
+# The split below follows what each stylesheet is actually needed for:
+#
+#   * app.css styles the prerendered content inside #app, the loading indicator and
+#     the long-form layout — everything a person sees before WebAssembly boots. It is
+#     inlined into every page, so first paint needs no round trip at all. Gzip merges
+#     most of the cost: the bytes were being downloaded anyway, just as a second file.
+#   * Cv.Web.styles.css is Blazor's CSS-isolation bundle — component-owned looks that
+#     cannot apply until components exist, i.e. until the runtime has booted, seconds
+#     after first paint. It loads asynchronously (the same media="print" swap used for
+#     the Google Fonts stylesheet) instead of being inlined, which would have made
+#     every page carry its ~15 KB gz for nothing a first-paint reader sees.
+#   * print.css is only consulted when printing, so it is marked media="print" and
+#     never blocks a screen render.
+#
+# All three are derived from the published output at build time, so they cannot drift
+# from what the app itself loads.
+# --------------------------------------------------------------------------------------
+
+CRITICAL_CSS_LINK_RE = re.compile(r'<link rel="stylesheet" href="css/app\.css[^"]*" />')
+PRINT_CSS_LINK_RE = re.compile(r'<link rel="stylesheet" href="(css/print\.css[^"]*)" />')
+COMPONENT_CSS_LINK_RE = re.compile(r'<link href="(Cv\.Web\.styles\.css[^"]*)" rel="stylesheet" />')
+
+
+def inline_first_paint_css(page: str, app_css: str) -> str:
+    """Apply the three-way stylesheet split to one rendered page."""
+    # A "</style" inside the CSS would terminate the inline block early and mangle the
+    # page. Verified absent today; this makes the failure loud if that ever changes.
+    if "</" in app_css:
+        raise SystemExit("prerender: app.css contains '</'; it cannot be inlined safely.")
+
+    page, count = CRITICAL_CSS_LINK_RE.subn(
+        lambda _: f"<style>\n{app_css}</style>", page, count=1
+    )
+    if count == 0:
+        raise SystemExit('prerender: could not find the css/app.css link to inline.')
+
+    page, count = PRINT_CSS_LINK_RE.subn(
+        lambda m: f'<link rel="stylesheet" href="{m.group(1)}" media="print" />', page, count=1
+    )
+    if count == 0:
+        raise SystemExit('prerender: could not find the css/print.css link to defer.')
+
+    def defer_component_css(match: re.Match[str]) -> str:
+        href = match.group(1)
+        return (
+            f'<link rel="preload" href="{href}" as="style" />\n'
+            f'    <link rel="stylesheet" href="{href}" media="print" onload="this.media=\'all\'" />\n'
+            f'    <noscript><link rel="stylesheet" href="{href}" /></noscript>'
+        )
+
+    page, count = COMPONENT_CSS_LINK_RE.subn(defer_component_css, page, count=1)
+    if count == 0:
+        raise SystemExit('prerender: could not find the Cv.Web.styles.css link to defer.')
+
+    return page
+
+
+def render(
+    route: Route,
+    shell: str,
+    base_url: str,
+    versions: dict[str, str] | None = None,
+    preloads: list[str] | None = None,
+    app_css: str = "",
+    shell_header: str = "",
+    sw_registration: str = "",
+) -> str:
     url = route.url.format(base=base_url)
     page = version_asset_urls(shell, versions or {})
+    page = inline_first_paint_css(page, app_css)
 
     page = TITLE_RE.sub(lambda _: f"<title>{e(route.title)}</title>", page, count=1)
     page = DESCRIPTION_RE.sub(
@@ -505,7 +663,7 @@ def render(route: Route, shell: str, base_url: str, versions: dict[str, str] | N
     )
     page = OG_URL_RE.sub(lambda _: f'<meta property="og:url" content="{e(url)}" />', page, count=1)
 
-    head_additions = [f'<link rel="canonical" href="{e(url)}" />']
+    head_additions = (preloads or []) + [f'<link rel="canonical" href="{e(url)}" />']
     if not route.indexable:
         head_additions.append('<meta name="robots" content="noindex" />')
 
@@ -538,11 +696,25 @@ def render(route: Route, shell: str, base_url: str, versions: dict[str, str] | N
     # in the shell is kept ahead of it.
     if route.body:
         def replace_app(match: re.Match[str]) -> str:
-            return f'{match.group(1)}{match.group(2)}\n<div class="prerendered">{route.body}</div>\n{match.group(3)}'
+            return (
+                f"{match.group(1)}{match.group(2)}"
+                f"{shell_header}"
+                f'\n<div class="prerendered">{route.body}</div>'
+                f"{match.group(3)}"
+            )
 
         page, count = APP_DIV_RE.subn(replace_app, page, count=1)
         if count == 0:
             raise SystemExit('prerender: could not find <div id="app"> in the shell.')
+        if BAD_NESTING_RE.search(page):
+            raise SystemExit(
+                "prerender: the prerendered block was nested inside the loading "
+                "indicator, which CSS then hides. The #app regex and the shell have "
+                "drifted apart; real readers would see a blank page until boot."
+            )
+
+    if sw_registration:
+        page = page.replace("</body>", f"{sw_registration}</body>", 1)
 
     return page
 
@@ -631,6 +803,22 @@ def main() -> int:
         return 1
 
     shell = shell_path.read_text(encoding="utf-8")
+
+    # This script both reads publish/index.html as the shell and writes the home route
+    # back over it. Run twice without a fresh publish in between, it would inject its
+    # canonical links, boot preloads and prerendered body into an already-processed
+    # page — every check would still pass while the home route silently carried
+    # duplicated markup. Refuse instead.
+    if '<link rel="canonical"' in shell or 'class="prerendered"' in shell:
+        print(
+            "FAIL  The shell is already prerendered — most likely a previous run of "
+            "this script, whose output MSBuild's incremental publish then declined to "
+            "overwrite. Restore a clean shell (delete publish/wwwroot/index.html, or "
+            "publish with --no-incremental) and run this script again.",
+            file=sys.stderr,
+        )
+        return 1
+
     cv = json.loads((publish / "data" / "cv.json").read_text(encoding="utf-8"))
 
     # Decision records are optional: the site works without them, and a build should not
@@ -643,10 +831,46 @@ def main() -> int:
     )
 
     versions = asset_versions(publish)
+    preloads = boot_preloads(publish)
+
+    # The stylesheet first paint depends on, read once and inlined into every route.
+    # Missing is fatal in the spirit of the PDF check below: a page without its CSS
+    # would still look fine to every automated check while rendering unstyled.
+    app_css_path = publish / "css" / "app.css"
+    if not app_css_path.exists():
+        print(f"FAIL  No css/app.css in {publish}", file=sys.stderr)
+        return 1
+    app_css = app_css_path.read_text(encoding="utf-8")
+
+    # Stamp the service worker before asset_versions hashes it, so the ?v= version
+    # covers the worker's source and the exact framework file set of this build. Any
+    # change to either produces a new version URL — the browser refetches and replaces
+    # the worker, and its activate step deletes the previous version's cache.
+    sw_registration = ""
+    sw_path = publish / "service-worker.js"
+    if sw_path.exists():
+        framework_names = sorted(p.name for p in (publish / "_framework").glob("*"))
+        stamp_source = sw_path.read_text(encoding="utf-8") + "\n" + "\n".join(framework_names)
+        stamp = hashlib.sha256(stamp_source.encode("utf-8")).hexdigest()[:10]
+        sw_path.write_text(
+            sw_path.read_text(encoding="utf-8").replace("__SW_VERSION__", stamp),
+            encoding="utf-8",
+        )
+        versions = asset_versions(publish)
+
+        sw_registration = (
+            "<script>if('serviceWorker' in navigator){"
+            "addEventListener('load',function(){"
+            "navigator.serviceWorker.register("
+            f"'service-worker.js?v={versions['service-worker.js']}');"
+            "});}</script>"
+        )
+
+    shell_header = static_shell_header(cv)
     routes = build_routes(cv, base_url, decisions)
 
     for route in routes:
-        page = render(route, shell, base_url, versions)
+        page = render(route, shell, base_url, versions, preloads, app_css, shell_header, sw_registration)
 
         if route.path == "":
             target = publish / "index.html"
