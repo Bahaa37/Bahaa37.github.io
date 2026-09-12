@@ -787,7 +787,7 @@ code {
 /* =========================================================================
    LONG-FORM DOCUMENT PAGES
 
-   Shared by the case study pages and the architecture decision records. These
+   Shared by the case study pages. These
    live here rather than in a component stylesheet because Blazor's CSS
    isolation scopes a .razor.css file to its own component, and three pages now
    render the same document shape. Isolation is right for a component that owns
@@ -940,128 +940,144 @@ code {
     line-height: 1.35;
 }
 
-/* ---------- decision records ---------- */
+/* ---------- testimonials ----------
+   Third-party quotes on /testimonials and in the home page's highlights band. The
+   markup is shared with the prerendered pages (see prerender.py), so these rules live
+   here rather than in a component's isolated stylesheet. */
 
-.adr-list {
-    list-style: none;
-    margin: 2.5rem 0 0;
-    padding: 0;
-    display: grid;
-    gap: 0.9rem;
+.testimonials {
+    padding: 3rem 0 4rem;
 }
 
-.adr-card {
-    display: block;
-    padding: 1.35rem 1.5rem;
+.testimonials__head {
+    max-width: var(--measure);
+    margin-bottom: 2.5rem;
+}
+
+.testimonials__title {
+    font-family: var(--font-display);
+    color: var(--ink);
+    margin: 0.2rem 0 0.6rem;
+}
+
+.testimonials__lede {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.testimonials__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.testimonial {
+    margin: 0;
+    padding: 1.5rem 1.5rem 1.25rem;
+    background: var(--paper);
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    background: var(--paper);
-    text-decoration: none;
-    transition: border-color .2s ease, translate .2s ease;
+    box-shadow: var(--shadow);
 }
 
-.adr-card:hover {
-    border-color: var(--accent-bright);
-    translate: 0 -2px;
+.testimonial__quote {
+    margin: 0 0 1.1rem;
 }
 
-.adr-card__meta {
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
+.testimonial__quote p {
     margin: 0;
-    font-size: 0.74rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
+    color: var(--ink);
+    line-height: 1.65;
+    font-size: 0.98rem;
 }
 
-.adr-card__status {
-    padding: 0.1rem 0.5rem;
-    border-radius: 999px;
+/* A quotation mark as tall, quiet punctuation rather than decoration. */
+.testimonial__quote p::before {
+    content: "C";
+    display: block;
+    font-family: var(--font-display);
+    font-size: 2rem;
+    line-height: 0.6;
+    color: var(--accent-bright);
+    margin: 0.4rem 0 0.7rem;
+}
+
+.testimonial__by {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.testimonial__avatar {
+    flex: none;
+    display: grid;
+    place-items: center;
+    inline-size: 2.6rem;
+    block-size: 2.6rem;
+    border-radius: 50%;
     background: var(--accent-wash);
     color: var(--accent);
-    letter-spacing: 0.06em;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.04em;
 }
 
-.adr-card__title {
-    margin: 0.55rem 0 0;
-    font-size: 1.12rem;
-    line-height: 1.35;
-    color: var(--ink);
-    text-wrap: balance;
-}
-
-.adr-card__situation {
-    margin: 0.45rem 0 0;
-    max-width: var(--measure);
-    color: var(--ink-soft);
-    font-size: 0.94rem;
-    line-height: 1.55;
-}
-
-.adr-options {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+.testimonial__who {
     display: grid;
-    gap: 0.75rem;
-    max-width: var(--measure);
+    gap: 0.1rem;
+    min-inline-size: 0;
 }
 
-.adr-option {
-    padding: 1rem 1.15rem;
-    border: 1px solid var(--line);
-    border-left: 3px solid var(--line);
-    border-radius: var(--radius);
+.testimonial__name {
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.testimonial__name a {
+    color: inherit;
+    text-decoration-color: transparent;
+    text-underline-offset: 3px;
+    transition: text-decoration-color 150ms ease;
+}
+
+.testimonial__name a:hover,
+.testimonial__name a:focus-visible {
+    text-decoration-color: currentColor;
+}
+
+.testimonial__meta {
+    color: var(--ink-faint);
+    font-size: 0.86rem;
+}
+
+[data-theme="dark"] .testimonial {
     background: var(--paper-alt);
 }
 
-/* The chosen option is marked on its edge rather than by colouring the whole
-   card: the rejected options are the substance of the record, and washing them
-   out would bury the part worth reading. */
-.adr-option--chosen {
-    border-left-color: var(--accent-bright);
-    background: var(--accent-wash);
+@media (prefers-color-scheme: dark) {
+    .testimonial {
+        background: var(--paper-alt);
+    }
 }
 
-.adr-option__name {
-    margin: 0;
-    font-weight: 600;
-    color: var(--ink);
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    flex-wrap: wrap;
+@media (max-width: 640px) {
+    .testimonials__grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-.adr-option__badge {
-    font-size: 0.68rem;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    font-weight: 600;
-    padding: 0.12rem 0.5rem;
-    border-radius: 999px;
-    background: var(--accent-bright);
-    color: var(--paper);
-}
-
-.adr-option__assessment {
-    margin: 0.4rem 0 0;
-    color: var(--ink-soft);
-    font-size: 0.94rem;
-    line-height: 1.6;
-}
 
 @media (prefers-reduced-motion: reduce) {
 
-    .study__link,
-    .adr-card {
+    .study__link {
         transition: none;
     }
 
-    .study__link:hover,
-    .adr-card:hover {
+    .study__link:hover {
         translate: none;
     }
 }

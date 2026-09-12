@@ -12,7 +12,7 @@
         URLs are immutable by construction: the framework files carry a build
         fingerprint, the ?v= hashes are computed from file contents by prerender.py.
         A new deploy changes the URLs, so stale entries are simply never asked for.
-      * /data/... — network-first. These files are the canonical CV and decisions;
+      * /data/... — network-first. These files are the canonical data documents;
         staleness there is exactly what the app's own NoCache revalidation exists to
         prevent. The cache answers only when the network cannot (offline).
       * page navigations — network-first, cached copy as the offline fallback.

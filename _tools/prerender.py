@@ -93,7 +93,83 @@ def bullets(items: list[str]) -> str:
 # --------------------------------------------------------------------------------------
 
 
-def home_body(cv: dict) -> str:
+# The static markup mirror of TestimonialCard.razor. Like the shell header, this is a
+# deliberate duplication: the same quote renders here (pre-boot, crawler-visible) and
+# from Blazor after boot, so a markup change must land in both places. The class names
+# are styled by app.css, which both copies share.
+#
+# The identity rule lives with the data: every entry carries a LinkedIn or GitHub URL,
+# and the name links to whichever exists — LinkedIn first.
+def _testimonial_meta(testimonial: dict) -> str | None:
+    parts = [
+        testimonial[key]
+        for key in ("role", "company")
+        if testimonial.get(key)
+    ]
+    return ", ".join(parts) or None
+
+
+def _testimonial_link(testimonial: dict) -> str | None:
+    return testimonial.get("linkedIn") or testimonial.get("gitHub")
+
+
+def _initials(name: str) -> str:
+    parts = [part for part in name.split() if part]
+    return "".join(part[0] for part in parts[:2]).upper() if parts else "?"
+
+
+def testimonial_figure(testimonial: dict) -> str:
+    name = testimonial["name"]
+    link = _testimonial_link(testimonial)
+    who = (
+        f'<a href="{e(link)}" rel="noopener noreferrer">{e(name)}</a>'
+        if link else e(name)
+    )
+    meta = _testimonial_meta(testimonial) or "Colleague"
+
+    return (
+        '<figure class="testimonial">'
+        '<blockquote class="testimonial__quote">'
+        f"<p>{e(testimonial['text'])}</p>"
+        "</blockquote>"
+        '<figcaption class="testimonial__by">'
+        f'<span class="testimonial__avatar" aria-hidden="true">{e(_initials(name))}</span>'
+        '<span class="testimonial__who">'
+        f'<span class="testimonial__name">{who}</span>'
+        f'<span class="testimonial__meta">{e(meta)}</span>'
+        "</span>"
+        "</figcaption>"
+        "</figure>"
+    )
+
+
+def testimonials_body(testimonials: list[dict]) -> str:
+    if not testimonials:
+        return """
+      <section class="band"><div class="shell">
+      <p class="eyebrow">Testimonials</p>
+      <h1 class="band__title">No recommendations yet</h1>
+      <p class="band__lede">Recommendations from people I have worked with appear here
+         as they are written. If we have worked together and you would like to add one,
+         get in touch — yours will be the first.</p>
+      </div></section>
+    """
+
+    figures = "".join(testimonial_figure(t) for t in testimonials)
+    return f"""
+      <article class="testimonials"><div class="shell">
+      <header class="testimonials__head">
+      <p class="eyebrow">Testimonials</p>
+      <h1 class="testimonials__title">What people say</h1>
+      <p class="testimonials__lede">Recommendations from colleagues and collaborators,
+         each one attributed to the person who actually wrote it.</p>
+      </header>
+      <div class="testimonials__grid">{figures}</div>
+      </div></article>
+    """
+
+
+def home_body(cv: dict, testimonials: list[dict] | None = None) -> str:
     profile = cv["profile"]
 
     skills = "".join(
@@ -126,6 +202,18 @@ def home_body(cv: dict) -> str:
         f"<dt>{e(label)}</dt><dd>{e(value)}</dd>" for label, value in facts if value
     )
 
+    # Mirrors the home page's testimonials band in Home.razor: three highlights, an
+    # honest absence when the data file is empty.
+    highlights = (testimonials or [])[:3]
+    testimonials_band = ""
+    if highlights:
+        figures = "".join(testimonial_figure(t) for t in highlights)
+        testimonials_band = (
+            '<section><h2>Testimonials</h2>'
+            '<p><a href="/testimonials">Read them all</a>.</p>'
+            f'<div class="testimonials__grid">{figures}</div></section>'
+        )
+
     return f"""
       <h1>{e(profile['name'])}</h1>
       <p>{e(profile['title'])}</p>
@@ -134,6 +222,7 @@ def home_body(cv: dict) -> str:
       <h2>Skills</h2>{skills}
       <h2>Experience</h2>{experience}
       <h2>Selected work</h2>{case_studies}
+      {testimonials_band}
       <h2>Contact</h2>
       <p><a href="mailto:{e(profile['email'])}">{e(profile['email'])}</a></p>
     """
@@ -265,41 +354,11 @@ def breadcrumbs(base_url: str, trail: list[tuple[str, str]]) -> dict:
 # --------------------------------------------------------------------------------------
 
 
-def decision_body(record: dict) -> str:
-    options = "".join(
-        f"<article><h3>{e(option['name'])}"
-        + (" (chosen)" if option.get("chosen") else "")
-        + f"</h3><p>{e(option['assessment'])}</p></article>"
-        for option in record.get("options", [])
-    )
-
-    return f"""
-      <h1>{e(record['title'])}</h1>
-      <p>{e(record['id'])} · {e(record.get('status', ''))} · {e(record.get('decided', ''))}</p>
-      <h2>Situation</h2><p>{e(record['situation'])}</p>
-      <h2>Options considered</h2>{options}
-      <h2>Decision</h2><p>{e(record['decision'])}</p>
-      <h2>Consequences</h2><ul>{bullets(record.get('consequences', []))}</ul>
-    """
-
-
-def architecture_index_body(records: list[dict]) -> str:
-    items = "".join(
-        f"<article><h2>{e(record['title'])}</h2>"
-        f"<p>{e(record['id'])} · {e(record.get('status', ''))}</p>"
-        f"<p>{e(record['situation'][:280])}</p></article>"
-        for record in records
-    )
-
-    return f"""
-      <h1>Architecture decision records</h1>
-      <p>Decisions taken on this site, written as context, options, decision and
-         consequences.</p>
-      {items}
-    """
-
-
-def build_routes(cv: dict, base_url: str, decisions: list[dict] | None = None) -> list[Route]:
+def build_routes(
+    cv: dict,
+    base_url: str,
+    testimonials: list[dict] | None = None,
+) -> list[Route]:
     profile = cv["profile"]
     name = profile["name"]
 
@@ -308,7 +367,7 @@ def build_routes(cv: dict, base_url: str, decisions: list[dict] | None = None) -
             path="",
             title=f"{name} — .NET Architecture & Modernization",
             description=cv["summary"],
-            body=home_body(cv),
+            body=home_body(cv, testimonials),
             json_ld=[
                 person_schema(cv, base_url),
                 {
@@ -369,48 +428,22 @@ def build_routes(cv: dict, base_url: str, decisions: list[dict] | None = None) -
             )
         )
 
-    # Architecture decision records. Same derivation as the case studies: the data file
-    # is the route table, so publishing a record publishes its page.
-    records = sorted(decisions or [], key=lambda r: r.get("displayOrder", 0))
-
-    if records:
-        routes.append(
-            Route(
-                path="architecture",
-                title=f"Architecture decisions — {name}",
-                description=(
-                    "Architecture decision records for this site: what forced each "
-                    "decision, what else was considered, what was chosen and what it cost."
-                ),
-                body=architecture_index_body(records),
-                json_ld=[breadcrumbs(base_url, [("Home", ""), ("Architecture", "architecture")])],
-            )
+    # One page for every recommendation. Derived from the data file like the case
+    # studies, so publishing a testimonial publishes its place here with no new code —
+    # and an empty file still gets a page that says so honestly.
+    entries = sorted(testimonials or [], key=lambda t: t.get("displayOrder", 0))
+    routes.append(
+        Route(
+            path="testimonials",
+            title=f"Testimonials — {name}",
+            description=(
+                f"Recommendations for {name} from colleagues and collaborators, "
+                "each attributed to the person who wrote it."
+            ),
+            body=testimonials_body(entries),
+            json_ld=[breadcrumbs(base_url, [("Home", ""), ("Testimonials", "testimonials")])],
         )
-
-    for record in records:
-        path = f"architecture/{record['slug']}"
-        short_title = record.get("shortTitle") or record["title"]
-
-        routes.append(
-            Route(
-                path=path,
-                title=f"{short_title} — {name}",
-                description=f"{record['id']}: {record['situation'][:240]}",
-                body=decision_body(record),
-                json_ld=[
-                    breadcrumbs(
-                        base_url,
-                        [("Home", ""), ("Architecture", "architecture"), (short_title, path)],
-                    ),
-                    {
-                        "@type": "TechArticle",
-                        "headline": record["title"],
-                        "description": record["decision"][:300],
-                        "author": {"@id": f"{base_url}/#person"},
-                    },
-                ],
-            )
-        )
+    )
 
     routes.append(
         Route(
@@ -483,7 +516,7 @@ NAV_LINKS = (
     ("/#timeline", "Experience"),
     ("/#work", "Selected work"),
     ("/#credentials", "Credentials"),
-    ("/architecture", "Decisions"),
+    ("/testimonials", "Testimonials"),
     ("/cv", "CV"),
 )
 
@@ -821,12 +854,12 @@ def main() -> int:
 
     cv = json.loads((publish / "data" / "cv.json").read_text(encoding="utf-8"))
 
-    # Decision records are optional: the site works without them, and a build should not
-    # fail because a supplementary document is absent.
-    decisions_path = publish / "data" / "decisions.json"
-    decisions = (
-        json.loads(decisions_path.read_text(encoding="utf-8")).get("decisions", [])
-        if decisions_path.exists()
+    # Testimonials are optional the same way: a build must not fail because a
+    # supplementary document is absent or empty.
+    testimonials_path = publish / "data" / "testimonials.json"
+    testimonials = (
+        json.loads(testimonials_path.read_text(encoding="utf-8")).get("testimonials", [])
+        if testimonials_path.exists()
         else []
     )
 
@@ -866,8 +899,17 @@ def main() -> int:
             "});}</script>"
         )
 
+    # Testimonials are optional the same way: a build must not fail because a
+    # supplementary document is absent or empty.
+    testimonials_path = publish / "data" / "testimonials.json"
+    testimonials = (
+        json.loads(testimonials_path.read_text(encoding="utf-8")).get("testimonials", [])
+        if testimonials_path.exists()
+        else []
+    )
+
     shell_header = static_shell_header(cv)
-    routes = build_routes(cv, base_url, decisions)
+    routes = build_routes(cv, base_url, testimonials)
 
     for route in routes:
         page = render(route, shell, base_url, versions, preloads, app_css, shell_header, sw_registration)

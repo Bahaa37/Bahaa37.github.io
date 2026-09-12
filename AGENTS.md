@@ -37,17 +37,17 @@ runs the same steps; deploys gate on all of them.
 
 - `wwwroot/data/cv.json` is the single source of truth. The showcase page, printable CV,
   and `CvValidator` are projections of it — never put content anywhere else.
-  `data/decisions.json` (ADRs) is deliberately separate.
 - Content rules fail the build on purpose: overlapping full-time roles, technology claimed
-  before its release date, and malformed ADRs. Unquantified achievements warn, never
-  auto-fill — no fabricated numbers.
+  before its release date. Unquantified achievements warn, never auto-fill — no fabricated
+  numbers, and no invented testimonials — third-party quotes live in
+  `wwwroot/data/testimonials.json` and are added only from real, attributed submissions.
 - Cache-busting is manual. Anything new fetched by a bare path needs `?v=<hash>` (done in
   `prerender.py`, which also stamps and registers `service-worker.js` — in dev it is
   never registered) or `BrowserRequestCache.NoCache` (see `CvDataService`). The service
   worker serves `/_framework/` and `?v=` URLs cache-first (immutable by fingerprint) and
   keeps `/data/` strictly network-first.
 - Blazor boots deferred: `autostart="false"`, started on idle by `js/boot.js`, skipped
-  entirely on data-saver/2G connections (ADR-0007). The static layer is the contract —
+  entirely on data-saver/2G connections. The static layer is the contract —
   every page must be complete without the runtime. That includes the header: the
   prerendered header in `prerender.py` (`static_shell_header` + `NAV_LINKS`) duplicates
   `MainLayout.razor`'s on purpose; change them together or pre- and post-boot chrome
@@ -81,5 +81,5 @@ runs the same steps; deploys gate on all of them.
 ## Verification
 
 CI cannot see unstyled buttons or dead links. Run the app and check `/`, `/cv`,
-`/work/{slug}` and `/architecture` at 390×844 and desktop width, in both themes, before
+`/work/{slug}` and `/testimonials` at 390×844 and desktop width, in both themes, before
 calling anything done.

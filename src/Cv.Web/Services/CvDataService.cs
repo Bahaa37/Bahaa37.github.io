@@ -16,10 +16,10 @@ namespace Cv.Web.Services;
 public sealed class CvDataService(HttpClient httpClient)
 {
     private const string DataPath = "data/cv.json";
-    private const string DecisionsPath = "data/decisions.json";
+    private const string TestimonialsPath = "data/testimonials.json";
 
     private Task<CvDocument>? pending;
-    private Task<IReadOnlyList<DecisionRecord>>? pendingDecisions;
+    private Task<IReadOnlyList<Testimonial>>? pendingTestimonials;
 
     /// <summary>The canonical document, fetched once per session.</summary>
     public Task<CvDocument> GetAsync(CancellationToken cancellationToken = default)
@@ -68,32 +68,32 @@ public sealed class CvDataService(HttpClient httpClient)
     }
 
     /// <summary>
-    /// The architecture decision records, fetched once per session.
+    /// Testimonials, fetched once per session.
     /// </summary>
     /// <remarks>
-    /// Held separately from the CV rather than folded into it. They are a different kind
-    /// of document with a different audience — nothing here belongs on a printed CV or
-    /// in an ATS — and keeping them apart means the CV's schema, its validator and its
+    /// Held separately from the CV rather than folded into it: they are third-party
+    /// words with their own attribution, nothing here belongs on a printed CV or in an
+    /// ATS, and keeping them apart means the CV's schema, its validator and its
     /// text-extraction gate stay about the CV.
     /// </remarks>
-    public Task<IReadOnlyList<DecisionRecord>> GetDecisionsAsync(
+    public Task<IReadOnlyList<Testimonial>> GetTestimonialsAsync(
         CancellationToken cancellationToken = default)
     {
-        pendingDecisions ??= FetchDecisions(cancellationToken);
-        return pendingDecisions;
+        pendingTestimonials ??= FetchTestimonials(cancellationToken);
+        return pendingTestimonials;
 
-        async Task<IReadOnlyList<DecisionRecord>> FetchDecisions(CancellationToken ct)
+        async Task<IReadOnlyList<Testimonial>> FetchTestimonials(CancellationToken ct)
         {
             try
             {
-                var file = await GetFreshAsync<DecisionFile>(DecisionsPath, ct);
-                return file.Decisions;
+                var file = await GetFreshAsync<TestimonialFile>(TestimonialsPath, ct);
+                return file.Testimonials;
             }
-            catch { pendingDecisions = null; throw; }
+            catch { pendingTestimonials = null; throw; }
         }
     }
 
-    private sealed record DecisionFile(IReadOnlyList<DecisionRecord> Decisions);
+    private sealed record TestimonialFile(IReadOnlyList<Testimonial> Testimonials);
 
     /// <summary>Replaces the in-memory document. Used by the editor's live preview.</summary>
     /// <remarks>

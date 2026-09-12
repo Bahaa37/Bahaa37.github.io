@@ -1,0 +1,55 @@
+@using Cv.Domain
+
+@* One attributed recommendation, as it appears on the testimonials page and in the
+   home page's highlights band. Styles live in app.css on purpose: prerender.py
+   renders the same markup into the static pages, and isolated component CSS cannot
+   reach that copy. *@
+
+<figure class="testimonial">
+    <blockquote class="testimonial__quote">
+        <p>@Testimonial.Text</p>
+    </blockquote>
+    <figcaption class="testimonial__by">
+        <span class="testimonial__avatar" aria-hidden="true">@Initials(Testimonial.Name)</span>
+        <span class="testimonial__who">
+            <span class="testimonial__name">
+                @if (LinkFor(Testimonial) is { } link)
+                {
+                    <a href="@link" rel="noopener noreferrer">@Testimonial.Name</a>
+                }
+                else
+                {
+                    @Testimonial.Name
+                }
+            </span>
+            <span class="testimonial__meta">
+                @(Meta(Testimonial) is { } meta ? meta : "Colleague")
+            </span>
+        </span>
+    </figcaption>
+</figure>
+
+@code {
+    [Parameter, EditorRequired]
+    public Testimonial Testimonial { get; set; } = default!;
+
+    // The name links to whichever profile exists — LinkedIn first, GitHub second. The
+    // data rules guarantee at least one, but a plain name renders if neither survives.
+    private static string? LinkFor(Testimonial testimonial)
+        => testimonial.LinkedIn ?? testimonial.GitHub;
+
+    private static string Initials(string name)
+    {
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length >= 2
+            ? $"{parts[0][0]}{parts[1][0]}".ToUpperInvariant()
+            : name[..1].ToUpperInvariant();
+    }
+
+    private static string? Meta(Testimonial testimonial)
+    {
+        var who = string.Join(", ", new[] { testimonial.Role, testimonial.Company }
+            .Where(part => !string.IsNullOrWhiteSpace(part)));
+        return string.IsNullOrEmpty(who) ? null : who;
+    }
+}

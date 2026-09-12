@@ -49,6 +49,29 @@ else
                  Education="document.Education"
                  Certifications="document.Certifications" />
 
+    @* Third-party words are the strongest social proof a portfolio carries, so they get
+       a band of their own — but only when there is something real to show. An empty
+       testimonials file renders nothing here, never an invented quote. *@
+    @if (testimonials is { Count: > 0 })
+    {
+        <section class="band reveal" id="testimonials">
+            <div class="shell">
+                <p class="eyebrow">Testimonials</p>
+                <h2 class="band__title">What people say</h2>
+                <p class="band__lede">
+                    Recommendations from colleagues, each attributed to its author.
+                    <a href="/testimonials">Read them all</a>.
+                </p>
+                <div class="testimonials__grid">
+                    @foreach (var testimonial in testimonials.OrderBy(t => t.DisplayOrder).Take(3))
+                    {
+                        <TestimonialCard Testimonial="testimonial" />
+                    }
+                </div>
+            </div>
+        </section>
+    }
+
     <section class="band reveal" id="contact">
         <div class="shell contact">
             <p class="eyebrow">Contact</p>
@@ -130,6 +153,7 @@ else
     private CvDocument? document;
     private IReadOnlyList<ExperienceEntry> roles = [];
     private IReadOnlyList<string> employers = [];
+    private IReadOnlyList<Testimonial> testimonials = [];
     private string experiencePhrase = string.Empty;
     private IJSObjectReference? motion;
 
@@ -156,6 +180,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         document = await CvData.GetAsync();
+        testimonials = await CvData.GetTestimonialsAsync();
 
         // "Now" is read once here rather than inside the render tree, so every derived
         // figure on the page is computed against the same instant.
