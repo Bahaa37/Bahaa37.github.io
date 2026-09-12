@@ -72,17 +72,30 @@ design/               Design canvas artboards.
 
 ```bash
 dotnet test tests/Cv.Tests/Cv.Tests.csproj
-dotnet run --project src/Cv.Web/Cv.Web.csproj     # → http://localhost:5199
+dotnet run --project src/Cv.Web/Cv.Web.csproj     # → http://localhost:5046
 ```
 
-Regenerating the CV PDF and checking it against the ATS gate:
+The full publish path — the same steps CI runs, in the same order:
 
 ```bash
 dotnet publish src/Cv.Web/Cv.Web.csproj -c Release -o publish
+
+# Render the CV from the build that is about to ship, and gate it on text extraction.
+python _tools/make_cv_pdf.py publish/wwwroot publish/wwwroot/Bahaa-Aldeen-Mohamed-CV.pdf
+python _tools/ats_check.py  publish/wwwroot/Bahaa-Aldeen-Mohamed-CV.pdf
+
+# Write a real page per route: own metadata, canonical, JSON-LD, and the route's text.
+python _tools/prerender.py  publish/wwwroot --base-url https://bahaa37.github.io
+
 python _tools/serve_publish.py 5210 publish/wwwroot
-chrome --headless --print-to-pdf=output/cv.pdf http://localhost:5210/cv
-python _tools/ats_check.py output/cv.pdf
 ```
+
+The order matters: the prerenderer refuses to finish unless the CV it links to is in the
+published output. Needs `playwright` and `pypdf`, plus `python -m playwright install
+chromium`.
+
+`.github/workflows/ci.yml` runs all of it on every branch and pull request; `pages.yml`
+runs it again on `main` and deploys. Nothing publishes if a gate fails.
 
 ## Contact
 
