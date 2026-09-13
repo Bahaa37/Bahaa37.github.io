@@ -4,8 +4,8 @@
   "description": "Senior .NET engineer working at architecture level: legacy modernization, solution architecture and systems analysis.",
   "start_url": "/",
   "display": "browser",
-  "background_color": "#ffffff",
-  "theme_color": "#f5f5f7",
+  "background_color": "#e8f2ff",
+  "theme_color": "#e8f2ff",
   "icons": [
     {
       "src": "/icon-192.png",

@@ -78,28 +78,65 @@
                     return document.documentElement.getAttribute("data-theme") || "system";
                 },
                 set: function (value) {
-                    if (value === "system") {
-                        document.documentElement.removeAttribute("data-theme");
-                    } else {
-                        document.documentElement.setAttribute("data-theme", value);
-                    }
+                    // Record the intent immediately: startViewTransition applies the
+                    // DOM change a beat later, and a reader who clicks again during
+                    // that beat must read the pending theme, not the old one.
+                    pendingTheme = value;
+                    // The cross-fade, when the browser has View Transitions, is the
+                    // tasteful version of "the background animates while it shifts":
+                    // one GPU-composited 250ms dissolve of the whole page, degrading
+                    // to an atomic swap everywhere else — never a per-frame repaint.
+                    // Reduced motion skips it: they get the instant switch.
+                    var apply = function () {
+                        if (value === "system") {
+                            document.documentElement.removeAttribute("data-theme");
+                        } else {
+                            document.documentElement.setAttribute("data-theme", value);
+                        }
+                        try {
+                            if (value === "system") { localStorage.removeItem("theme"); }
+                            else { localStorage.setItem("theme", value); }
+                        } catch (e) { }
+                        return value;
+                    };
+                    var reduceMotion = false;
                     try {
-                        if (value === "system") { localStorage.removeItem("theme"); }
-                        else { localStorage.setItem("theme", value); }
+                        reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
                     } catch (e) { }
+                    if (!reduceMotion && document.startViewTransition) {
+                        var trans = document.startViewTransition(apply);
+                        // Rapid taps legitimately skip a queued transition; Chromium
+                        // reports that as a console error unless it is caught here.
+                        if (trans && trans.finished) { trans.finished.catch(function () { }); }
+                    } else {
+                        apply();
+                    }
+                    // Every commit pulses once from the switch, inside-out, in the
+                    // new theme's ground colour (see the pulse block below).
+                    if (!reduceMotion) {
+                        var groundKey = value;
+                        if (groundKey === "system") {
+                            try {
+                                groundKey = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+                            } catch (e) { groundKey = "light"; }
+                        }
+                        if (PULSE_GROUNDS[groundKey]) { pulseOut(0.3, PULSE_GROUNDS[groundKey]); }
+                    }
                     return value;
                 },
                 // What the reader is actually looking at right now, which is what the
                 // toggle has to invert — "system" on a dark OS means the next click
                 // should go to light, not to dark.
                 effective: function () {
+                    if (pendingTheme && pendingTheme !== "system") { return pendingTheme; }
                     var attr = document.documentElement.getAttribute("data-theme");
                     if (attr) { return attr; }
                     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
                 }
             };
+            var pendingTheme = null;
 
-            // Prerendered pages carry a static copy of the header's theme button
+            // Prerendered pages carry a static copy of the header's theme switch
             // (injected by prerender.py, mirroring MainLayout.razor), so theming works
             // during the whole window before the WebAssembly runtime boots — which
             // boot.js defers until idle, and may skip entirely on data-saver
@@ -107,9 +144,9 @@
             // the static button disappears with it, and Blazor's own @onclick takes
             // over. This listener then matches nothing, so it cannot double-toggle.
             //
-            // Only the labels are painted here: the sun/moon icons are pure CSS state
-            // (both are in the markup; the theme selectors in app.css choose which
-            // shows), so the icon cannot fall out of sync with the palette.
+            // Labels and aria-checked are painted here: the knob's side and its
+            // sun/moon icon are pure CSS state (the theme selectors in app.css choose),
+            // so the control cannot fall out of sync with the palette.
             function paintStaticThemeButtons() {
                 var dark = themeControl.effective() === "dark";
                 var buttons = document.querySelectorAll("[data-static-theme-toggle]");
@@ -117,6 +154,7 @@
                 for (var i = 0; i < buttons.length; i++) {
                     buttons[i].setAttribute("aria-label", label);
                     buttons[i].setAttribute("title", label);
+                    buttons[i].setAttribute("aria-checked", dark ? "true" : "false");
                 }
             }
 
@@ -137,6 +175,202 @@
                 document.addEventListener("DOMContentLoaded", paintStaticThemeButtons);
             } else {
                 paintStaticThemeButtons();
+            }
+
+            /*
+                The theme switch's drag: the tactile version of the same action. A tap
+                still toggles — this only adds pulling the knob past the midpoint.
+                Pointer-captured, with touch-action: none scoped to the control in CSS,
+                so a thumb resting here never holds the page's scroll; and a dragged
+                release calls preventDefault, which cancels the synthetic click — that
+                is what stops a drag from ALSO counting as a tap (pre-boot's delegated
+                listener and post-boot Blazor's @onclick would otherwise both fire).
+
+                The knob's resting position is CSS state (theme selectors); during a
+                drag the script writes the translate directly and clears it on release,
+                so the knob glides the rest of the way under its own transition.
+            */
+            /*
+                The theme pulse: the background answers the pin, inside-out.
+
+                While the knob is dragged, a disc of the OTHER theme's ground colour
+                grows from the switch in step with the drag — a live preview expanding
+                under the finger. On commit it pulses the rest of the way out across
+                the viewport and fades; on release below the midpoint it shrinks back
+                into the switch. Taps fire the same commit pulse. Transform + opacity
+                only (one short-lived composited layer), never under reduced motion.
+                The colours must stay in step with --paper in app.css.
+            */
+            var PULSE_GROUNDS = { light: "#e8f2ff", dark: "#0d141d" };
+
+            function prefersReducedMotion() {
+                try { return window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
+                catch (e) { return false; }
+            }
+
+            function themePulseEl() {
+                var el = document.querySelector(".theme-pulse");
+                return el;
+            }
+
+            function switchCenter() {
+                var el = document.querySelector(".theme-toggle");
+                if (!el) { return null; }
+                var r = el.getBoundingClientRect();
+                return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+            }
+
+            function pulseScaleFull() {
+                return Math.ceil(Math.hypot(window.innerWidth, window.innerHeight) / 24) + 2;
+            }
+
+            function aimPulse(progress, color) {
+                var el = themePulseEl();
+                var c = switchCenter();
+                if (!el || !c) { return; }
+                el.style.setProperty("--pulse-x", c.x + "px");
+                el.style.setProperty("--pulse-y", c.y + "px");
+                el.style.background =
+                    "radial-gradient(circle, " + color + " 0%, " + color + " 34%, transparent 70%)";
+                el.classList.add("is-live");
+                el.style.transform = "scale(" + (0.3 + progress * pulseScaleFull()) + ")";
+                el.style.opacity = String(0.18 + progress * 0.34);
+            }
+
+            function pulseOut(fromScale, color) {
+                var el = themePulseEl();
+                if (!el) { return; }
+                if (currentPulse) { currentPulse.cancel(); currentPulse = null; }
+                var c = switchCenter();
+                if (c) {
+                    el.style.setProperty("--pulse-x", c.x + "px");
+                    el.style.setProperty("--pulse-y", c.y + "px");
+                    el.style.background =
+                        "radial-gradient(circle, " + color + " 0%, " + color + " 34%, transparent 70%)";
+                }
+                el.classList.add("is-live");
+                var full = pulseScaleFull();
+                var anim = el.animate(
+                    [
+                        { transform: "scale(" + Math.max(0.3, Math.min(fromScale, full)) + ")", opacity: 0.4 },
+                        { transform: "scale(" + full + ")", opacity: 0 }
+                    ],
+                    { duration: 620, easing: "cubic-bezier(.2, .6, .35, 1)" });
+                anim.onfinish = function () {
+                    el.classList.remove("is-live");
+                    el.style.transform = "";
+                    el.style.opacity = "";
+                    currentPulse = null;
+                };
+                currentPulse = anim;
+            }
+            var currentPulse = null;
+
+            var THEME_KNOB_TRAVEL = 22; // track 46 - knob 20 - 2*2 inset
+
+            function bindThemeSwitch(el) {
+                if (el.dataset.dragBound === "1") { return; }
+                var knob = el.querySelector(".theme-toggle__knob");
+                if (!knob) { return; }
+                el.dataset.dragBound = "1";
+
+                var startX = 0, dx = 0, dragging = false, moved = false;
+                // Set after a dragged release; the document-level capture listener
+                // below swallows exactly that click and resets the flag. (Canceling
+                // pointerup does NOT stop click — the spec fires it regardless — so
+                // this suppressor is the only reliable gate.)
+                var suppressNextClick = false;
+
+                document.addEventListener("click",
+                    function (ev) {
+                        if (!suppressNextClick) { return; }
+                        suppressNextClick = false;
+                        ev.stopPropagation();
+                        ev.preventDefault();
+                    }, true);
+
+                el.addEventListener("pointerdown", function (ev) {
+                    if (!ev.isPrimary || (ev.pointerType === "mouse" && ev.button !== 0)) { return; }
+                    suppressNextClick = false;
+                    dragging = true;
+                    moved = false;
+                    dx = 0;
+                    startX = ev.clientX;
+                    el.classList.add("is-dragging");
+                    try { el.setPointerCapture(ev.pointerId); } catch (e) { }
+                });
+
+                el.addEventListener("pointermove", function (ev) {
+                    if (!dragging) { return; }
+                    dx = ev.clientX - startX;
+                    if (Math.abs(dx) > 6) { moved = true; }
+                    // Pull toward the other theme only: right when light, left when dark.
+                    var dark = themeControl.effective() === "dark";
+                    if (dark) { dx = Math.min(0, Math.max(-THEME_KNOB_TRAVEL, dx)); }
+                    else { dx = Math.max(0, Math.min(THEME_KNOB_TRAVEL, dx)); }
+                    if (moved) {
+                        knob.style.transform = "translateX(" + dx + "px)";
+                        if (!prefersReducedMotion()) {
+                            // The ground previews the target theme, expanding
+                            // inside-out with the pin.
+                            var progress = Math.abs(dx) / THEME_KNOB_TRAVEL;
+                            var target = dark ? "light" : "dark";
+                            aimPulse(progress, PULSE_GROUNDS[target]);
+                        }
+                    }
+                });
+
+                function release(ev) {
+                    if (!dragging) { return; }
+                    dragging = false;
+                    el.classList.remove("is-dragging");
+                    knob.style.transform = "";
+                    if (moved) {
+                        // Commit through a synthetic click so it routes through
+                        // whichever owner owns this button — the shell's delegated
+                        // listener before boot, Blazor's @onclick after — keeping
+                        // aria-checked and the label in sync with the palette. The
+                        // commit pulse itself is fired by themeControl.set. The
+                        // natural click that follows the pointerup is suppressed
+                        // above (a drag must not also count as a tap).
+                        var commits = Math.abs(dx) > THEME_KNOB_TRAVEL / 2;
+                        if (!commits && !prefersReducedMotion()) {
+                            // Below the midpoint: the preview retreats into the switch.
+                            var target = themeControl.effective() === "dark" ? "light" : "dark";
+                            pulseOut(0, PULSE_GROUNDS[target]);
+                        }
+                        if (commits) { el.click(); }
+                        suppressNextClick = true;
+                    }
+                    dx = 0;
+                    moved = false;
+                }
+
+                el.addEventListener("pointerup", release);
+                el.addEventListener("pointercancel", release);
+            }
+
+            function bindThemeSwitches() {
+                var switches = document.querySelectorAll(".theme-toggle");
+                for (var i = 0; i < switches.length; i++) { bindThemeSwitch(switches[i]); }
+            }
+
+            // This script runs in <head>, where document.body does not exist yet — the
+            // observer must attach after the document is parsed or it silently never
+            // observes anything (found the hard way: drags did nothing until this was
+            // moved behind DOMContentLoaded).
+            function startSwitchObserver() {
+                bindThemeSwitches();
+                try {
+                    new MutationObserver(bindThemeSwitches)
+                        .observe(document.body, { childList: true, subtree: true });
+                } catch (e) { }
+            }
+
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", startSwitchObserver);
+            } else {
+                startSwitchObserver();
             }
 
             /*
@@ -179,28 +413,23 @@
     <!-- display: "browser" — this is a document, not an app, and a standalone window
          would only take the back button away from someone reading a CV. -->
     <link rel="manifest" href="manifest.webmanifest" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f5f7" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b1220" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#e8f2ff" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d141d" />
     <link href="Cv.Web.styles.css" rel="stylesheet" />
     <script type="importmap"></script>
 </head>
 
 <body>
     <!--
-        The aurora field: the one continuous backdrop every surface floats over.
-
-        It lives here, outside #app, deliberately. Blazor clears #app when it boots and
-        prerender.py fills it at publish time, so anything that must survive both of
-        those replacements — and be present at first paint without a single byte of
-        runtime — belongs to the shell. The layers are plain radial gradients animated
-        on transform only: no filter on a full-viewport element, so the field costs one
-        composited layer per blob and never re-rasterizes.
+        The ground is one flat, still surface painted by app.css on <html> — nothing
+        animated or layered sits behind the content. Everything the design floats
+        (sheets, the header capsule, the contact dock) lives inside #app or the shell,
+        so there is no backdrop element to preserve across the prerender fill and the
+        Blazor boot. The one exception is the theme pulse: a short-lived ripple the
+        shell script drives from the theme switch (see the script above), kept outside
+        #app so Blazor's boot can never orphan it mid-animation.
     -->
-    <div class="aurora" aria-hidden="true">
-        <i class="aurora__layer aurora__layer--a"></i>
-        <i class="aurora__layer aurora__layer--b"></i>
-        <i class="aurora__layer aurora__layer--c"></i>
-    </div>
+    <div class="theme-pulse" aria-hidden="true"></div>
 
     <div id="app">
         <svg class="loading-progress">

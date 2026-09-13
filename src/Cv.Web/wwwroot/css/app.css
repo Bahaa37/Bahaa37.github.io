@@ -1,15 +1,22 @@
 /*
-    Design system for the showcase site — "Frosted Keynote".
+    Design system for the showcase site — "Frosted Keynote", Sky Aluminum revision.
 
-    The site behaves like a native Apple app: one aurora-lit field behind everything,
-    frosted glass for chrome (header capsule, pills, chips), and near-opaque rounded
-    sheets carrying all dense content. Direction chosen on the impeccable decision
-    page; the full contract lives in .impeccable/surfaces/src-cv-web-pages-home-razor.md.
+    The site behaves like a native Apple app: frosted glass for chrome, near-opaque
+    rounded sheets carrying all dense content, and one still ground behind everything.
+    Direction chosen on the impeccable decision page; re-tinted three times on
+    2026-09-13 — the drifting aurora died first (generated decor), neutral graphite
+    died the same morning (generic), Terminal Green by afternoon (the user's pick from
+    four, then rejected on review) — and the user then proposed this direction
+    themselves: Apple's anodized baby-blue aluminum, frosted glass, metallic silver
+    edges. Silvery blue-paper light, blue-slate night, steel-blue ink; anodized-silver
+    gradient borders on the sheets and dock; gold metal stays reserved for awards so
+    it keeps its value. The full contract lives in
+    .impeccable/surfaces/src-cv-web-pages-home-razor.md.
 
     Two performance rules shaped by the site's sub-second first-paint budget:
 
-    - The aurora field is three plain radial gradients animated on transform only.
-      No filter on a full-viewport element, no repaint after the first raster.
+    - The ground never animates. Depth comes from the sheets' shadows, not from
+      anything moving behind them.
     - backdrop-filter is spent exclusively on chrome: the header capsule and small
       controls. Content sheets use plain translucent backgrounds so long pages never
       keep a GPU blurred layer alive under the reader's eyes.
@@ -22,27 +29,37 @@
 
 :root {
     /* Ink on sheets. The faint step is the smallest text on the page, so it is held
-       at or above 4.5:1 on its sheet — the previous palette failed AA here. */
-    --ink: #1d1d1f;
-    --ink-soft: #424245;
-    --ink-faint: #56575b;
+       at or above 4.5:1 on its sheet. Every step is steel — blue undertoned. */
+    --ink: #16222e;
+    --ink-soft: #44586b;
+    --ink-faint: #5c7086;
 
-    /* The ground the aurora glows over; sheets float between the two. */
-    --paper: #f5f5f7;
-    --sheet-bg: rgba(255, 255, 255, .9);
-    --sheet-line: rgba(0, 0, 0, .08);
+    /* The ground everything floats above; sheets sit between it and the reader.
+       Glacier #e8f2ff — the exact --finish token of the iPhone 18 Pro's baby blue,
+       taken from Apple's own published CSS (their .finish-background uses the same
+       values for page backgrounds). */
+    --paper: #e8f2ff;
+    --sheet-bg: rgba(255, 255, 255, .88);
+    /* The sheets carry an anodized-silver gradient edge (see --edge-metal), which is
+       painted UNDER the sheet face — so the face needs a solid stand-in, not a
+       translucent colour, or the metal would sheen through. Composite of sheet over
+       paper; visually identical now that nothing moves behind them. */
+    --sheet-solid: #fdfeff;
+    --sheet-line: rgba(22, 34, 46, .1);
 
-    /* Action and link colour. The pair is split because a button's fill and a text
-       link need different contrast solutions: the fill carries white text at AA,
-       the link sits as text on a white sheet at AA. */
-    --accent: #0066cc;
+    /* Action and link colour — steel blue in the light theme. The pair is split
+       because a button's fill and a text link need different contrast solutions:
+       the fill carries white text at AA, the link sits as text on a white sheet at AA. */
+    --accent: #0e6398;
     --accent-bright: #0071e3;
-    --accent-wash: #e8f1fb;
+    --accent-wash: #e3f1fa;
     --action-bg: #0066cc;
     --action-bg-hover: #0059b3;
     --action-ink: #ffffff;
 
-    /* Gold is spent on exactly one element — the award metric — and nowhere else. */
+    /* Gold is spent on exactly one element — the award metric — and nowhere else.
+       In an aluminum world the award is the gold metal: silver edges everywhere,
+       gold only where recognition is the subject. */
     --gold: #8a6116;
     --gold-wash: #fbf3e2;
 
@@ -50,30 +67,40 @@
     --alarm: #b0432c;
     --alarm-wash: #fbeae6;
 
-    /* The aurora blobs themselves. Same hues in both themes; only the veil over
-       them changes, so the field reads airy by day and submarine by night. */
-    --aurora-1: #0a84ff;
-    --aurora-2: #5ac8d8;
-    --aurora-3: #7d7aff;
-    --aurora-veil: .35;
-    --aurora-glow: rgba(10, 132, 255, .14);
+    /* The diagram stage's local colours — the recessed panel in the hero is dark in
+       both themes. Silver-steel marks the legacy estate, sky marks what replaced it;
+       nothing outside the stage uses either. */
+    --stage-legacy: #9aa8b6;
+    --stage-lead: #7fc4ff;
+
+    /* The anodized edge: a 1px gradient that reads as machined aluminum rather than
+       a flat line. Spent on sheets, the study slab, and (single-tone) on glass chrome.
+       Gold metal is NOT here — awards only. */
+    --edge-metal: linear-gradient(135deg, #ffffff, #b9c6d3 38%, #8ea1b2 52%, #c9d5e0 78%, #eef3f8);
+    --edge-silver: #b3c1ce;
 
     /* Glass is chrome-only. The inner top highlight is the tell of real glass. */
     --glass-bg: rgba(255, 255, 255, .58);
-    --glass-line: rgba(255, 255, 255, .65);
-    --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, .45);
+    --glass-line: rgba(255, 255, 255, .75);
+    --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, .5);
     --glass-blur: saturate(180%) blur(20px);
 
-    /* Ghost pills sit ON a sheet, not over the field, so their edge must be visible
+    /* The floating contact dock: true frosted glass with a silver edge — the second
+       and last blur on the page. */
+    --dock-bg: rgba(255, 255, 255, .6);
+
+    /* Ghost pills sit ON a sheet, not over the ground, so their edge must be visible
        against the sheet — white-on-white glass has no affordance in the light theme.
        The alpha is held near the 3:1 non-text guideline for component boundaries on a
        low-grade panel. */
-    --pill-line: rgba(0, 0, 0, .24);
+    --pill-line: rgba(22, 34, 46, .24);
     --pill-bg: rgba(255, 255, 255, .7);
 
-    --line: rgba(0, 0, 0, .1);
-    --shadow-sheet: 0 1px 2px rgba(16, 24, 40, .05), 0 12px 32px rgba(16, 24, 40, .08), 0 32px 80px rgba(10, 80, 160, .07);
-    --shadow-float: 0 2px 6px rgba(16, 24, 40, .08), 0 12px 28px rgba(16, 24, 40, .12);
+    --line: rgba(22, 34, 46, .12);
+    --shadow-sheet: 0 1px 2px rgba(30, 45, 65, .05), 0 12px 32px rgba(30, 45, 65, .08), 0 32px 80px rgba(30, 45, 65, .08);
+    --shadow-float: 0 2px 6px rgba(30, 45, 65, .08), 0 12px 28px rgba(30, 45, 65, .12);
+    /* The hover response: a neutral lift, not a coloured glow. */
+    --shadow-lift: 0 10px 24px rgba(30, 45, 65, .14);
 
     --measure: 68ch;
     --page: 1160px;
@@ -100,63 +127,73 @@
 */
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-        --ink: #f5f5f7;
-        --ink-soft: #c6cdd8;
-        --ink-faint: #9aa4b1;
-        --paper: #0b1220;
-        --sheet-bg: rgba(21, 29, 41, .88);
-        --sheet-line: rgba(255, 255, 255, .09);
-        --accent: #8abaff;
-        --accent-bright: #a8ccff;
-        --accent-wash: #16283c;
+        --ink: #eef4fa;
+        --ink-soft: #c2d0de;
+        --ink-faint: #92a4b6;
+        --paper: #0d141d;
+        --sheet-bg: rgba(27, 38, 52, .88);
+        --sheet-solid: #192431;
+        --sheet-line: rgba(205, 226, 245, .09);
+        --accent: #8ec7f2;
+        --accent-bright: #b0d8f7;
+        --accent-wash: #1d2c3b;
         --action-bg: #0a84ff;
         --action-bg-hover: #3d9bff;
         --action-ink: #071018;
         --gold: #e0b95f;
-        --gold-wash: #2a2213;
+        --gold-wash: #2c2413;
         --alarm: #e5806a;
         --alarm-wash: #2c1a15;
-        --aurora-veil: .3;
-        --aurora-glow: rgba(90, 200, 216, .12);
-        --glass-bg: rgba(16, 24, 36, .55);
-        --glass-line: rgba(255, 255, 255, .14);
-        --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, .09);
-        --pill-line: rgba(255, 255, 255, .18);
-        --pill-bg: rgba(255, 255, 255, .06);
-        --line: rgba(255, 255, 255, .11);
+        --stage-legacy: #8496a8;
+        --stage-lead: #7fc4ff;
+        --edge-metal: linear-gradient(135deg, #3a4a5c, #1a2531 38%, #93a7bb 52%, #26333f 78%, #3c4d60);
+        --edge-silver: #55677a;
+        --glass-bg: rgba(17, 25, 35, .55);
+        --glass-line: rgba(160, 185, 210, .3);
+        --glass-highlight: inset 0 1px 0 rgba(214, 232, 247, .1);
+        --dock-bg: rgba(20, 29, 40, .6);
+        --pill-line: rgba(205, 226, 245, .18);
+        --pill-bg: rgba(205, 226, 245, .06);
+        --line: rgba(205, 226, 245, .11);
         --shadow-sheet: 0 1px 2px rgba(0, 0, 0, .5), 0 12px 32px rgba(0, 0, 0, .38), 0 32px 80px rgba(0, 0, 0, .32);
         --shadow-float: 0 2px 6px rgba(0, 0, 0, .45), 0 12px 28px rgba(0, 0, 0, .4);
+        --shadow-lift: 0 10px 24px rgba(0, 0, 0, .55);
         color-scheme: dark;
     }
 }
 
 :root[data-theme="dark"] {
-    --ink: #f5f5f7;
-    --ink-soft: #c6cdd8;
-    --ink-faint: #9aa4b1;
-    --paper: #0b1220;
-    --sheet-bg: rgba(21, 29, 41, .88);
-    --sheet-line: rgba(255, 255, 255, .09);
-    --accent: #8abaff;
-    --accent-bright: #a8ccff;
-    --accent-wash: #16283c;
+    --ink: #eef4fa;
+    --ink-soft: #c2d0de;
+    --ink-faint: #92a4b6;
+    --paper: #0d141d;
+    --sheet-bg: rgba(27, 38, 52, .88);
+    --sheet-solid: #192431;
+    --sheet-line: rgba(205, 226, 245, .09);
+    --accent: #8ec7f2;
+    --accent-bright: #b0d8f7;
+    --accent-wash: #1d2c3b;
     --action-bg: #0a84ff;
     --action-bg-hover: #3d9bff;
     --action-ink: #071018;
     --gold: #e0b95f;
-    --gold-wash: #2a2213;
+    --gold-wash: #2c2413;
     --alarm: #e5806a;
     --alarm-wash: #2c1a15;
-    --aurora-veil: .3;
-    --aurora-glow: rgba(90, 200, 216, .12);
-    --glass-bg: rgba(16, 24, 36, .55);
-    --glass-line: rgba(255, 255, 255, .14);
-    --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, .09);
-    --pill-line: rgba(255, 255, 255, .18);
-    --pill-bg: rgba(255, 255, 255, .06);
-    --line: rgba(255, 255, 255, .11);
+    --stage-legacy: #8496a8;
+    --stage-lead: #7fc4ff;
+    --edge-metal: linear-gradient(135deg, #3a4a5c, #1a2531 38%, #93a7bb 52%, #26333f 78%, #3c4d60);
+    --edge-silver: #55677a;
+    --glass-bg: rgba(17, 25, 35, .55);
+    --glass-line: rgba(160, 185, 210, .3);
+    --glass-highlight: inset 0 1px 0 rgba(214, 232, 247, .1);
+    --dock-bg: rgba(20, 29, 40, .6);
+    --pill-line: rgba(205, 226, 245, .18);
+    --pill-bg: rgba(205, 226, 245, .06);
+    --line: rgba(205, 226, 245, .11);
     --shadow-sheet: 0 1px 2px rgba(0, 0, 0, .5), 0 12px 32px rgba(0, 0, 0, .38), 0 32px 80px rgba(0, 0, 0, .32);
     --shadow-float: 0 2px 6px rgba(0, 0, 0, .45), 0 12px 28px rgba(0, 0, 0, .4);
+    --shadow-lift: 0 10px 24px rgba(0, 0, 0, .55);
     color-scheme: dark;
 }
 
@@ -174,8 +211,8 @@ body {
     padding: 0;
 }
 
-/* The ground lives on html, not body: the aurora is position:fixed with z-index:-1,
-   so body must stay transparent or it would paint over the field. */
+/* The ground lives on html, not body: it is one flat, still surface, and everything
+   the design adds — sheets, chrome, the dock — floats above it. */
 html {
     scroll-behavior: smooth;
     background: var(--paper);
@@ -191,7 +228,7 @@ body {
 
 /* Browser surfaces carry the design too: selection, caret, scrollbar. */
 ::selection {
-    background: color-mix(in srgb, var(--aurora-1) 26%, transparent);
+    background: color-mix(in srgb, var(--accent) 26%, transparent);
 }
 
 input,
@@ -240,76 +277,6 @@ a {
     outline: 2px solid var(--accent-bright);
     outline-offset: 3px;
     border-radius: 4px;
-}
-
-/* ---------- the aurora field ----------
-
-   Three blobs, one shared clock. The drift durations are multiples of one base so the
-   field phases in and out of alignment rather than ticking mechanically. transform-only
-   animation keeps every frame on the compositor; the gradients themselves are painted
-   exactly once. */
-
-.aurora {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    overflow: hidden;
-    pointer-events: none;
-}
-
-.aurora__layer {
-    position: absolute;
-    display: block;
-    border-radius: 50%;
-    opacity: var(--aurora-veil);
-    will-change: transform;
-}
-
-.aurora__layer--a {
-    inset-block-start: -22%;
-    inset-inline-start: -12%;
-    inline-size: 68vmax;
-    block-size: 68vmax;
-    background: radial-gradient(closest-side, var(--aurora-1), transparent 72%);
-    animation: aurora-a 84s linear infinite alternate;
-}
-
-.aurora__layer--b {
-    inset-block-start: 8%;
-    inset-inline-end: -18%;
-    inline-size: 58vmax;
-    block-size: 58vmax;
-    background: radial-gradient(closest-side, var(--aurora-2), transparent 70%);
-    animation: aurora-b 63s linear infinite alternate;
-}
-
-.aurora__layer--c {
-    inset-block-end: -28%;
-    inset-inline-start: 18%;
-    inline-size: 64vmax;
-    block-size: 64vmax;
-    background: radial-gradient(closest-side, var(--aurora-3), transparent 72%);
-    animation: aurora-c 77s linear infinite alternate;
-}
-
-@keyframes aurora-a {
-    to { transform: translate3d(9vw, 7vh, 0) rotate(24deg) scale(1.12); }
-}
-
-@keyframes aurora-b {
-    to { transform: translate3d(-8vw, 9vh, 0) rotate(-18deg) scale(1.08); }
-}
-
-@keyframes aurora-c {
-    to { transform: translate3d(7vw, -8vh, 0) rotate(15deg) scale(1.1); }
-}
-
-/* The field must never reach paper: a printed page with three colour blobs behind
-   ATS-critical text is exactly the kind of defect CI cannot see. */
-@media print {
-    .aurora {
-        display: none;
-    }
 }
 
 /* ---------- motion ----------
@@ -372,17 +339,20 @@ a {
 }
 
 /*
-    The content sheet: every dense surface floats as one rounded slab over the field.
-    Translucent but NOT glass — no backdrop-filter here, so a 6000px page never holds
-    a live blur under the reader. The background is opaque enough that body text keeps
-    its AA contrast over whatever part of the aurora happens to drift beneath.
+    The content sheet: every dense surface floats as one rounded slab over the ground.
+    The edge is the anodized-silver gradient (--edge-metal) painted in the border-box
+    layer under a solid face (--sheet-solid) — the padding-box/border-box composite is
+    what lets a 1px border carry a gradient and still take the 16px radius. No
+    backdrop-filter here, so a 6000px page never holds a live blur under the reader.
 */
 .sheet {
     width: min(100% - 1.5rem, var(--page));
     margin: 1.4rem auto;
     padding: clamp(2rem, 1.2rem + 3vw, 3.75rem) clamp(1.25rem, 3.5vw, 3.25rem);
-    background: var(--sheet-bg);
-    border: 1px solid var(--sheet-line);
+    border: 1px solid transparent;
+    background:
+        linear-gradient(var(--sheet-solid), var(--sheet-solid)) padding-box,
+        var(--edge-metal) border-box;
     border-radius: var(--radius-sheet);
     box-shadow: var(--shadow-sheet);
 }
@@ -423,7 +393,7 @@ a {
 /* ---------- site chrome ----------
 
    The header is a floating glass capsule, not a full-width bar: chrome, not content.
-   It sits sticky above the field and never carries a background of its own — the
+   It sits sticky above the ground and never carries a background of its own — the
    capsule inside it is the glass. */
 
 .site-header {
@@ -438,7 +408,10 @@ a {
 .header-capsule {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    /* flex-start, not space-between: the nav and the theme toggle form one cluster at
+       the capsule's end. Under space-between the toggle stranded at the far edge,
+       visually disconnected from the links it sits with. */
+    justify-content: flex-start;
     gap: 0.75rem;
     min-height: 56px;
     padding: 0.35rem 0.4rem 0.35rem 1.1rem;
@@ -448,7 +421,7 @@ a {
     box-shadow: var(--shadow-float), var(--glass-highlight);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
-    /* Glass reads against what drifts behind it, so the capsule needs its own
+    /* Glass reads against what scrolls behind it, so the capsule needs its own
        scroll-linked state: the shell's inline script (index.html) adds .is-scrolled
        when content has passed underneath — it lives there rather than here because
        the state must exist before the runtime boots and after Blazor replaces the
@@ -476,6 +449,9 @@ a {
     align-items: center;
     flex-wrap: wrap;
     justify-content: flex-end;
+    /* Pushes the nav + toggle cluster to the capsule's end (the toggle follows the
+       nav in visual order via `order` below). */
+    margin-inline-start: auto;
 }
 
 /*
@@ -515,51 +491,132 @@ a {
 }
 
 /*
-    The theme control. One button, two states: "follow the system" remains reachable by
-    clearing site data, while a reader who wants the other one wants it in one click.
+    The theme control: an iOS-style switch. A tap toggles — Blazor's handler after
+    boot, the shell's delegated click before it — and the shell's drag enhancement
+    lets the knob be pulled past the midpoint for the tactile version. The whole
+    button keeps the 44px tap floor; the track inside is the visible switch;
+    touch-action: none is scoped to this control only, so a thumb resting here never
+    holds the page's scroll.
 
-    The icon is pure CSS state — the sun and moon are both in the markup and the theme
-    selectors decide which shows. That keeps the button byte-identical between the
-    prerendered shell (prerender.py) and the Blazor render, so pre- and post-boot
-    chrome can never diverge on the control that toggles the whole palette.
+    The knob's side and its sun/moon icon are pure CSS state — the theme selectors
+    below decide both, so the control is identical between the prerendered shell and
+    the Blazor render and can never fall out of sync with the palette.
 */
 .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    min-width: 44px;
+    min-height: 44px;
+    /* Holds the switch off the capsule's rounded end (mobile parks it on row one at
+       the corner). */
+    margin-inline-end: 0.15rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.theme-toggle__track {
+    position: relative;
+    display: block;
+    width: 46px;
+    height: 26px;
+    border-radius: 999px;
+    /* Solid fallback first: older WebViews without color-mix still get a visible
+       track (the in-app browser the switch was reported broken in). */
+    background: rgba(22, 34, 46, .12);
+    background: color-mix(in srgb, var(--ink) 12%, transparent);
+    border: 1px solid var(--line);
+    box-shadow: inset 0 1px 3px rgba(10, 18, 28, .16);
+    transition: background-color .25s ease, border-color .25s ease;
+}
+
+.theme-toggle:hover .theme-toggle__track {
+    background: rgba(22, 34, 46, .2);
+    background: color-mix(in srgb, var(--ink) 20%, transparent);
+}
+
+.theme-toggle__knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
     display: grid;
     place-items: center;
-    flex: none;
-    width: 44px;
-    height: 44px;
-    margin-inline-start: 0.35rem;
-    padding: 0;
-    color: var(--ink-soft);
-    background: transparent;
-    border: 1px solid var(--line);
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    cursor: pointer;
-    transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+    /* The knob is the one piece of polished aluminum a finger actually moves. */
+    background: linear-gradient(145deg, #ffffff, #d9e3ec);
+    border: 1px solid rgba(255, 255, 255, .65);
+    box-shadow: 0 1px 3px rgba(15, 28, 42, .35);
+    color: var(--ink-soft);
+    /* transform, not the individual translate property: the switch must travel in
+       older WebViews too (it was reported stuck in the in-app browser). */
+    transform: translateX(0);
+    transition: transform .18s cubic-bezier(.3, .7, .4, 1), background .25s ease;
 }
 
-.theme-toggle:hover {
-    color: var(--accent);
-    border-color: var(--accent);
-    background: color-mix(in srgb, var(--accent) 8%, transparent);
+.theme-toggle.is-dragging .theme-toggle__knob {
+    transition: none;
 }
 
-.theme-toggle svg {
-    width: 18px;
-    height: 18px;
+.theme-toggle__knob svg {
+    width: 12px;
+    height: 12px;
 }
 
-.theme-toggle .icon-sun { display: none; }
-.theme-toggle .icon-moon { display: block; }
+/* Light: knob left, sun showing. */
+.theme-toggle .icon-sun { display: block; }
+.theme-toggle .icon-moon { display: none; }
 
+/* Dark: knob right, moon showing — flipped by the same selectors that flip the
+   palette, so the control and the colours can never disagree. */
 @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .theme-toggle .icon-sun { display: block; }
-    :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: none; }
+    :root:not([data-theme="light"]) .theme-toggle__knob {
+        transform: translateX(22px);
+        background: linear-gradient(145deg, #c7d5e2, #8fa3b5);
+    }
+
+    :root:not([data-theme="light"]) .theme-toggle .icon-sun { display: none; }
+    :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: block; }
 }
 
-:root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
-:root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+:root[data-theme="dark"] .theme-toggle__knob {
+    transform: translateX(22px);
+    background: linear-gradient(145deg, #c7d5e2, #8fa3b5);
+}
+
+:root[data-theme="dark"] .theme-toggle .icon-sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .icon-moon { display: block; }
+
+/*
+    The theme pulse: one ripple element, driven entirely by WAAPI from the shell
+    script. During a knob drag it grows inside-out from the switch — a live preview
+    of the other theme's ground expanding under the finger — and on commit it pulses
+    out across the viewport once and fades. Transform + opacity only: one short-lived
+    composited layer, hidden in print, never started under reduced motion.
+*/
+.theme-pulse {
+    position: fixed;
+    top: var(--pulse-y, 50%);
+    left: var(--pulse-x, 50%);
+    width: 24px;
+    height: 24px;
+    margin: -12px 0 0 -12px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 60;
+    opacity: 0;
+    display: none;
+}
+
+.theme-pulse.is-live {
+    display: block;
+}
 
 @media (prefers-reduced-motion: reduce) {
     .theme-toggle {
@@ -592,6 +649,84 @@ a {
 }
 
 /*
+    The contact dock: call and email as one frosted capsule fixed to the viewport's
+    foot — reachable from every scroll position, on every showcase page. It is the
+    page's second and last blur (with the header capsule): small, fixed, and chrome —
+    a live GPU layer the size of a matchbox, not a page. Pure anchors and no script,
+    so it exists identically in the prerendered shell (prerender.py) and the Blazor
+    render; a data-saver visitor who never boots the runtime can still call or email
+    in one tap. The tel: href carries the number without ever printing it as text.
+*/
+.contact-dock {
+    position: fixed;
+    inset-block-end: calc(0.9rem + env(safe-area-inset-bottom, 0px));
+    inset-inline-end: 0.9rem;
+    z-index: 40;
+    display: flex;
+    gap: 0.3rem;
+    margin: 0;
+    padding: 0.3rem;
+    background: var(--dock-bg);
+    border: 1px solid var(--edge-silver);
+    border-radius: 999px;
+    box-shadow: var(--shadow-float), var(--glass-highlight);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.contact-dock__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 44px;
+    padding: 0 1rem;
+    border-radius: 999px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 600;
+    transition: color .2s ease, background-color .2s ease;
+}
+
+.contact-dock__action svg {
+    width: 17px;
+    height: 17px;
+}
+
+.contact-dock__action:hover {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--ink) 7%, transparent);
+}
+
+/* On a phone the dock centres in the thumb zone instead of hugging the corner. */
+@media (max-width: 720px) {
+    .contact-dock {
+        inset-inline: 0.9rem;
+        justify-content: center;
+    }
+}
+
+/* The dock is screen chrome: it must never reach paper, and sections hidden by the
+   reveal system (below-fold .reveal starts at opacity:0) must not print blank —
+   Ctrl+P on the showcase prints the document, not the animation state. */
+@media print {
+    .contact-dock,
+    .theme-pulse {
+        display: none;
+    }
+
+    .js-motion .reveal,
+    .js-motion .reveal .stagger {
+        opacity: 1 !important;
+        translate: none !important;
+        scale: none !important;
+        /* The restore must be instant: a print snapshot taken mid-transition would
+           render faint text on paper. */
+        transition: none !important;
+    }
+}
+
+/*
     Reading-progress bar.
 
     Scroll-driven, so it needs no script and no markup — it is the document's own scroll
@@ -606,7 +741,7 @@ a {
         inset: 0 0 auto 0;
         height: 2px;
         z-index: 100;
-        background: linear-gradient(90deg, var(--aurora-1), var(--aurora-3));
+        background: var(--accent);
         transform: scaleX(0);
         transform-origin: left center;
         animation: draw-x linear both;
@@ -637,26 +772,30 @@ a {
     */
     @media (max-width: 720px) {
         .site-header {
-            padding-top: 0.5rem;
+            padding-top: 0.4rem;
         }
 
-        /* The collapsed capsule is ~118px tall; anchor jumps need a proportionate
+        /* The collapsed capsule is ~98px tall; anchor jumps need a proportionate
            margin or the target heading lands underneath the chrome. Coupled to the
            Two-Row Capsule Rule in DESIGN.md — change them together. */
         .sheet[id],
         .case[id] {
-            scroll-margin-top: 132px;
+            scroll-margin-top: 112px;
         }
 
         .header-capsule {
             flex-wrap: wrap;
             border-radius: 24px;
-            padding: 0.25rem 0.4rem 0.25rem 0.9rem;
+            /* The column gap separates name and toggle; the near-zero row gap keeps
+               the nav strip visually attached to the name row — a full row gap here
+               read as a hole in the chrome and cost the viewport ~20px. */
+            gap: 0.05rem 0.5rem;
+            padding: 0.2rem 0.35rem 0.2rem 0.8rem;
         }
 
         .site-header__name {
             flex: 1 1 auto;
-            padding-block: 0.5rem;
+            padding-block: 0.3rem;
         }
 
         .site-nav {
@@ -666,7 +805,7 @@ a {
             overflow-x: auto;
             scrollbar-width: none;
             scroll-snap-type: x proximity;
-            padding-bottom: 0.3rem;
+            padding-bottom: 0.15rem;
             mask-image: linear-gradient(90deg, #000 92%, transparent);
             -webkit-mask-image: linear-gradient(90deg, #000 92%, transparent);
         }
@@ -726,7 +865,7 @@ a {
 
 .btn:hover {
     translate: 0 -1px;
-    box-shadow: 0 10px 26px var(--aurora-glow);
+    box-shadow: var(--shadow-lift);
 }
 
 .btn:active {
@@ -742,7 +881,7 @@ a {
     background: var(--action-bg-hover);
 }
 
-/* Glass pill: chrome, so it may use the blur when it floats over the field — but the
+/* Glass pill: chrome, so it may use the blur when it floats over the ground — but the
    pills that sit on a sheet get a sheet-visible edge instead, and no blur at all (the
    sheet beneath is nearly opaque, so a blur there is render cost for nothing). */
 .btn--ghost {
@@ -793,7 +932,7 @@ a {
 .chip:hover {
     translate: 0 -1px;
     border-color: var(--accent);
-    box-shadow: 0 6px 18px var(--aurora-glow);
+    box-shadow: var(--shadow-lift);
     color: var(--ink);
 }
 
@@ -1046,7 +1185,7 @@ details.disclosure > summary:hover {
    stylesheet because Blazor's CSS isolation scopes a .razor.css file to its own
    component, and three pages now render the same document shape. Isolation is
    right for a component that owns its look; it is wrong for a layout several
-   routes share. The whole study is one big sheet on the field.
+   routes share. The whole study is one big sheet on the ground.
    ========================================================================= */
 
 .booting {
@@ -1058,8 +1197,10 @@ details.disclosure > summary:hover {
     width: min(100% - 1.5rem, calc(var(--measure) + 14rem));
     margin: 1.4rem auto;
     padding: clamp(2rem, 1.5rem + 3vw, 4rem) clamp(1.25rem, 3.5vw, 3rem) clamp(3rem, 2rem + 4vw, 5rem);
-    background: var(--sheet-bg);
-    border: 1px solid var(--sheet-line);
+    border: 1px solid transparent;
+    background:
+        linear-gradient(var(--sheet-solid), var(--sheet-solid)) padding-box,
+        var(--edge-metal) border-box;
     border-radius: var(--radius-sheet);
     box-shadow: var(--shadow-sheet);
 }
@@ -1202,7 +1343,7 @@ details.disclosure > summary:hover {
 .study__link:hover {
     border-color: var(--accent);
     translate: 0 -2px;
-    box-shadow: 0 10px 26px var(--aurora-glow);
+    box-shadow: var(--shadow-lift);
 }
 
 .study__link--next {
@@ -1359,12 +1500,6 @@ details.disclosure > summary:hover {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
-    }
-
-    /* The aurora holds its rest pose: the animation above drives transform only, so
-       freezing it leaves the field exactly where first paint put it. */
-    .aurora__layer {
-        animation: none !important;
     }
 
     /* Zeroing the durations is not enough on its own: the reveal rules set opacity: 0

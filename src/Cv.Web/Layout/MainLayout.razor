@@ -30,20 +30,38 @@
                 (flex-basis 100%) wraps below both. After the nav it would strand alone
                 on a third row at 390px.
             *@
+            @*
+                The theme control is an iOS-style switch: a tap toggles (the button's
+                own click, keyboard included), and — after boot — dragging the knob
+                past the midpoint also switches, the tactile version of the same
+                action. The drag is progressive enhancement from the shell's inline
+                script; without script this is just a button, and theming still works.
+
+                The knob's position and its sun/moon icon are pure CSS state: both
+                states are always in the markup and the theme selectors in app.css
+                decide, so the control is identical across the prerendered shell and
+                this render and can never fall out of sync with the palette.
+            *@
             <button type="button"
                     class="theme-toggle"
-                    @onclick="ToggleThemeAsync"
+                    role="switch"
+                    aria-checked="@isDark.ToString().ToLowerInvariant()"
                     aria-label="@(isDark ? "Switch to light theme" : "Switch to dark theme")"
-                    title="@(isDark ? "Switch to light theme" : "Switch to dark theme")">
-                <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
-                    <circle cx="12" cy="12" r="4" />
-                    <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41" />
-                </svg>
-                <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                </svg>
+                    title="@(isDark ? "Switch to light theme" : "Switch to dark theme")"
+                    @onclick="ToggleThemeAsync">
+                <span class="theme-toggle__track" aria-hidden="true">
+                    <span class="theme-toggle__knob">
+                        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="4" />
+                            <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41" />
+                        </svg>
+                        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                        </svg>
+                    </span>
+                </span>
             </button>
 
             @*
@@ -94,6 +112,39 @@
         <p>Built with Blazor WebAssembly on .NET 10. This site is itself a work sample.</p>
     </div>
 </footer>
+
+@*
+    The persistent contact dock (app.css .contact-dock): call and email fixed to the
+    viewport's foot on every showcase page. Plain anchors, no script, so a visitor the
+    runtime never reaches can still get in touch — prerender.py's static shell carries
+    the same markup (static_contact_dock) byte for byte; change them together.
+
+    The tel: href (Profile.PhoneHref) carries the digits without printing the number as
+    text anywhere on the page — the anti-scrape posture the contact section below keeps
+    for the visible number, extended to an always-reachable affordance. The drawn SVGs
+    match the theme toggle's icon language: 24px viewBox, currentColor stroke, 1.6
+    stroke width, round caps.
+*@
+@if (profile is not null)
+{
+    <nav class="contact-dock" aria-label="Contact">
+        <a class="contact-dock__action" href="@profile.PhoneHref">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+            </svg>
+            <span>Call</span>
+        </a>
+        <a class="contact-dock__action" href="mailto:@profile.Email">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 6-10 7L2 6" />
+            </svg>
+            <span>Email</span>
+        </a>
+    </nav>
+}
 
 @code {
     [Inject]

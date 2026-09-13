@@ -48,10 +48,10 @@ runs the same steps; deploys gate on all of them.
   keeps `/data/` strictly network-first.
 - Blazor boots deferred: `autostart="false"`, started on idle by `js/boot.js`, skipped
   entirely on data-saver/2G connections. The static layer is the contract —
-  every page must be complete without the runtime. That includes the header: the
-  prerendered header in `prerender.py` (`static_shell_header` + `NAV_LINKS`) duplicates
-  `MainLayout.razor`'s on purpose; change them together or pre- and post-boot chrome
-  diverges.
+  every page must be complete without the runtime. That includes the header and the
+  contact dock: `prerender.py` (`static_shell_header` + `NAV_LINKS`, and
+  `static_contact_dock`) duplicates `MainLayout.razor`'s chrome on purpose; change
+  them together or pre- and post-boot chrome diverges.
 - Motion is additive: `motion.js` is the only thing that applies hiding classes. Never
   write an unconditional `opacity: 0` — invisible-content bugs happened three times.
 - No CSS framework. Dark tokens are written twice (`prefers-color-scheme` and

@@ -57,9 +57,12 @@ exception: the two JS modules imported from C# by literal path (`js/motion.js`,
 with `autostart="false"`, and skips it entirely on data-saver or 2G connections (ADR-0007).
 So for some visitors the runtime never boots at all. Anything a reader must be able to do
 has to work in the static layer — which is why `prerender.py` injects a static copy of the
-theme button that the inline script in `index.html` wires up by delegation, and why Blazor
-replacing `#app` on boot silently takes that duty over. If you add interactive chrome,
-either give it a static counterpart or accept that those visitors never get it.
+theme switch that the inline script in `index.html` wires up by delegation, and why Blazor
+replacing `#app` on boot silently takes that duty over. The switch is a tap-first control
+by design: the drag (knob past the midpoint) and the ripple (`.theme-pulse`) are
+enhancements layered on top of a plain button — never the only path. If you add
+interactive chrome, either give it a static counterpart or accept that those visitors
+never get it.
 
 **Motion is additive, always.** `motion.js` is the only thing that applies hiding classes,
 so a script failure can never leave content invisible. Three separate bugs in this project's

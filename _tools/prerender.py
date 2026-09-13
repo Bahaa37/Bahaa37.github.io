@@ -532,10 +532,12 @@ def static_shell_header(cv: dict, include_testimonials: bool) -> str:
     """
     The pre-boot chrome, duplicated from MainLayout.razor (see the note above).
 
-    The theme button carries both icons; the theme selectors in app.css decide which
-    shows, so this markup and the Blazor render stay byte-identical on the one control
-    that switches the whole palette. The skip link lands on #main, which render() puts
-    on the prerendered block.
+    The theme control is the same switch: tap toggles (delegated click in the shell's
+    inline script), drag is added by that script after first paint. aria-checked is
+    painted by paintStaticThemeButtons in index.html; the knob's side and icon are
+    pure CSS state in app.css, so this markup and the Blazor render stay identical on
+    the one control that switches the whole palette. The skip link lands on #main,
+    which render() puts on the prerendered block.
     """
     links = NAV_LINKS if include_testimonials else NAV_LINKS_WITHOUT_TESTIMONIALS
     nav = "".join(f'<a href="{href}">{e(label)}</a>' for href, label in links)
@@ -546,8 +548,10 @@ def static_shell_header(cv: dict, include_testimonials: bool) -> str:
         f'<a class="site-header__name" href="/">{e(cv["profile"]["name"])}</a>'
         # The toggle precedes the nav so the name's flex-grow parks it at the
         # first-row end; after the nav it strands alone on a third row at 390px.
-        '<button type="button" class="theme-toggle" data-static-theme-toggle '
-        'aria-label="Switch theme" title="Switch theme">'
+        '<button type="button" class="theme-toggle" role="switch" aria-checked="false" '
+        'data-static-theme-toggle aria-label="Switch theme" title="Switch theme">'
+        '<span class="theme-toggle__track" aria-hidden="true">'
+        '<span class="theme-toggle__knob">'
         '<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
         'stroke-width="1.6" stroke-linecap="round" aria-hidden="true">'
         '<circle cx="12" cy="12" r="4"></circle>'
@@ -556,9 +560,40 @@ def static_shell_header(cv: dict, include_testimonials: bool) -> str:
         '<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
         'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
         '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>'
-        "</button>"
+        "</span></span></button>"
         f'<nav class="site-nav">{nav}</nav>'
         "</div></div></header>"
+    )
+
+
+def static_contact_dock(cv: dict) -> str:
+    """
+    The pre-boot contact dock, duplicated from MainLayout.razor (see its comment).
+
+    One fixed capsule at the viewport's foot holding call and email as plain anchors —
+    no script, so it works for every visitor the WebAssembly runtime never reaches.
+    The tel: href carries the digits (Profile.PhoneHref's C# equivalent: keep the
+    leading +, drop everything else) without printing the number as text anywhere.
+    """
+    phone = cv["profile"]["phone"]
+    tel = "".join(c for c in phone if c.isdigit() or c == "+")
+    mail = e(cv["profile"]["email"])
+    return (
+        '<nav class="contact-dock" aria-label="Contact">'
+        f'<a class="contact-dock__action" href="tel:{tel}">'
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" '
+        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 '
+        '19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 '
+        '2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 '
+        '2.81.7A2 2 0 0 1 22 16.92z"></path></svg>'
+        "<span>Call</span></a>"
+        f'<a class="contact-dock__action" href="mailto:{mail}">'
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" '
+        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        '<rect x="2" y="4" width="20" height="16" rx="2"></rect>'
+        '<path d="m22 6-10 7L2 6"></path></svg>'
+        "<span>Email</span></a></nav>"
     )
 
 
@@ -702,6 +737,7 @@ def render(
     preloads: list[str] | None = None,
     app_css: str = "",
     shell_header: str = "",
+    contact_dock: str = "",
     sw_registration: str = "",
 ) -> str:
     url = route.url.format(base=base_url)
@@ -762,6 +798,9 @@ def render(
                 # same link MainLayout.razor does, and this block is its destination
                 # until Blazor's own <main id="main"> replaces everything here.
                 f'\n<div class="prerendered" id="main">{route.body}</div>'
+                # The dock is position:fixed, so its DOM home is arbitrary; it rides
+                # inside #app because Blazor replaces that block wholesale on boot.
+                f"{contact_dock}"
                 f"{match.group(3)}"
             )
 
@@ -938,10 +977,11 @@ def main() -> int:
     )
 
     shell_header = static_shell_header(cv, include_testimonials=bool(testimonials))
+    contact_dock = static_contact_dock(cv)
     routes = build_routes(cv, base_url, testimonials)
 
     for route in routes:
-        page = render(route, shell, base_url, versions, preloads, app_css, shell_header, sw_registration)
+        page = render(route, shell, base_url, versions, preloads, app_css, shell_header, contact_dock, sw_registration)
 
         if route.path == "":
             target = publish / "index.html"
