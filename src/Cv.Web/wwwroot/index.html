@@ -47,10 +47,10 @@
          in the URL makes each face appear the moment it lands. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" media="print" onload="this.media='all'" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;600&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;600&display=swap" media="print" onload="this.media='all'" />
     <noscript>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;600&display=swap" />
     </noscript>
 
     <!--
@@ -106,13 +106,15 @@
             // connections. The wiring is delegated: after boot Blazor replaces #app,
             // the static button disappears with it, and Blazor's own @onclick takes
             // over. This listener then matches nothing, so it cannot double-toggle.
+            //
+            // Only the labels are painted here: the sun/moon icons are pure CSS state
+            // (both are in the markup; the theme selectors in app.css choose which
+            // shows), so the icon cannot fall out of sync with the palette.
             function paintStaticThemeButtons() {
                 var dark = themeControl.effective() === "dark";
                 var buttons = document.querySelectorAll("[data-static-theme-toggle]");
+                var label = dark ? "Switch to light theme" : "Switch to dark theme";
                 for (var i = 0; i < buttons.length; i++) {
-                    var icon = buttons[i].querySelector("[aria-hidden='true']");
-                    if (icon) { icon.textContent = dark ? "\u2600" : "\u263E"; }
-                    var label = dark ? "Switch to light theme" : "Switch to dark theme";
                     buttons[i].setAttribute("aria-label", label);
                     buttons[i].setAttribute("title", label);
                 }
@@ -136,6 +138,38 @@
             } else {
                 paintStaticThemeButtons();
             }
+
+            /*
+                The header capsule's glass deepens once content has scrolled beneath it.
+
+                This is state, not motion — no animation is started or stopped — so it
+                runs regardless of reduced-motion, and it lives here rather than in
+                motion.js because it has to work on every page, from first paint, and
+                keep working after Blazor replaces the header. The node is re-queried
+                whenever it is no longer connected, which is exactly the boot boundary.
+            */
+            var capsule = null;
+            var capsuleScrolled = false;
+            var capsuleQueued = false;
+            function paintCapsule() {
+                capsuleQueued = false;
+                if (!capsule || !capsule.isConnected) {
+                    capsule = document.querySelector(".header-capsule");
+                }
+                if (!capsule) { return; }
+                var scrolled = (window.scrollY || window.pageYOffset || 0) > 8;
+                if (scrolled !== capsuleScrolled) {
+                    capsuleScrolled = scrolled;
+                    capsule.classList.toggle("is-scrolled", scrolled);
+                }
+            }
+            window.addEventListener("scroll", function () {
+                if (!capsuleQueued) {
+                    capsuleQueued = true;
+                    requestAnimationFrame(paintCapsule);
+                }
+            }, { passive: true });
+            paintCapsule();
         })();
     </script>
 
@@ -145,12 +179,29 @@
     <!-- display: "browser" — this is a document, not an app, and a standalone window
          would only take the back button away from someone reading a CV. -->
     <link rel="manifest" href="manifest.webmanifest" />
-    <meta name="theme-color" content="#14425f" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f5f7" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b1220" />
     <link href="Cv.Web.styles.css" rel="stylesheet" />
     <script type="importmap"></script>
 </head>
 
 <body>
+    <!--
+        The aurora field: the one continuous backdrop every surface floats over.
+
+        It lives here, outside #app, deliberately. Blazor clears #app when it boots and
+        prerender.py fills it at publish time, so anything that must survive both of
+        those replacements — and be present at first paint without a single byte of
+        runtime — belongs to the shell. The layers are plain radial gradients animated
+        on transform only: no filter on a full-viewport element, so the field costs one
+        composited layer per blob and never re-rasterizes.
+    -->
+    <div class="aurora" aria-hidden="true">
+        <i class="aurora__layer aurora__layer--a"></i>
+        <i class="aurora__layer aurora__layer--b"></i>
+        <i class="aurora__layer aurora__layer--c"></i>
+    </div>
+
     <div id="app">
         <svg class="loading-progress">
             <circle r="40%" cx="50%" cy="50%" />

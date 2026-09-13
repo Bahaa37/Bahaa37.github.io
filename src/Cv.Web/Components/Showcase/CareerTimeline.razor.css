@@ -213,3 +213,11 @@
 .entry__points .metric-chip {
     margin-left: 0.4rem;
 }
+
+/* The disclosed tail keeps the list rhythm but sits a step back in colour. */
+.entry__points--more {
+    margin-top: 0.45rem;
+    padding-top: 0.45rem;
+    border-top: 1px dashed var(--line);
+    color: var(--ink-faint);
+}

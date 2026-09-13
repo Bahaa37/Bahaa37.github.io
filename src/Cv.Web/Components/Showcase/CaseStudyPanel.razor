@@ -7,25 +7,21 @@
 
 <article class="case stagger" id="@Study.Slug" style="--i: @Index">
     <header class="case__head">
-        <p class="eyebrow">
-            @(Study.Organisation ?? "Project")
-            <span class="case__index">@($"{Index:00}")</span>
-        </p>
         <h3 class="case__title">@Study.Title</h3>
+        @*
+            Attribution reads as a byline under the title, never as a label above it:
+            the heading carries its own weight, and the organisation is metadata.
+        *@
+        <p class="case__org mono">@(Study.Organisation ?? "Personal project")</p>
         <p class="case__summary">@Study.Summary</p>
     </header>
 
-    <div class="case__grid">
-        <div class="case__block">
-            <h4>The problem</h4>
-            <p>@Study.Problem</p>
-        </div>
-        <div class="case__block">
-            <h4>What I did</h4>
-            <p>@Study.Approach</p>
-        </div>
-    </div>
-
+    @*
+        The skim stops on outcomes — what actually changed — so that is the one block
+        the panel keeps, tinted. The full problem/approach prose lives on the case
+        study's own page, so clicking through buys real depth instead of repeating
+        the card.
+    *@
     @if (Study.Outcomes.Count > 0)
     {
         <div class="case__block case__block--outcomes">
@@ -49,13 +45,8 @@
         </ul>
     }
 
-    @*
-        Every case study now has a page of its own, so each card has somewhere to go.
-        Where a deeper write-up exists it is offered as well — those are different
-        documents, not two links to the same one.
-    *@
     <div class="case__diagram">
-        <a class="btn btn--primary" href="@($"/work/{Study.Slug}")">Read the case study</a>
+        <a class="btn btn--ghost" href="@($"/work/{Study.Slug}")">Read the case study</a>
 
         @if (Study.HasWriteup)
         {

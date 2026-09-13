@@ -4,22 +4,22 @@
     into one — attaching the evidence turns a claim into a citation.
 *@
 
-<section class="band band--alt reveal" id="skills">
+<section class="sheet reveal" id="skills">
     <div class="shell">
-        <p class="eyebrow">Capabilities</p>
-        <h2 class="band__title">Skills, with the work that backs them</h2>
-        <p class="band__lede">
+        <h2 class="sheet__title">Skills, with the work that backs them</h2>
+        <p class="sheet__lede">
             Anyone can list a technology. Where a skill shows up in the achievement record,
             the employers are named beside it.
         </p>
 
         @*
-            Each group cascades in a beat after the one above it, so the section arrives
-            as a sequence rather than as one block of boxes. --i is the stagger index the
-            shared .stagger rule reads.
+            The skim leads with the two positioning pillars (architecture; AI and
+            delivery) — PRODUCT.md's headline claims get the first row, and the rest of
+            the stack stays one no-JS disclosure away instead of diluting them. Group
+            order inside each tier follows cv.json.
         *@
         <div class="groups">
-            @foreach (var (group, index) in Groups.Select((group, index) => (group, index)))
+            @foreach (var (group, index) in LeadGroups.Select((group, index) => (group, index)))
             {
                 <div class="group stagger" style="--i: @index">
                     <h3 class="group__title">@group.Category</h3>
@@ -39,6 +39,7 @@
                                 @if (skill.HasEvidence)
                                 {
                                     <span class="chip__where">@Evidence(skill)</span>
+                                    <span class="visually-hidden">Used at @string.Join(", ", skill.UsedAt)</span>
                                 }
                             </li>
                         }
@@ -46,6 +47,35 @@
                 </div>
             }
         </div>
+
+        @if (RestGroups.Count > 0)
+        {
+            <details class="disclosure skills__more">
+                <summary>Also across the stack — @RestGroups.Count more skill areas</summary>
+                <div class="groups">
+                    @foreach (var (group, index) in RestGroups.Select((group, index) => (group, index)))
+                    {
+                        <div class="group stagger" style="--i: @index">
+                            <h3 class="group__title">@group.Category</h3>
+                            <ul class="chips">
+                                @foreach (var skill in SkillEvidence.For(group, Experience))
+                                {
+                                    <li class="chip @(skill.HasEvidence ? "chip--evidenced" : null)"
+                                        title="@(skill.HasEvidence ? string.Join(" · ", skill.UsedAt) : null)">
+                                        <span>@skill.Skill</span>
+                                        @if (skill.HasEvidence)
+                                        {
+                                            <span class="chip__where">@Evidence(skill)</span>
+                                            <span class="visually-hidden">Used at @string.Join(", ", skill.UsedAt)</span>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </details>
+        }
     </div>
 </section>
 
@@ -55,6 +85,26 @@
 
     [Parameter, EditorRequired]
     public required IReadOnlyList<ExperienceEntry> Experience { get; set; }
+
+    /// <summary>
+    /// The two categories whose names carry the positioning claims (architecture;
+    /// AI and delivery). They render first and always expand; everything else sits
+    /// behind the "Also across the stack" disclosure. Matched by name against
+    /// cv.json's category strings — renaming a category in the data moves it between
+    /// tiers, which is the point: the data stays the only source of truth.
+    /// </summary>
+    private static readonly string[] LeadCategories =
+    [
+        "Architecture & Patterns",
+        "Cloud, Delivery & AI Engineering",
+    ];
+
+    private IEnumerable<SkillGroup> LeadGroups => Groups
+        .Where(g => LeadCategories.Contains(g.Category));
+
+    private IReadOnlyList<SkillGroup> RestGroups => Groups
+        .Where(g => !LeadCategories.Contains(g.Category))
+        .ToList();
 
     /// <summary>
     /// The employer evidence in the compact form a chip can carry: the first employer,

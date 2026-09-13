@@ -17,6 +17,14 @@
     @(showDiagram ? "Hide architecture diagram" : "Show architecture diagram")
 </button>
 
+@*
+    The rendered SVG is a picture to a screen reader, so the source ships beside it,
+    always present and visually hidden. The Mermaid text is a faithful, ordered
+    reading of the diagram — a screen-reader engineer gets the same information a
+    sighted one draws from the picture, whether or not it was ever rendered.
+*@
+<pre class="visually-hidden">@Source</pre>
+
 @if (showDiagram)
 {
     <div class="scroll-x diagram__canvas" @ref="diagramElement"></div>

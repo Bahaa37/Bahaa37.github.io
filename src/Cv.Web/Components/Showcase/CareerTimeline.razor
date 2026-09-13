@@ -5,11 +5,10 @@
     worth showing plainly rather than smoothing over, so returns are marked.
 *@
 
-<section class="band reveal" id="timeline">
+<section class="sheet reveal" id="timeline">
     <div class="shell">
-        <p class="eyebrow">Experience</p>
-        <h2 class="band__title">@ExperiencePhrase across @Employers.Count employers</h2>
-        <p class="band__lede">
+        <h2 class="sheet__title">@ExperiencePhrase across @Employers.Count employers</h2>
+        <p class="sheet__lede">
             Every achievement below is drawn from the same record as the printable CV.
             Where a real number exists it is shown; where one does not, none is invented.
         </p>
@@ -44,7 +43,7 @@
                             @role.Company@(role.Location is null ? "" : $" · {role.Location}")
                         </p>
                         <ul class="entry__points">
-                            @foreach (var highlight in role.Highlights)
+                            @foreach (var highlight in role.Highlights.Take(PrimaryHighlightCount))
                             {
                                 <li>
                                     @highlight.Text
@@ -55,6 +54,32 @@
                                 </li>
                             }
                         </ul>
+
+                        @*
+                            The skim is the product: three achievements per role at first
+                            paint, the long tail one no-JS disclosure away. A details
+                            element works with the runtime disabled, so the static layer
+                            keeps every word reachable.
+                        *@
+                        @if (role.Highlights.Count > PrimaryHighlightCount)
+                        {
+                            var rest = role.Highlights.Skip(PrimaryHighlightCount).ToList();
+                            <details class="disclosure">
+                                <summary>Show @rest.Count more for this role</summary>
+                                <ul class="entry__points entry__points--more">
+                                    @foreach (var highlight in rest)
+                                    {
+                                        <li>
+                                            @highlight.Text
+                                            @if (highlight.HasMetric)
+                                            {
+                                                <span class="metric-chip">@highlight.Metric</span>
+                                            }
+                                        </li>
+                                    }
+                                </ul>
+                            </details>
+                        }
                     </div>
                 </li>
             }
@@ -71,6 +96,13 @@
 
     [Parameter, EditorRequired]
     public required IReadOnlyList<string> Employers { get; set; }
+
+    /// <summary>
+    /// Highlights shown at first paint per role; the rest sit behind a disclosure.
+    /// Three is the skim budget — the strongest achievements lead, and the cv.json
+    /// order already ranks them.
+    /// </summary>
+    private const int PrimaryHighlightCount = 3;
 
     /// <summary>
     /// True when an earlier role at the same employer exists further down the list —

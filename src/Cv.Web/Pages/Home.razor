@@ -16,9 +16,8 @@ else
           ExperiencePhrase="@experiencePhrase"
           AwardCount="document.Awards.Count" />
 
-    <section class="band reveal">
+    <section class="sheet sheet--slim reveal">
         <div class="shell">
-            <p class="eyebrow">In short</p>
             <p class="summary">@document.Summary</p>
         </div>
     </section>
@@ -27,11 +26,10 @@ else
 
     <CareerTimeline Roles="roles" ExperiencePhrase="@experiencePhrase" Employers="employers" />
 
-    <section class="band band--alt reveal" id="work">
+    <section class="sheet reveal" id="work">
         <div class="shell">
-            <p class="eyebrow">Selected work</p>
-            <h2 class="band__title">Five pieces of work, in depth</h2>
-            <p class="band__lede">
+            <h2 class="sheet__title">Five pieces of work, in depth</h2>
+            <p class="sheet__lede">
                 Each one covers the problem, the decisions made, and what actually changed.
                 Where a diagram helps, it renders on demand rather than on page load.
             </p>
@@ -54,11 +52,10 @@ else
        testimonials file renders nothing here, never an invented quote. *@
     @if (testimonials is { Count: > 0 })
     {
-        <section class="band reveal" id="testimonials">
+        <section class="sheet reveal" id="testimonials">
             <div class="shell">
-                <p class="eyebrow">Testimonials</p>
-                <h2 class="band__title">What people say</h2>
-                <p class="band__lede">
+                <h2 class="sheet__title">What people say</h2>
+                <p class="sheet__lede">
                     Recommendations from colleagues, each attributed to its author.
                     <a href="/testimonials">Read them all</a>.
                 </p>
@@ -72,11 +69,10 @@ else
         </section>
     }
 
-    <section class="band reveal" id="contact">
+    <section class="sheet reveal" id="contact">
         <div class="shell contact">
-            <p class="eyebrow">Contact</p>
-            <h2 class="band__title">Open to senior .NET and architecture roles</h2>
-            <p class="band__lede">
+            <h2 class="sheet__title">Open to senior .NET and architecture roles</h2>
+            <p class="sheet__lede">
                 The quickest way to reach me is email. The CV below is the same content as
                 this page, formatted for printing and for applicant tracking systems.
             </p>

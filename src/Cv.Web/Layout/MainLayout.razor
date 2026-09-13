@@ -6,37 +6,68 @@
 
     The printable CV uses EmptyLayout instead, so none of this reaches paper or an
     ATS text extractor.
+
+    The header is Frosted Keynote's one piece of glass chrome: a floating capsule,
+    styled by .header-capsule in app.css. prerender.py's static_shell_header duplicates
+    this markup byte for byte (minus the Blazor @onclick, which becomes
+    data-static-theme-toggle) — when the nav or the toggle changes, change both sides.
+
+    The icons inside the theme button are pure CSS state: both are always in the markup
+    and the theme selectors in app.css decide which one shows. That keeps the button
+    identical across the prerendered shell and this render, so the control that switches
+    the whole palette can never diverge pre- and post-boot.
 *@
 
-<header class="site-header">
-    <div class="shell site-header__inner">
-        <a class="site-header__name" href="/">@(profile?.Name ?? "Portfolio")</a>
-        @*
-            Root-relative, not bare fragments. These sections live on the home page, and
-            a bare "#work" from /work/legacy-modernization scrolls nowhere — the links
-            only worked while the home page was the only page with chrome.
-        *@
-        @* Root-relative, not bare fragments: a bare "#work" from /work/… scrolls nowhere. *@
-        <nav class="site-nav">
-            <a href="/#skills">Skills</a>
-            <a href="/#timeline">Experience</a>
-            <a href="/#work">Selected work</a>
-            <a href="/#credentials">Credentials</a>
-            <a href="/testimonials">Testimonials</a>
-            <a href="/cv">CV</a>
-        </nav>
+<a class="skip-link" href="#main">Skip to content</a>
 
-        <button type="button"
-                class="theme-toggle"
-                @onclick="ToggleThemeAsync"
-                aria-label="@(isDark ? "Switch to light theme" : "Switch to dark theme")"
-                title="@(isDark ? "Switch to light theme" : "Switch to dark theme")">
-            <span aria-hidden="true">@(isDark ? "☀" : "☾")</span>
-        </button>
+<header class="site-header">
+    <div class="shell">
+        <div class="header-capsule">
+            <a class="site-header__name" href="/">@(profile?.Name ?? "Portfolio")</a>
+            @*
+                The toggle sits between the name and the nav in DOM order: the name's
+                flex-grow pushes the toggle to the capsule's first-row end, and the nav
+                (flex-basis 100%) wraps below both. After the nav it would strand alone
+                on a third row at 390px.
+            *@
+            <button type="button"
+                    class="theme-toggle"
+                    @onclick="ToggleThemeAsync"
+                    aria-label="@(isDark ? "Switch to light theme" : "Switch to dark theme")"
+                    title="@(isDark ? "Switch to light theme" : "Switch to dark theme")">
+                <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4" />
+                    <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41" />
+                </svg>
+                <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+            </button>
+
+            @*
+                Root-relative, not bare fragments: a bare "#work" from /work/… scrolls
+                nowhere. Testimonials render only when there is something real to show —
+                a nav link to an empty page is a wasted click for the one visitor a
+                portfolio cannot afford to waste.
+            *@
+            <nav class="site-nav">
+                <a href="/#skills">Skills</a>
+                <a href="/#timeline">Experience</a>
+                <a href="/#work">Selected work</a>
+                <a href="/#credentials">Credentials</a>
+                @if (hasTestimonials)
+                {
+                    <a href="/testimonials">Testimonials</a>
+                }
+                <a href="/cv">CV</a>
+            </nav>
+        </div>
     </div>
 </header>
 
-<main>
+<main id="main">
     @Body
 </main>
 
@@ -70,8 +101,16 @@
 
     private Profile? profile;
     private bool isDark;
+    private bool hasTestimonials;
 
-    protected override async Task OnInitializedAsync() => profile = (await CvData.GetAsync()).Profile;
+    protected override async Task OnInitializedAsync()
+    {
+        profile = (await CvData.GetAsync()).Profile;
+
+        // The nav link exists only while a quote does; the empty page stays reachable
+        // by direct link for anyone who already has the URL.
+        hasTestimonials = (await CvData.GetTestimonialsAsync()).Count > 0;
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -81,8 +120,8 @@
         }
 
         // The theme is applied by an inline script before first paint, so by the time
-        // this runs the page is already correct. All that is read here is which icon the
-        // button should show.
+        // this runs the page is already correct. All that is read here is which label
+        // the button should carry — the icon itself is CSS state, not markup state.
         var effective = await JS.InvokeAsync<string>("themeControl.effective");
         isDark = effective == "dark";
         StateHasChanged();

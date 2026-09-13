@@ -24,10 +24,10 @@
 }
 else if (study is null)
 {
-    <section class="band">
+    <section class="sheet">
         <div class="shell">
-            <h1 class="band__title">No such case study</h1>
-            <p class="band__lede">
+            <h1 class="sheet__title">No such case study</h1>
+            <p class="sheet__lede">
                 Nothing here matches "@Slug".
                 <a href="/#work">See the selected work</a> instead.
             </p>
@@ -46,8 +46,12 @@ else
             </nav>
 
             <header class="study__head">
-                <p class="eyebrow">@(study.Organisation ?? "Project")</p>
                 <h1 class="study__title">@study.Title</h1>
+                @*
+                    Attribution reads as a byline under the title, never as a label
+                    above it — same rule as the panels on the home page.
+                *@
+                <p class="study__org mono">@(study.Organisation ?? "Personal project")</p>
                 <p class="study__summary">@study.Summary</p>
 
                 @if (study.Stack.Count > 0)
@@ -73,7 +77,7 @@ else
 
             @if (study.Outcomes.Count > 0)
             {
-                <section class="study__block">
+                <section class="study__block study__block--outcomes">
                     <h2>Outcome</h2>
                     <ul class="outcomes">
                         @foreach (var outcome in study.Outcomes)

@@ -1,10 +1,18 @@
 /*
-    Design system for the showcase site.
+    Design system for the showcase site — "Frosted Keynote".
 
-    Replaces the Blazor template's Bootstrap-based styling. Bootstrap was dropped
-    because this site is a handful of bespoke layouts, and shipping ~200KB of a grid
-    framework to a recruiter who will read the page once is a poor trade on a page
-    whose entire job is loading fast.
+    The site behaves like a native Apple app: one aurora-lit field behind everything,
+    frosted glass for chrome (header capsule, pills, chips), and near-opaque rounded
+    sheets carrying all dense content. Direction chosen on the impeccable decision
+    page; the full contract lives in .impeccable/surfaces/src-cv-web-pages-home-razor.md.
+
+    Two performance rules shaped by the site's sub-second first-paint budget:
+
+    - The aurora field is three plain radial gradients animated on transform only.
+      No filter on a full-viewport element, no repaint after the first raster.
+    - backdrop-filter is spent exclusively on chrome: the header capsule and small
+      controls. Content sheets use plain translucent backgrounds so long pages never
+      keep a GPU blurred layer alive under the reader's eyes.
 
     Colours are defined once as tokens on :root, so no colour has its sole definition
     inside a conditional block. They are overridden in two places — the dark media query
@@ -13,32 +21,68 @@
 */
 
 :root {
-    --ink: #16202a;
-    --ink-soft: #46586a;
-    --ink-faint: #6b7c8d;
-    --paper: #ffffff;
-    --paper-alt: #f4f7fa;
-    --paper-sunken: #e9eff5;
-    --line: #d8e1ea;
-    --accent: #14425f;
-    --accent-bright: #1d6fa5;
-    --accent-wash: #e6eff6;
+    /* Ink on sheets. The faint step is the smallest text on the page, so it is held
+       at or above 4.5:1 on its sheet — the previous palette failed AA here. */
+    --ink: #1d1d1f;
+    --ink-soft: #424245;
+    --ink-faint: #56575b;
+
+    /* The ground the aurora glows over; sheets float between the two. */
+    --paper: #f5f5f7;
+    --sheet-bg: rgba(255, 255, 255, .9);
+    --sheet-line: rgba(0, 0, 0, .08);
+
+    /* Action and link colour. The pair is split because a button's fill and a text
+       link need different contrast solutions: the fill carries white text at AA,
+       the link sits as text on a white sheet at AA. */
+    --accent: #0066cc;
+    --accent-bright: #0071e3;
+    --accent-wash: #e8f1fb;
+    --action-bg: #0066cc;
+    --action-bg-hover: #0059b3;
+    --action-ink: #ffffff;
+
+    /* Gold is spent on exactly one element — the award metric — and nowhere else. */
     --gold: #8a6116;
     --gold-wash: #fbf3e2;
-    /* The blocker colour earned its own token once the diagram animated it: it was
-       previously the literal #b4634c repeated in three component rules. */
+
+    /* The diagram's blocker colour; earned its own token when it started animating. */
     --alarm: #b0432c;
     --alarm-wash: #fbeae6;
-    --glow: rgba(29, 111, 165, .18);
+
+    /* The aurora blobs themselves. Same hues in both themes; only the veil over
+       them changes, so the field reads airy by day and submarine by night. */
+    --aurora-1: #0a84ff;
+    --aurora-2: #5ac8d8;
+    --aurora-3: #7d7aff;
+    --aurora-veil: .35;
+    --aurora-glow: rgba(10, 132, 255, .14);
+
+    /* Glass is chrome-only. The inner top highlight is the tell of real glass. */
+    --glass-bg: rgba(255, 255, 255, .58);
+    --glass-line: rgba(255, 255, 255, .65);
+    --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, .45);
+    --glass-blur: saturate(180%) blur(20px);
+
+    /* Ghost pills sit ON a sheet, not over the field, so their edge must be visible
+       against the sheet — white-on-white glass has no affordance in the light theme.
+       The alpha is held near the 3:1 non-text guideline for component boundaries on a
+       low-grade panel. */
+    --pill-line: rgba(0, 0, 0, .24);
+    --pill-bg: rgba(255, 255, 255, .7);
+
+    --line: rgba(0, 0, 0, .1);
+    --shadow-sheet: 0 1px 2px rgba(16, 24, 40, .05), 0 12px 32px rgba(16, 24, 40, .08), 0 32px 80px rgba(10, 80, 160, .07);
+    --shadow-float: 0 2px 6px rgba(16, 24, 40, .08), 0 12px 28px rgba(16, 24, 40, .12);
 
     --measure: 68ch;
-    --page: 1120px;
-    --radius: 10px;
-    --shadow: 0 1px 2px rgba(16, 32, 42, .06), 0 8px 24px rgba(16, 32, 42, .06);
+    --page: 1160px;
+    --radius: 12px;
+    --radius-sheet: 16px;
 
-    --font-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
-    --font-body: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, Helvetica, sans-serif;
-    --font-mono: "IBM Plex Mono", "Cascadia Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --font-display: "Geist", "Segoe UI", system-ui, sans-serif;
+    --font-body: "Geist", "Segoe UI", system-ui, -apple-system, Helvetica, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
     color-scheme: light dark;
 }
@@ -56,43 +100,63 @@
 */
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-        --ink: #e6edf3;
-        --ink-soft: #a9b8c6;
-        --ink-faint: #7d8d9c;
-        --paper: #0f151b;
-        --paper-alt: #151d26;
-        --paper-sunken: #1c2731;
-        --line: #2a3742;
-        --accent: #8ec6ea;
-        --accent-bright: #a9d7f5;
-        --accent-wash: #16242f;
+        --ink: #f5f5f7;
+        --ink-soft: #c6cdd8;
+        --ink-faint: #9aa4b1;
+        --paper: #0b1220;
+        --sheet-bg: rgba(21, 29, 41, .88);
+        --sheet-line: rgba(255, 255, 255, .09);
+        --accent: #8abaff;
+        --accent-bright: #a8ccff;
+        --accent-wash: #16283c;
+        --action-bg: #0a84ff;
+        --action-bg-hover: #3d9bff;
+        --action-ink: #071018;
         --gold: #e0b95f;
         --gold-wash: #2a2213;
         --alarm: #e5806a;
         --alarm-wash: #2c1a15;
-        --glow: rgba(169, 215, 245, .22);
-        --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px rgba(0, 0, 0, .3);
+        --aurora-veil: .3;
+        --aurora-glow: rgba(90, 200, 216, .12);
+        --glass-bg: rgba(16, 24, 36, .55);
+        --glass-line: rgba(255, 255, 255, .14);
+        --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, .09);
+        --pill-line: rgba(255, 255, 255, .18);
+        --pill-bg: rgba(255, 255, 255, .06);
+        --line: rgba(255, 255, 255, .11);
+        --shadow-sheet: 0 1px 2px rgba(0, 0, 0, .5), 0 12px 32px rgba(0, 0, 0, .38), 0 32px 80px rgba(0, 0, 0, .32);
+        --shadow-float: 0 2px 6px rgba(0, 0, 0, .45), 0 12px 28px rgba(0, 0, 0, .4);
         color-scheme: dark;
     }
 }
 
 :root[data-theme="dark"] {
-    --ink: #e6edf3;
-    --ink-soft: #a9b8c6;
-    --ink-faint: #7d8d9c;
-    --paper: #0f151b;
-    --paper-alt: #151d26;
-    --paper-sunken: #1c2731;
-    --line: #2a3742;
-    --accent: #8ec6ea;
-    --accent-bright: #a9d7f5;
-    --accent-wash: #16242f;
+    --ink: #f5f5f7;
+    --ink-soft: #c6cdd8;
+    --ink-faint: #9aa4b1;
+    --paper: #0b1220;
+    --sheet-bg: rgba(21, 29, 41, .88);
+    --sheet-line: rgba(255, 255, 255, .09);
+    --accent: #8abaff;
+    --accent-bright: #a8ccff;
+    --accent-wash: #16283c;
+    --action-bg: #0a84ff;
+    --action-bg-hover: #3d9bff;
+    --action-ink: #071018;
     --gold: #e0b95f;
     --gold-wash: #2a2213;
     --alarm: #e5806a;
     --alarm-wash: #2c1a15;
-    --glow: rgba(169, 215, 245, .22);
-    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px rgba(0, 0, 0, .3);
+    --aurora-veil: .3;
+    --aurora-glow: rgba(90, 200, 216, .12);
+    --glass-bg: rgba(16, 24, 36, .55);
+    --glass-line: rgba(255, 255, 255, .14);
+    --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, .09);
+    --pill-line: rgba(255, 255, 255, .18);
+    --pill-bg: rgba(255, 255, 255, .06);
+    --line: rgba(255, 255, 255, .11);
+    --shadow-sheet: 0 1px 2px rgba(0, 0, 0, .5), 0 12px 32px rgba(0, 0, 0, .38), 0 32px 80px rgba(0, 0, 0, .32);
+    --shadow-float: 0 2px 6px rgba(0, 0, 0, .45), 0 12px 28px rgba(0, 0, 0, .4);
     color-scheme: dark;
 }
 
@@ -110,10 +174,11 @@ body {
     padding: 0;
 }
 
-/* The nav is all in-page anchors, so jumping instantly loses the reader's place.
-   Reset to auto under reduced motion in the block at the foot of this file. */
+/* The ground lives on html, not body: the aurora is position:fixed with z-index:-1,
+   so body must stay transparent or it would paint over the field. */
 html {
     scroll-behavior: smooth;
+    background: var(--paper);
 }
 
 body {
@@ -121,15 +186,41 @@ body {
     font-size: 16px;
     line-height: 1.6;
     color: var(--ink);
-    background: var(--paper);
     -webkit-font-smoothing: antialiased;
+}
+
+/* Browser surfaces carry the design too: selection, caret, scrollbar. */
+::selection {
+    background: color-mix(in srgb, var(--aurora-1) 26%, transparent);
+}
+
+input,
+textarea {
+    caret-color: var(--accent);
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--ink-faint) 38%, transparent);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 h1, h2, h3, h4 {
     font-family: var(--font-display);
-    line-height: 1.22;
+    line-height: 1.18;
     margin: 0;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
+    font-weight: 600;
     text-wrap: balance;
 }
 
@@ -137,39 +228,125 @@ h1, h2, h3, h4 {
     font-family: var(--font-mono);
 }
 
+p {
+    margin: 0 0 1rem;
+}
+
+a {
+    color: var(--accent);
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent-bright);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* ---------- the aurora field ----------
+
+   Three blobs, one shared clock. The drift durations are multiples of one base so the
+   field phases in and out of alignment rather than ticking mechanically. transform-only
+   animation keeps every frame on the compositor; the gradients themselves are painted
+   exactly once. */
+
+.aurora {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.aurora__layer {
+    position: absolute;
+    display: block;
+    border-radius: 50%;
+    opacity: var(--aurora-veil);
+    will-change: transform;
+}
+
+.aurora__layer--a {
+    inset-block-start: -22%;
+    inset-inline-start: -12%;
+    inline-size: 68vmax;
+    block-size: 68vmax;
+    background: radial-gradient(closest-side, var(--aurora-1), transparent 72%);
+    animation: aurora-a 84s linear infinite alternate;
+}
+
+.aurora__layer--b {
+    inset-block-start: 8%;
+    inset-inline-end: -18%;
+    inline-size: 58vmax;
+    block-size: 58vmax;
+    background: radial-gradient(closest-side, var(--aurora-2), transparent 70%);
+    animation: aurora-b 63s linear infinite alternate;
+}
+
+.aurora__layer--c {
+    inset-block-end: -28%;
+    inset-inline-start: 18%;
+    inline-size: 64vmax;
+    block-size: 64vmax;
+    background: radial-gradient(closest-side, var(--aurora-3), transparent 72%);
+    animation: aurora-c 77s linear infinite alternate;
+}
+
+@keyframes aurora-a {
+    to { transform: translate3d(9vw, 7vh, 0) rotate(24deg) scale(1.12); }
+}
+
+@keyframes aurora-b {
+    to { transform: translate3d(-8vw, 9vh, 0) rotate(-18deg) scale(1.08); }
+}
+
+@keyframes aurora-c {
+    to { transform: translate3d(7vw, -8vh, 0) rotate(15deg) scale(1.1); }
+}
+
+/* The field must never reach paper: a printed page with three colour blobs behind
+   ATS-critical text is exactly the kind of defect CI cannot see. */
+@media print {
+    .aurora {
+        display: none;
+    }
+}
+
 /* ---------- motion ----------
 
-   One orchestrated moment, not scattered micro-interactions. Every rule here is
-   disabled by the prefers-reduced-motion block at the foot of this file, so motion
-   is additive to a page that already works without it.
-*/
+   One orchestrated system: sections settle in as sheets, the hero plays its sequence,
+   counters run once. Every hiding rule is gated behind .js-motion, added only from
+   motion.js — a script failure can never leave content invisible. Everything here is
+   disabled by the reduced-motion block at the foot of this file.
 
-/* Sections start hidden ONLY once motion.js has claimed them. Without this guard a
-   viewer with JavaScript disabled, or one who loads before the script runs, would be
-   left with permanently invisible content.
+   Reveals move on `translate` and `scale`, not `transform`, deliberately: `transform`
+   is spent on hover lifts, and the individual transform properties compose cleanly
+   with it. */
 
-   Reveals move on `translate`, not `transform`, deliberately: `transform` is spent on
-   hover lifts, and an element holding a filled transform from a reveal would pin its
-   own hover state to none. The two are separate properties and compose cleanly. */
 .js-motion .reveal {
     opacity: 0;
-    translate: 0 14px;
-    transition: opacity .6s cubic-bezier(.2, .7, .3, 1), translate .6s cubic-bezier(.2, .7, .3, 1);
+    translate: 0 26px;
+    scale: .985;
+    transition:
+        opacity .7s cubic-bezier(.16, 1, .3, 1),
+        translate .7s cubic-bezier(.16, 1, .3, 1),
+        scale .7s cubic-bezier(.16, 1, .3, 1);
 }
 
 .js-motion .reveal.is-visible {
     opacity: 1;
     translate: 0 0;
+    scale: 1;
 }
 
 /* Items inside a revealed section cascade rather than arriving as one block. Each sets
    --i to its index; the section's own reveal is what triggers them. */
 .js-motion .reveal .stagger {
     opacity: 0;
-    translate: 0 12px;
+    translate: 0 14px;
     transition:
-        opacity .5s cubic-bezier(.2, .7, .3, 1) calc(var(--i, 0) * 45ms),
-        translate .5s cubic-bezier(.2, .7, .3, 1) calc(var(--i, 0) * 45ms);
+        opacity .55s cubic-bezier(.16, 1, .3, 1) calc(var(--i, 0) * 50ms),
+        translate .55s cubic-bezier(.16, 1, .3, 1) calc(var(--i, 0) * 50ms);
 }
 
 .js-motion .reveal.is-visible .stagger {
@@ -182,64 +359,8 @@ h1, h2, h3, h4 {
     to   { opacity: 1; transform: none; }
 }
 
-/* Each headline line rides up from behind its own clipping box. */
-@keyframes line-rise {
-    from { transform: translateY(105%); }
-    to   { transform: none; }
-}
-
-@keyframes fade-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-
-@keyframes node-in {
-    from { opacity: 0; transform: translateY(8px) scale(.97); }
-    to   { opacity: 1; transform: none; }
-}
-
-@keyframes draw-x {
-    from { transform: scaleX(0); }
-    to   { transform: scaleX(1); }
-}
-
-@keyframes draw-y {
-    from { transform: scaleY(0); }
-    to   { transform: scaleY(1); }
-}
-
-/* The blocker is flagged before it is removed, so the eye is on it when it goes. */
-@keyframes flag {
-    0%, 100% { box-shadow: 0 0 0 0 transparent; }
-    40%      { box-shadow: 0 0 0 5px color-mix(in srgb, var(--alarm) 22%, transparent); }
-}
-
-@keyframes dissolve {
-    from { opacity: 1; }
-    to   { opacity: .26; filter: grayscale(1); }
-}
-
-@keyframes drift {
-    from { transform: translate3d(0, 0, 0) scale(1); }
-    to   { transform: translate3d(0, -18px, 0) scale(1.06); }
-}
-
 .rise {
-    animation: rise-in .55s cubic-bezier(.2, .7, .3, 1) both;
-}
-
-p {
-    margin: 0 0 1rem;
-}
-
-a {
-    color: var(--accent-bright);
-}
-
-:focus-visible {
-    outline: 2px solid var(--accent-bright);
-    outline-offset: 3px;
-    border-radius: 3px;
+    animation: rise-in .55s cubic-bezier(.16, 1, .3, 1) both;
 }
 
 /* ---------- layout primitives ---------- */
@@ -250,94 +371,195 @@ a {
     padding: 0 1.25rem;
 }
 
-.band {
-    padding: 3.5rem 0;
-    border-top: 1px solid var(--line);
+/*
+    The content sheet: every dense surface floats as one rounded slab over the field.
+    Translucent but NOT glass — no backdrop-filter here, so a 6000px page never holds
+    a live blur under the reader. The background is opaque enough that body text keeps
+    its AA contrast over whatever part of the aurora happens to drift beneath.
+*/
+.sheet {
+    width: min(100% - 1.5rem, var(--page));
+    margin: 1.4rem auto;
+    padding: clamp(2rem, 1.2rem + 3vw, 3.75rem) clamp(1.25rem, 3.5vw, 3.25rem);
+    background: var(--sheet-bg);
+    border: 1px solid var(--sheet-line);
+    border-radius: var(--radius-sheet);
+    box-shadow: var(--shadow-sheet);
 }
 
-.band--alt {
-    background: var(--paper-alt);
-}
-
-/* Section headings carry real weight now. They were set barely larger than body copy,
-   which left the page with no scanning rhythm — every band read as the same slab. */
-.band__title {
-    font-size: clamp(1.75rem, 1.15rem + 2.3vw, 2.75rem);
+.sheet__title {
+    font-size: clamp(1.85rem, 1.15rem + 2.6vw, 2.9rem);
     letter-spacing: -0.028em;
-    margin-bottom: 0.55rem;
+    margin-bottom: 0.6rem;
 }
 
-.band__lede {
+.sheet__lede {
     color: var(--ink-soft);
     max-width: var(--measure);
     margin-bottom: 2rem;
-    font-size: 1.03rem;
+    font-size: 1.05rem;
 }
 
-/* The eyebrow is the one place each band takes the accent colour, so a reader
-   scrolling fast still gets a fix on where they are. */
-.eyebrow {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    font-weight: 500;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--accent-bright);
-    margin-bottom: 0.7rem;
+/* The slim variant: one paragraph of prose on its own slab, so it reads as a beat
+   between the hero and the skill matrix rather than as a section of its own. */
+.sheet--slim {
+    padding-block: clamp(1.5rem, 1rem + 2vw, 2.25rem);
 }
 
-/* ---------- site chrome ---------- */
+.sheet--slim p:last-child {
+    margin-bottom: 0;
+}
+
+/*
+    Anchor targets: every section is a nav destination (#skills, #timeline, #work,
+    #credentials), and without a scroll margin the sticky capsule swallows the heading
+    the reader jumped to — ~15px of clip on desktop, the entire heading at 390px where
+    the capsule wraps to two rows.
+*/
+.sheet[id] {
+    scroll-margin-top: 92px;
+}
+
+/* ---------- site chrome ----------
+
+   The header is a floating glass capsule, not a full-width bar: chrome, not content.
+   It sits sticky above the field and never carries a background of its own — the
+   capsule inside it is the glass. */
 
 .site-header {
     position: sticky;
     top: 0;
-    z-index: 20;
-    background: color-mix(in srgb, var(--paper) 88%, transparent);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--line);
+    z-index: 50;
+    padding-top: 0.75rem;
+    background: none;
+    border: none;
 }
 
-.site-header__inner {
+.header-capsule {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    min-height: 60px;
+    gap: 0.75rem;
+    min-height: 56px;
+    padding: 0.35rem 0.4rem 0.35rem 1.1rem;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-line);
+    border-radius: 999px;
+    box-shadow: var(--shadow-float), var(--glass-highlight);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    /* Glass reads against what drifts behind it, so the capsule needs its own
+       scroll-linked state: the shell's inline script (index.html) adds .is-scrolled
+       when content has passed underneath — it lives there rather than here because
+       the state must exist before the runtime boots and after Blazor replaces the
+       header — deepening the fill just enough to keep nav text at AA. */
+    transition: background-color .35s ease, box-shadow .35s ease;
+}
+
+.header-capsule.is-scrolled {
+    background: color-mix(in srgb, var(--glass-bg) 72%, var(--paper));
 }
 
 .site-header__name {
-    font-weight: 700;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.98rem;
     letter-spacing: -0.01em;
     text-decoration: none;
     color: var(--ink);
     white-space: nowrap;
 }
 
+.site-nav {
+    display: flex;
+    gap: 0.15rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
 /*
-    The theme control. It is a single button rather than a three-way picker: "follow the
-    system" is the default and stays reachable by clearing site data, while a reader who
-    wants the other one wants it in one click, not two.
+    DOM order is name → toggle → nav, so the wrapped mobile capsule keeps the name and
+    toggle on its first row. On wide screens the capsule is one row and the toggle must
+    sit AFTER the nav at the far end — order puts it there visually without touching
+    the DOM the mobile wrap depends on.
+*/
+@media (min-width: 721px) {
+    .site-nav {
+        order: 2;
+    }
+
+    .theme-toggle {
+        order: 3;
+    }
+}
+
+/* Tap targets: 44px is the floor a thumb gets. Padding carries the size; the visual
+   stays a quiet capsule per link. */
+.site-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 0.85rem;
+    border-radius: 999px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 0.92rem;
+    white-space: nowrap;
+    transition: color .2s ease, background-color .2s ease;
+}
+
+.site-nav a:hover {
+    color: var(--ink);
+    background: color-mix(in srgb, var(--ink) 7%, transparent);
+}
+
+/*
+    The theme control. One button, two states: "follow the system" remains reachable by
+    clearing site data, while a reader who wants the other one wants it in one click.
+
+    The icon is pure CSS state — the sun and moon are both in the markup and the theme
+    selectors decide which shows. That keeps the button byte-identical between the
+    prerendered shell (prerender.py) and the Blazor render, so pre- and post-boot
+    chrome can never diverge on the control that toggles the whole palette.
 */
 .theme-toggle {
     display: grid;
     place-items: center;
-    width: 2.1rem;
-    height: 2.1rem;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    margin-inline-start: 0.35rem;
     padding: 0;
-    font-size: 1rem;
-    line-height: 1;
     color: var(--ink-soft);
     background: transparent;
     border: 1px solid var(--line);
     border-radius: 50%;
     cursor: pointer;
-    transition: color 0.2s ease, border-color 0.2s ease;
+    transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .theme-toggle:hover {
-    color: var(--accent-bright);
-    border-color: var(--accent-bright);
+    color: var(--accent);
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
+
+.theme-toggle svg {
+    width: 18px;
+    height: 18px;
+}
+
+.theme-toggle .icon-sun { display: none; }
+.theme-toggle .icon-moon { display: block; }
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-toggle .icon-sun { display: block; }
+    :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: none; }
+}
+
+:root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+:root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
     .theme-toggle {
@@ -345,46 +567,28 @@ a {
     }
 }
 
-.site-nav {
-    display: flex;
-    gap: 1.25rem;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-}
-
-.site-nav a {
-    position: relative;
-    color: var(--ink-soft);
+/*
+    Skip link: the first focusable element on every page. Visually absent until a
+    keyboard reader lands on it — then it is the loudest thing on screen.
+*/
+.skip-link {
+    position: fixed;
+    top: 0.75rem;
+    inset-inline-start: 0.75rem;
+    z-index: 100;
+    padding: 0.7rem 1.2rem;
+    border-radius: 999px;
+    background: var(--action-bg);
+    color: var(--action-ink);
+    font-weight: 600;
     text-decoration: none;
-    font-size: 0.92rem;
-    white-space: nowrap;
-    padding-bottom: 3px;
-    transition: color .22s ease;
+    translate: 0 -300%;
+    transition: translate .2s ease;
 }
 
-/* An underline that wipes in from the left, rather than a colour swap alone. */
-.site-nav a::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 1.5px;
-    background: var(--accent-bright);
-    border-radius: 2px;
-    transform: scaleX(0);
-    transform-origin: left center;
-    transition: transform .28s cubic-bezier(.2, .7, .3, 1);
-}
-
-.site-nav a:hover {
-    color: var(--accent-bright);
-}
-
-.site-nav a:hover::after,
-.site-nav a:focus-visible::after {
-    transform: scaleX(1);
+.skip-link:focus-visible {
+    translate: 0 0;
+    outline-offset: 2px;
 }
 
 /*
@@ -402,7 +606,7 @@ a {
         inset: 0 0 auto 0;
         height: 2px;
         z-index: 100;
-        background: linear-gradient(90deg, var(--accent-bright), var(--gold));
+        background: linear-gradient(90deg, var(--aurora-1), var(--aurora-3));
         transform: scaleX(0);
         transform-origin: left center;
         animation: draw-x linear both;
@@ -418,79 +622,102 @@ a {
     }
 }
 
-/*
-    Below this width the name and six nav links cannot share a row: flex-wrap interleaves
-    them into a jumble with the name stranded mid-list. Stack into two rows instead, the
-    name and theme button on the first and the whole nav on the second.
-*/
-@media (max-width: 720px) {
-    /* Grid rather than a column of flex items, so the theme button keeps the name's row
-       instead of becoming a third stacked strip of its own. */
-    .site-header__inner {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        grid-template-areas:
-            "name toggle"
-            "nav  nav";
-        align-items: center;
-        gap: 0;
-        padding-top: 0.5rem;
-    }
-
-    .site-header__name {
-        grid-area: name;
-        padding-bottom: 0.4rem;
-    }
-
-    .theme-toggle {
-        grid-area: toggle;
-    }
-
-    /*
-        Wrap the links rather than scroll them sideways. The strip used to be a single
-        nowrap row with its scrollbar hidden, on the theory that the overflow was
-        discoverable by swiping. It was not: at 390px the row needed 448px, so "Decisions"
-        and "CV" sat off the right edge with nothing on screen to suggest they existed —
-        and /architecture is a page worth finding. Wrapping costs one row of header height
-        and needs no interaction to reveal anything.
-
-        The jumble the scrolling strip avoided came from wrapping the whole header while
-        the name was a sibling of the links. The name has its own grid area now, so the
-        links only ever wrap among themselves.
-    */
-    .site-nav {
-        grid-area: nav;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-        gap: 0.5rem 1.1rem;
-        padding-bottom: 0.55rem;
-    }
+@keyframes draw-x {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
 }
 
+    /*
+        The capsule is one floating object, so on a narrow screen it stays one object:
+        the name and toggle hold the first row, and the nav becomes a horizontal scroll
+        strip on the second — wrapping nav links used to grow the capsule to three rows
+        (~165px), a fifth of every screen for the whole read. The strip scrolls with
+        native momentum and hides its scrollbar; the faded edge tells the reader there
+        is more. Snap points keep a thumb-swipe landing on a whole link.
+    */
+    @media (max-width: 720px) {
+        .site-header {
+            padding-top: 0.5rem;
+        }
+
+        /* The collapsed capsule is ~118px tall; anchor jumps need a proportionate
+           margin or the target heading lands underneath the chrome. Coupled to the
+           Two-Row Capsule Rule in DESIGN.md — change them together. */
+        .sheet[id],
+        .case[id] {
+            scroll-margin-top: 132px;
+        }
+
+        .header-capsule {
+            flex-wrap: wrap;
+            border-radius: 24px;
+            padding: 0.25rem 0.4rem 0.25rem 0.9rem;
+        }
+
+        .site-header__name {
+            flex: 1 1 auto;
+            padding-block: 0.5rem;
+        }
+
+        .site-nav {
+            flex-basis: 100%;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            scrollbar-width: none;
+            scroll-snap-type: x proximity;
+            padding-bottom: 0.3rem;
+            mask-image: linear-gradient(90deg, #000 92%, transparent);
+            -webkit-mask-image: linear-gradient(90deg, #000 92%, transparent);
+        }
+
+        .site-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .site-nav a {
+            scroll-snap-align: start;
+            padding: 0 0.7rem;
+            min-height: 44px;
+            font-size: 0.9rem;
+        }
+    }
+
+
 .site-footer {
-    border-top: 1px solid var(--line);
-    padding: 2rem 0 3rem;
+    padding: 2.5rem 0 3.5rem;
     color: var(--ink-faint);
     font-size: 0.9rem;
 }
 
-/* ---------- buttons ---------- */
+.site-footer a {
+    color: var(--ink-soft);
+    text-underline-offset: 3px;
+}
+
+.site-footer a:hover {
+    color: var(--accent);
+}
+
+/* ---------- buttons: capsules ---------- */
 
 .btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.45rem;
-    padding: 0.65rem 1.15rem;
-    border-radius: var(--radius);
+    min-height: 44px;
+    padding: 0.6rem 1.35rem;
+    border-radius: 999px;
     border: 1px solid transparent;
     font: inherit;
-    font-size: 0.94rem;
+    font-size: 0.95rem;
     font-weight: 600;
     text-decoration: none;
     cursor: pointer;
     background: none;
     transition:
-        transform .22s cubic-bezier(.2, .7, .3, 1),
+        translate .22s cubic-bezier(.16, 1, .3, 1),
         box-shadow .22s ease,
         border-color .22s ease,
         background-color .22s ease,
@@ -498,49 +725,41 @@ a {
 }
 
 .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 22px var(--glow);
+    translate: 0 -1px;
+    box-shadow: 0 10px 26px var(--aurora-glow);
 }
 
 .btn:active {
-    transform: translateY(0);
+    translate: 0 0;
 }
 
 .btn--primary {
-    background: var(--accent);
-    color: #fff;
-}
-
-/* Paired with the token rules above; see the note there on why this is written twice. */
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .btn--primary {
-        color: #0f151b;
-    }
-}
-
-:root[data-theme="dark"] .btn--primary {
-    color: #0f151b;
+    background: var(--action-bg);
+    color: var(--action-ink);
 }
 
 .btn--primary:hover {
-    background: var(--accent-bright);
+    background: var(--action-bg-hover);
 }
 
+/* Glass pill: chrome, so it may use the blur when it floats over the field — but the
+   pills that sit on a sheet get a sheet-visible edge instead, and no blur at all (the
+   sheet beneath is nearly opaque, so a blur there is render cost for nothing). */
 .btn--ghost {
-    border-color: var(--line);
+    border-color: var(--pill-line);
+    background: var(--pill-bg);
     color: var(--ink);
 }
 
 .btn--ghost:hover {
-    border-color: var(--accent-bright);
-    color: var(--accent-bright);
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
-/* ---------- chips ----------
+/* ---------- chips: glass pills ----------
 
    Shared by the skill matrix and anywhere else a short label needs to read as a
-   discrete, scannable object rather than a row in a list.
-*/
+   discrete, scannable object rather than a row in a list. */
 
 .chips {
     list-style: none;
@@ -557,23 +776,24 @@ a {
     gap: 0.4rem;
     /* A chip must never be the thing that widens the page on a narrow screen. */
     max-width: 100%;
-    padding: 0.4rem 0.8rem;
-    border: 1px solid var(--line);
+    min-height: 32px;
+    padding: 0.3rem 0.85rem;
+    border: 1px solid var(--sheet-line);
     border-radius: 999px;
-    background: var(--paper);
+    background: color-mix(in srgb, var(--sheet-bg) 80%, transparent);
     color: var(--ink-soft);
     font-size: 0.88rem;
     transition:
-        transform .2s cubic-bezier(.2, .7, .3, 1),
+        translate .2s cubic-bezier(.16, 1, .3, 1),
         border-color .2s ease,
         box-shadow .2s ease,
         color .2s ease;
 }
 
 .chip:hover {
-    transform: translateY(-2px);
-    border-color: var(--accent-bright);
-    box-shadow: 0 4px 16px var(--glow);
+    translate: 0 -1px;
+    border-color: var(--accent);
+    box-shadow: 0 6px 18px var(--aurora-glow);
     color: var(--ink);
 }
 
@@ -582,8 +802,8 @@ a {
 .chip--evidenced {
     color: var(--ink);
     font-weight: 600;
-    border-color: color-mix(in srgb, var(--accent-bright) 34%, var(--line));
-    background: color-mix(in srgb, var(--accent-wash) 55%, var(--paper));
+    border-color: color-mix(in srgb, var(--accent) 38%, var(--sheet-line));
+    background: var(--accent-wash);
 }
 
 .chip__where {
@@ -597,18 +817,20 @@ a {
 
 .tag {
     display: inline-block;
-    padding: 0.15rem 0.55rem;
+    padding: 0.15rem 0.6rem;
+    border: 1px solid var(--sheet-line);
     border-radius: 999px;
-    background: var(--paper-sunken);
+    background: color-mix(in srgb, var(--sheet-bg) 78%, transparent);
     color: var(--ink-soft);
     font-size: 0.78rem;
     white-space: nowrap;
 }
 
+/* The award metric: the one warm note on the page. */
 .metric-chip {
     display: inline-block;
-    padding: 0.12rem 0.5rem;
-    border-radius: 6px;
+    padding: 0.12rem 0.55rem;
+    border-radius: 8px;
     background: var(--gold-wash);
     color: var(--gold);
     font-weight: 700;
@@ -624,6 +846,77 @@ code {
 .scroll-x {
     overflow-x: auto;
     max-width: 100%;
+}
+
+/*
+    Visually hidden, fully accessible: for text alternatives that must reach screen
+    readers without altering the composition (diagram summaries, full chip evidence).
+*/
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+/*
+    The no-JS disclosure: "Show all N" on timelines, certifications, and skill groups.
+    A details element works without any script, so the static layer keeps the full
+    content reachable; the summary reads as a quiet accent action, never as a heading.
+*/
+details.disclosure {
+    margin-top: 0.6rem;
+}
+
+details.disclosure > summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 44px;
+    padding: 0 0.35rem;
+    border-radius: 999px;
+    color: var(--accent);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+    transition: color .2s ease;
+}
+
+details.disclosure > summary::-webkit-details-marker {
+    display: none;
+}
+
+/* The chevron: CSS-drawn, rotates when the disclosure opens. */
+details.disclosure > summary::after {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-right: 1.6px solid currentColor;
+    border-bottom: 1.6px solid currentColor;
+    translate: 0 -2px;
+    rotate: 45deg;
+    transition: rotate .25s cubic-bezier(.16, 1, .3, 1);
+}
+
+details.disclosure[open] > summary::after {
+    rotate: 225deg;
+    translate: 0 -1px;
+}
+
+details.disclosure > summary:hover {
+    color: var(--accent-bright);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    details.disclosure > summary::after {
+        transition: none;
+    }
 }
 
 /* ---------- Blazor plumbing (kept from the template) ---------- */
@@ -661,7 +954,7 @@ code {
 
 .loading-progress circle {
     fill: none;
-    stroke: var(--paper-sunken);
+    stroke: var(--line);
     stroke-width: 0.6rem;
     transform-origin: 50% 50%;
     transform: rotate(-90deg);
@@ -694,8 +987,8 @@ code {
     boots, so this is also what a person sees for the second before the runtime arrives.
 
     It is therefore styled, not hidden. Hiding it would be cloaking, and a blank second
-    was the thing worth fixing. The type is deliberately plain: this is the document
-    underneath the design, and it should read as one.
+    was the thing worth fixing. The type is deliberately plainer than the sheets: this
+    is the document underneath the design, and it should read as one.
 */
 #app:has(.prerendered) .loading-progress,
 #app:has(.prerendered) .loading-progress-text {
@@ -746,52 +1039,14 @@ code {
     margin-bottom: 0.3rem;
 }
 
-@media (prefers-reduced-motion: reduce) {
-    html {
-        scroll-behavior: auto;
-    }
-
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-
-    /* Zeroing the durations is not enough on its own: the reveal rules set opacity: 0
-       as a starting state, so without this the content would simply stay invisible for
-       anyone who asked for less motion. Every element that any rule above starts hidden
-       must be restored here, including the hero sequence and the diagram nodes. */
-    .js-motion .reveal,
-    .js-motion .reveal .stagger,
-    .js-motion .hero .line > span,
-    .js-motion .hero__eyebrow,
-    .js-motion .hero__pitch,
-    .js-motion .hero__actions,
-    .js-motion .diagram,
-    .js-motion .stats,
-    .js-motion .node,
-    .js-motion .arrow,
-    .js-motion .bridge__arrow {
-        opacity: 1 !important;
-        transform: none !important;
-        translate: none !important;
-        filter: none !important;
-    }
-
-    .js-motion .bridge__line { transform: scaleX(1) !important; }
-    .js-motion .entry__rail::after { transform: scaleY(1) !important; }
-}
-
 /* =========================================================================
    LONG-FORM DOCUMENT PAGES
 
-   Shared by the case study pages. These
-   live here rather than in a component stylesheet because Blazor's CSS
-   isolation scopes a .razor.css file to its own component, and three pages now
-   render the same document shape. Isolation is right for a component that owns
-   its look; it is wrong for a layout two routes share.
+   Shared by the case study pages. These live here rather than in a component
+   stylesheet because Blazor's CSS isolation scopes a .razor.css file to its own
+   component, and three pages now render the same document shape. Isolation is
+   right for a component that owns its look; it is wrong for a layout several
+   routes share. The whole study is one big sheet on the field.
    ========================================================================= */
 
 .booting {
@@ -800,20 +1055,28 @@ code {
 }
 
 .study {
-    padding: clamp(2rem, 1.5rem + 3vw, 4rem) 0 clamp(3rem, 2rem + 4vw, 5rem);
+    width: min(100% - 1.5rem, calc(var(--measure) + 14rem));
+    margin: 1.4rem auto;
+    padding: clamp(2rem, 1.5rem + 3vw, 4rem) clamp(1.25rem, 3.5vw, 3rem) clamp(3rem, 2rem + 4vw, 5rem);
+    background: var(--sheet-bg);
+    border: 1px solid var(--sheet-line);
+    border-radius: var(--radius-sheet);
+    box-shadow: var(--shadow-sheet);
 }
 
 .study__shell {
     /* Prose measure, not page width: long-form argument is the point of these
-       pages, and a 1120px line length would make them unreadable. */
-    max-width: calc(var(--measure) + 8rem);
+       pages, and a 1160px line length would make them unreadable. */
+    max-width: calc(var(--measure) + 4rem);
+    margin: 0 auto;
+    padding: 0;
 }
 
 .crumbs {
     display: flex;
     gap: 0.5rem;
     align-items: center;
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     color: var(--ink-faint);
     margin-bottom: 2rem;
 }
@@ -823,12 +1086,20 @@ code {
 }
 
 .crumbs a:hover {
-    color: var(--accent-bright);
+    color: var(--accent);
 }
 
 .study__head {
     padding-bottom: 2rem;
     border-bottom: 1px solid var(--line);
+}
+
+/* Attribution reads as a byline under the title, never as a label above it. */
+.study__org {
+    margin: 0.9rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--ink-faint);
 }
 
 .study__title {
@@ -852,8 +1123,8 @@ code {
 
 .study__block h2 {
     margin: 0 0 0.75rem;
-    font-size: 1.1rem;
-    letter-spacing: 0.01em;
+    font-size: 1.35rem;
+    letter-spacing: -0.015em;
 }
 
 .study__block > p {
@@ -861,6 +1132,19 @@ code {
     max-width: var(--measure);
     color: var(--ink-soft);
     line-height: 1.65;
+}
+
+/* The outcome block is the one tinted moment in a study — matching the home page's
+   panels, so "what actually changed" reads at the same weight in both places. */
+.study__block--outcomes {
+    margin-top: 2.75rem;
+    padding: 1rem 1.15rem;
+    background: var(--accent-wash);
+    border-radius: var(--radius);
+}
+
+.study__block--outcomes h2 {
+    margin: 0 0 0.75rem;
 }
 
 .study__writeup {
@@ -879,7 +1163,7 @@ code {
 }
 
 .outcomes li::marker {
-    color: var(--accent-bright);
+    color: var(--accent);
 }
 
 .stack {
@@ -908,16 +1192,17 @@ code {
 .study__link {
     display: block;
     padding: 1rem 1.15rem;
-    border: 1px solid var(--line);
+    border: 1px solid var(--sheet-line);
     border-radius: var(--radius);
     text-decoration: none;
-    background: var(--paper);
-    transition: border-color .2s ease, translate .2s ease;
+    background: color-mix(in srgb, var(--sheet-bg) 70%, transparent);
+    transition: border-color .2s ease, translate .2s ease, box-shadow .2s ease;
 }
 
 .study__link:hover {
-    border-color: var(--accent-bright);
+    border-color: var(--accent);
     translate: 0 -2px;
+    box-shadow: 0 10px 26px var(--aurora-glow);
 }
 
 .study__link--next {
@@ -926,6 +1211,7 @@ code {
 
 .study__link-label {
     display: block;
+    font-family: var(--font-mono);
     font-size: 0.72rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -941,12 +1227,14 @@ code {
 }
 
 /* ---------- testimonials ----------
+
    Third-party quotes on /testimonials and in the home page's highlights band. The
    markup is shared with the prerendered pages (see prerender.py), so these rules live
-   here rather than in a component's isolated stylesheet. */
+   here rather than in a component's isolated stylesheet. Quotes are solid sheet tiles
+   — content, not chrome — so no blur rides under a page of them. */
 
 .testimonials {
-    padding: 3rem 0 4rem;
+    padding: 0;
 }
 
 .testimonials__head {
@@ -977,10 +1265,9 @@ code {
 .testimonial {
     margin: 0;
     padding: 1.5rem 1.5rem 1.25rem;
-    background: var(--paper);
-    border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--sheet-bg) 70%, var(--paper));
+    border: 1px solid var(--sheet-line);
     border-radius: var(--radius);
-    box-shadow: var(--shadow);
 }
 
 .testimonial__quote {
@@ -996,12 +1283,12 @@ code {
 
 /* A quotation mark as tall, quiet punctuation rather than decoration. */
 .testimonial__quote p::before {
-    content: "C";
+    content: "\201C";
     display: block;
     font-family: var(--font-display);
     font-size: 2rem;
     line-height: 0.6;
-    color: var(--accent-bright);
+    color: var(--accent);
     margin: 0.4rem 0 0.7rem;
 }
 
@@ -1021,7 +1308,7 @@ code {
     background: var(--accent-wash);
     color: var(--accent);
     font-family: var(--font-display);
-    font-weight: 700;
+    font-weight: 600;
     font-size: 0.9rem;
     letter-spacing: 0.04em;
 }
@@ -1054,24 +1341,45 @@ code {
     font-size: 0.86rem;
 }
 
-[data-theme="dark"] .testimonial {
-    background: var(--paper-alt);
-}
-
-@media (prefers-color-scheme: dark) {
-    .testimonial {
-        background: var(--paper-alt);
-    }
-}
-
 @media (max-width: 640px) {
     .testimonials__grid {
         grid-template-columns: 1fr;
     }
 }
 
-
 @media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    /* The aurora holds its rest pose: the animation above drives transform only, so
+       freezing it leaves the field exactly where first paint put it. */
+    .aurora__layer {
+        animation: none !important;
+    }
+
+    /* Zeroing the durations is not enough on its own: the reveal rules set opacity: 0
+       as a starting state, so without this the content would simply stay invisible for
+       anyone who asked for less motion. Every element that any rule above starts hidden
+       must be restored here. Hero-specific starting states live in Hero.razor.css's own
+       reduced-motion block, beside the rules that create them. */
+    .js-motion .reveal,
+    .js-motion .reveal .stagger {
+        opacity: 1 !important;
+        transform: none !important;
+        translate: none !important;
+        scale: none !important;
+        filter: none !important;
+    }
 
     .study__link {
         transition: none;
@@ -1079,5 +1387,10 @@ code {
 
     .study__link:hover {
         translate: none;
+    }
+
+    .btn,
+    .chip {
+        transition: none;
     }
 }

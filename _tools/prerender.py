@@ -143,15 +143,17 @@ def testimonial_figure(testimonial: dict) -> str:
     )
 
 
-def testimonials_body(testimonials: list[dict]) -> str:
+def testimonials_body(testimonials: list[dict], cv: dict) -> str:
     if not testimonials:
-        return """
-      <section class="band"><div class="shell">
-      <p class="eyebrow">Testimonials</p>
-      <h1 class="band__title">No recommendations yet</h1>
-      <p class="band__lede">Recommendations from people I have worked with appear here
+        email = cv["profile"]["email"]
+        return f"""
+      <section class="sheet"><div class="shell">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a>
+        <span aria-hidden="true">/</span><a href="/testimonials">Testimonials</a></nav>
+      <h1 class="sheet__title">No recommendations yet</h1>
+      <p class="sheet__lede">Recommendations from people I have worked with appear here
          as they are written. If we have worked together and you would like to add one,
-         get in touch — yours will be the first.</p>
+         <a href="mailto:{e(email)}">get in touch</a> — yours will be the first.</p>
       </div></section>
     """
 
@@ -159,7 +161,6 @@ def testimonials_body(testimonials: list[dict]) -> str:
     return f"""
       <article class="testimonials"><div class="shell">
       <header class="testimonials__head">
-      <p class="eyebrow">Testimonials</p>
       <h1 class="testimonials__title">What people say</h1>
       <p class="testimonials__lede">Recommendations from colleagues and collaborators,
          each one attributed to the person who actually wrote it.</p>
@@ -440,7 +441,7 @@ def build_routes(
                 f"Recommendations for {name} from colleagues and collaborators, "
                 "each attributed to the person who wrote it."
             ),
-            body=testimonials_body(entries),
+            body=testimonials_body(entries, cv),
             json_ld=[breadcrumbs(base_url, [("Home", ""), ("Testimonials", "testimonials")])],
         )
     )
@@ -520,19 +521,44 @@ NAV_LINKS = (
     ("/cv", "CV"),
 )
 
+# The nav renders the same link MainLayout.razor renders: only while a quote exists.
+# A screening recruiter's one speculative click must not land on an empty page.
+NAV_LINKS_WITHOUT_TESTIMONIALS = tuple(
+    link for link in NAV_LINKS if link[0] != "/testimonials"
+)
 
-def static_shell_header(cv: dict) -> str:
-    profile_name = cv["profile"]["name"]
-    links = "".join(f'<a href="{href}">{e(label)}</a>' for href, label in NAV_LINKS)
+
+def static_shell_header(cv: dict, include_testimonials: bool) -> str:
+    """
+    The pre-boot chrome, duplicated from MainLayout.razor (see the note above).
+
+    The theme button carries both icons; the theme selectors in app.css decide which
+    shows, so this markup and the Blazor render stay byte-identical on the one control
+    that switches the whole palette. The skip link lands on #main, which render() puts
+    on the prerendered block.
+    """
+    links = NAV_LINKS if include_testimonials else NAV_LINKS_WITHOUT_TESTIMONIALS
+    nav = "".join(f'<a href="{href}">{e(label)}</a>' for href, label in links)
     return (
+        '<a class="skip-link" href="#main">Skip to content</a>'
         '<header class="site-header">'
-        '<div class="shell site-header__inner">'
-        f'<a class="site-header__name" href="/">{e(profile_name)}</a>'
-        f'<nav class="site-nav">{links}</nav>'
+        '<div class="shell"><div class="header-capsule">'
+        f'<a class="site-header__name" href="/">{e(cv["profile"]["name"])}</a>'
+        # The toggle precedes the nav so the name's flex-grow parks it at the
+        # first-row end; after the nav it strands alone on a third row at 390px.
         '<button type="button" class="theme-toggle" data-static-theme-toggle '
         'aria-label="Switch theme" title="Switch theme">'
-        '<span aria-hidden="true">☾</span></button>'
-        "</div></header>"
+        '<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+        'stroke-width="1.6" stroke-linecap="round" aria-hidden="true">'
+        '<circle cx="12" cy="12" r="4"></circle>'
+        '<path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2'
+        'M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41"></path></svg>'
+        '<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+        'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>'
+        "</button>"
+        f'<nav class="site-nav">{nav}</nav>'
+        "</div></div></header>"
     )
 
 
@@ -732,7 +758,10 @@ def render(
             return (
                 f"{match.group(1)}{match.group(2)}"
                 f"{shell_header}"
-                f'\n<div class="prerendered">{route.body}</div>'
+                # id="main" is the skip link's target: the static shell carries the
+                # same link MainLayout.razor does, and this block is its destination
+                # until Blazor's own <main id="main"> replaces everything here.
+                f'\n<div class="prerendered" id="main">{route.body}</div>'
                 f"{match.group(3)}"
             )
 
@@ -908,7 +937,7 @@ def main() -> int:
         else []
     )
 
-    shell_header = static_shell_header(cv)
+    shell_header = static_shell_header(cv, include_testimonials=bool(testimonials))
     routes = build_routes(cv, base_url, testimonials)
 
     for route in routes:

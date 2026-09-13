@@ -1,24 +1,10 @@
-.paper {
-    padding: 3rem 0 5rem;
-    background: var(--paper);
-}
+/*
+    The write-up body sits inside the shared .study sheet (app.css); everything here
+    styles the long-form content inside it.
+*/
 
-.paper .shell {
+.study__shell {
     max-width: 760px;
-}
-
-.eyebrow a {
-    color: var(--ink-faint);
-    text-decoration: none;
-}
-
-.eyebrow a:hover {
-    color: var(--accent-bright);
-}
-
-.sep {
-    padding: 0 0.4rem;
-    color: var(--line);
 }
 
 .title {
@@ -40,41 +26,43 @@
     line-height: 1.65;
 }
 
-.paper p {
+.study p {
     line-height: 1.72;
     color: var(--ink-soft);
     max-width: 68ch;
 }
 
-.paper h2 {
+.study h2 {
     margin: 2.6rem 0 0.9rem;
     font-size: clamp(1.2rem, 1.05rem + 0.7vw, 1.5rem);
 }
 
-.paper code {
+.study code {
     padding: 0.08em 0.35em;
     border-radius: 4px;
-    background: var(--paper-sunken);
+    background: color-mix(in srgb, var(--ink) 5%, transparent);
     color: var(--ink);
 }
 
+/* The pull quote is a tinted tile — no accent rail: a thick border on one side is the
+   one tell the design detector flags every time it ships. */
 .pull {
     margin: 1.4rem 0;
     padding: 1rem 1.25rem;
-    border-left: 3px solid var(--gold);
+    border: 1px solid color-mix(in srgb, var(--gold) 38%, transparent);
     background: var(--gold-wash);
     color: var(--ink) !important;
-    border-radius: 0 8px 8px 0;
+    border-radius: var(--radius);
 }
 
 /* ---------- code block ---------- */
 
 .code {
     margin: 1.5rem 0;
-    border: 1px solid var(--line);
+    border: 1px solid var(--sheet-line);
     border-radius: 10px;
     overflow: hidden;
-    background: var(--paper-sunken);
+    background: color-mix(in srgb, var(--ink) 4%, transparent);
 }
 
 .code__head {
@@ -83,8 +71,8 @@
     justify-content: space-between;
     gap: 1rem;
     padding: 0.6rem 1rem;
-    border-bottom: 1px solid var(--line);
-    background: var(--paper-alt);
+    border-bottom: 1px solid var(--sheet-line);
+    background: color-mix(in srgb, var(--ink) 6%, transparent);
     font-size: 0.75rem;
     color: var(--ink-faint);
 }
@@ -116,6 +104,12 @@
     .code .n { color: #7fd1b9; }
 }
 
+/* The syntax colours are fixed hexes, so an explicit dark choice needs the same
+   override the system preference gets — same twice-written rule as the tokens. */
+:root[data-theme="dark"] .code .k { color: #c3a6f0; }
+:root[data-theme="dark"] .code .f { color: #e0b95f; }
+:root[data-theme="dark"] .code .n { color: #7fd1b9; }
+
 /* ---------- points ---------- */
 
 .points {
@@ -144,9 +138,9 @@
 .arch {
     margin: 1.8rem 0;
     padding: 1.4rem 1.25rem 1.1rem;
-    border: 1px solid var(--line);
+    border: 1px solid var(--sheet-line);
     border-radius: 12px;
-    background: var(--paper-alt);
+    background: color-mix(in srgb, var(--ink) 4%, transparent);
     display: flex;
     flex-direction: column;
     align-items: center;

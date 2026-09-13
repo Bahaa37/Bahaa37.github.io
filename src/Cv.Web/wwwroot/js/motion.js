@@ -1,10 +1,10 @@
 /*
     The site's motion system.
 
-    Supersedes reveal.js, which only handled scroll reveals. Three things live here now:
-    the orchestrated hero sequence, the scroll reveals, and the stat counters.
+    Three things live here: the orchestrated hero sequence, the scroll reveals, and the
+    stat counters.
 
-    Two rules govern everything in this file:
+    Three rules govern everything in this file:
 
     1. Motion is ADDITIVE. Every hiding rule in the stylesheet is gated behind the
        `js-motion` class, which is added from here and only here. If this module fails
@@ -14,9 +14,22 @@
 
     2. Reduced motion is honoured by doing NOTHING rather than by animating and undoing.
        We return before adding `js-motion` at all, so the starting states never apply.
+
+    3. Motion never replays over a reader. The hero sequence exists for the visitor who
+       landed fast and is still on their first look. A visitor who has scrolled, or who
+       has already seen it this session, gets the static hero — the runtime arrives
+       seconds late on a cold connection, and hiding what someone is mid-way through
+       reading is the one defect this site must never commit.
 */
 
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
+
+// The sequence only starts when the runtime has booted this soon after navigation.
+// Past this point the visitor has been reading the static hero for seconds, and
+// replaying it would blank exactly what they are looking at.
+const HERO_PLAY_DEADLINE_MS = 1500;
+
+const HERO_SCROLL_THRESHOLD = 40;
 
 let observer = null;
 let sweepQueued = false;
@@ -73,16 +86,18 @@ export function start() {
 
     document.documentElement.classList.add('js-motion');
 
-    playHero();
+    maybePlayHero();
     observe();
 }
 
 /**
- * Plays the hero as one sequence. Exported so the component can replay it.
+ * Plays the hero as one sequence. Arming applies the hidden starting states; the
+ * class is never added on the skip path, so a visitor who does not get the sequence
+ * gets the fully visible static hero, not an invisible one.
  *
- * Removing the class and reading offsetWidth forces a reflow, which is what actually
- * restarts the animations; without that read the browser coalesces the remove/add and
- * nothing replays.
+ * Removing the playing class and reading offsetWidth forces a reflow, which is what
+ * actually restarts the animations; without that read the browser coalesces the
+ * remove/add and nothing replays.
  */
 export function playHero() {
     const hero = document.querySelector('.hero');
@@ -91,11 +106,42 @@ export function playHero() {
         return;
     }
 
+    hero.classList.add('is-armed');
     hero.classList.remove('is-playing');
     void hero.offsetWidth;
     hero.classList.add('is-playing');
 
     runCounters();
+}
+
+/**
+ * Decides whether this visit gets the sequence at all.
+ *
+ * Three independent reasons to skip, any one of which means the visitor already has
+ * eyes on the static hero: they scrolled while the runtime was arriving, they have
+ * seen the sequence earlier in this session, or the boot itself took longer than the
+ * play deadline. The flag is per session, so a second page view never replays it.
+ */
+function maybePlayHero() {
+    const hero = document.querySelector('.hero');
+
+    if (!hero) {
+        return;
+    }
+
+    let played = false;
+    try { played = sessionStorage.getItem('heroPlayed') === '1'; } catch (e) { }
+
+    const scrolled = (window.scrollY || window.pageYOffset || 0) > HERO_SCROLL_THRESHOLD;
+    const bootedLate = performance.now() > HERO_PLAY_DEADLINE_MS;
+
+    if (played || scrolled || bootedLate) {
+        return;
+    }
+
+    try { sessionStorage.setItem('heroPlayed', '1'); } catch (e) { }
+
+    playHero();
 }
 
 /** Claims any not-yet-observed .reveal elements. Blazor renders sections after start(). */

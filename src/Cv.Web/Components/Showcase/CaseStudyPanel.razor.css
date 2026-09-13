@@ -1,70 +1,28 @@
 /*
-    Five of these stack in a row, so they had to stop reading as five identical slabs.
-    The accent rail on the left edge is the cheapest way to give each one a spine and an
-    entry point for the eye; it grows on hover so the card the reader is on is obvious.
+    Five case studies live inside one work sheet, so they are flat sections separated
+    by hairlines — not cards nested in a card, and no accent rails. The title, the
+    byline, and the whitespace do the separating; a hover lift on a section the reader
+    is not navigating to would be motion without a meaning.
 */
+
 .case {
-    position: relative;
-    overflow: hidden;
-    padding: 1.7rem 1.6rem 1.85rem;
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    scroll-margin-top: 76px;
-    transition:
-        transform .28s cubic-bezier(.2, .7, .3, 1),
-        border-color .28s ease,
-        box-shadow .28s ease;
-}
-
-.case::before {
-    content: "";
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: 3px;
-    background: linear-gradient(var(--accent-bright), color-mix(in srgb, var(--accent-bright) 20%, transparent));
-    transform: scaleY(0);
-    transform-origin: top center;
-    transition: transform .35s cubic-bezier(.2, .7, .3, 1);
-}
-
-.case:hover {
-    transform: translateY(-3px);
-    border-color: color-mix(in srgb, var(--accent-bright) 32%, var(--line));
-    box-shadow: 0 12px 36px var(--glow);
-}
-
-.case:hover::before {
-    transform: scaleY(1);
+    padding: 1.6rem 0 1.85rem;
+    scroll-margin-top: 96px;
 }
 
 .case + .case {
-    margin-top: 1.25rem;
-}
-
-.case__head .eyebrow {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-}
-
-/* The index was set in the hairline colour at body size, which made it invisible. As a
-   large tabular numeral it gives each study a landmark to scroll between. */
-.case__index {
-    font-family: var(--font-display);
-    font-variant-numeric: tabular-nums;
-    color: color-mix(in srgb, var(--ink-faint) 45%, transparent);
-    font-size: clamp(1.9rem, 1.4rem + 1.6vw, 2.6rem);
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -0.04em;
+    border-top: 1px solid var(--sheet-line);
 }
 
 .case__title {
-    font-size: clamp(1.15rem, 1.02rem + 0.6vw, 1.45rem);
+    font-size: clamp(1.2rem, 1.05rem + 0.7vw, 1.5rem);
     letter-spacing: -0.015em;
+}
+
+.case__org {
+    margin: 0.45rem 0 0;
+    font-size: 0.78rem;
+    color: var(--ink-faint);
 }
 
 .case__summary {
@@ -73,17 +31,11 @@
     max-width: var(--measure);
 }
 
-.case__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.25rem;
-    margin-top: 1.5rem;
-}
-
 .case__block h4 {
-    font-size: 0.76rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--ink-faint);
     margin-bottom: 0.45rem;
@@ -95,12 +47,13 @@
     font-size: 0.95rem;
 }
 
+/* The outcome block is the one tinted moment in a case: what actually changed is the
+   part a skim stops on. */
 .case__block--outcomes {
     margin-top: 1.35rem;
     padding: 1rem 1.15rem;
-    background: var(--paper-alt);
+    background: var(--accent-wash);
     border-radius: var(--radius);
-    border: 1px solid var(--line);
 }
 
 .case__diagram {
@@ -120,8 +73,8 @@
 .diagram__canvas {
     margin-top: 1rem;
     padding: 1.25rem;
-    background: var(--paper-alt);
-    border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--ink) 4%, transparent);
+    border: 1px solid var(--sheet-line);
     border-radius: var(--radius);
     text-align: center;
     min-height: 80px;
@@ -136,7 +89,7 @@
 .diagram__fallback pre {
     overflow-x: auto;
     padding: 0.9rem;
-    background: var(--paper-sunken);
+    background: color-mix(in srgb, var(--ink) 4%, transparent);
     border-radius: var(--radius);
     font-size: 0.8rem;
     line-height: 1.45;

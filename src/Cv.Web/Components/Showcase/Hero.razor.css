@@ -1,29 +1,16 @@
-.hero {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-    padding: clamp(3rem, 1.8rem + 5vw, 5.5rem) 0 clamp(2.5rem, 2rem + 3vw, 4rem);
-    background: var(--paper);
-}
-
 /*
-    Ambient depth behind the hero. Two slow colour fields drifting against each other,
-    which is what stops the opening screen reading as a flat slab. It carries no
-    information, so it is decoration in the strict sense — and is switched off entirely
-    under reduced motion, where it becomes a static wash.
+    The hero sheet. .sheet in app.css supplies the slab; everything here is the
+    composition inside it and the choreography that plays once, for the visitor who
+    arrived fast enough to not yet have started reading.
 */
-.hero::before {
-    content: "";
-    position: absolute;
-    inset: -35% -15% auto -20%;
-    height: 145%;
-    z-index: -1;
-    pointer-events: none;
-    background:
-        radial-gradient(42% 48% at 16% 10%, color-mix(in srgb, var(--accent-bright) 20%, transparent), transparent 70%),
-        radial-gradient(36% 44% at 84% 2%, color-mix(in srgb, var(--gold) 13%, transparent), transparent 72%);
-    animation: drift 19s ease-in-out infinite alternate;
-    will-change: transform;
+
+.hero {
+    /* The opening sheet runs a little wider than the rest so the diagram and the
+       headline share one viewport at 1280–1536px without either feeling cropped. */
+    width: min(100% - 1.5rem, calc(var(--page) + 6rem));
+    margin-block-start: 0.9rem;
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 4.75rem);
+    overflow: hidden;
 }
 
 .hero__grid {
@@ -33,23 +20,10 @@
     align-items: center;
 }
 
-.hero__eyebrow {
-    margin: 0;
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-}
-
-.dot {
-    padding: 0 0.35rem;
-}
-
 .hero__headline {
-    margin: 1.1rem 0 0;
     font-size: clamp(2.4rem, 1.1rem + 5.2vw, 4.6rem);
-    line-height: 1.03;
-    letter-spacing: -0.042em;
+    line-height: 1.02;
+    letter-spacing: -0.04em;
     font-weight: 700;
 }
 
@@ -65,8 +39,9 @@
     display: block;
 }
 
+/* "constraint" takes the action blue — the one colour word in the headline. */
 .hero__accent {
-    color: var(--accent-bright);
+    color: var(--accent);
 }
 
 .hero__pitch {
@@ -78,6 +53,46 @@
     text-wrap: pretty;
 }
 
+/* The track record as one quiet mono line. Tabular figures stop the count-up
+   twitching; the gold fact is the page's only warm note. */
+.hero__facts {
+    display: block;
+    margin: 1.15rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
+    line-height: 1.9;
+    color: var(--ink-faint);
+    max-width: 52ch;
+}
+
+/*
+    The separator rides at the END of the fact it follows, so a line break between
+    facts lands cleanly before the next one — a leading middot stranded on a wrapped
+    line was the one broken edge in the page's first fixation. Each fact is
+    inline-block, so a fact never splits internally either ("9 / payment markets" was
+    the visible casualty).
+*/
+.hero__fact {
+    display: inline-block;
+}
+
+.hero__fact:not(:last-child)::after {
+    content: "·";
+    padding: 0 0.45em;
+}
+
+.hero__fact strong {
+    font-weight: 600;
+    font-size: 1.06em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.hero__fact--gold,
+.hero__fact--gold strong {
+    color: var(--gold);
+}
+
 .hero__actions {
     display: flex;
     flex-wrap: wrap;
@@ -85,21 +100,28 @@
     margin-top: 1.9rem;
 }
 
-/* ---------- the before/after diagram ---------- */
+/* ---------- the before/after diagram ----------
+
+   A recessed keynote stage: dark in both themes, so the opening screen holds one
+   deliberate contrast moment — the argument performed on a lit stage. Every colour
+   inside is local to the stage; tokens stay for everything on the sheet proper. */
 
 .diagram {
     margin: 0;
     padding: 1.4rem 1.5rem 1.6rem;
-    border: 1px solid var(--line);
+    border: 1px solid color-mix(in srgb, var(--aurora-1) 26%, rgba(255, 255, 255, .1));
     border-radius: 14px;
-    background: var(--paper-alt);
+    background:
+        radial-gradient(120% 90% at 80% -10%, rgba(90, 200, 216, .16), transparent 60%),
+        radial-gradient(120% 90% at 15% 110%, rgba(125, 122, 255, .14), transparent 60%),
+        linear-gradient(180deg, #101a2c, #0b1220);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), var(--shadow-float);
 }
 
 .diagram__label {
-    font-size: 0.68rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    color: rgba(226, 234, 244, .6);
     margin-bottom: 1.1rem;
 }
 
@@ -114,25 +136,25 @@
 
 .panel {
     padding: 0.9rem 0.8rem;
-    border: 1px solid var(--line);
+    border: 1px solid rgba(255, 255, 255, .12);
     border-radius: 10px;
-    background: var(--paper);
+    background: rgba(255, 255, 255, .045);
 }
 
 .panel--before {
-    border-color: color-mix(in srgb, var(--alarm) 30%, var(--line));
+    border-color: color-mix(in srgb, var(--alarm) 42%, rgba(255, 255, 255, .12));
 }
 
 .panel--after {
-    border-color: color-mix(in srgb, var(--accent-bright) 32%, var(--line));
+    border-color: color-mix(in srgb, var(--aurora-2) 46%, rgba(255, 255, 255, .12));
 }
 
 .panel__label {
     margin: 0 0 0.7rem;
-    font-size: 0.63rem;
+    font-size: 0.68rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--ink-faint);
+    color: rgba(226, 234, 244, .55);
 }
 
 .panel__stack {
@@ -143,30 +165,30 @@
 
 .node {
     padding: 0.42rem 0.55rem;
-    border: 1px solid var(--line);
+    border: 1px solid rgba(255, 255, 255, .14);
     border-radius: 6px;
     font-size: 0.72rem;
-    color: var(--ink-soft);
+    color: rgba(226, 234, 244, .82);
     text-align: center;
 }
 
 .node--blocker {
     border-style: dashed;
-    border-color: color-mix(in srgb, var(--alarm) 55%, var(--line));
-    color: var(--alarm);
-    background: var(--alarm-wash);
+    border-color: color-mix(in srgb, var(--alarm) 65%, rgba(255, 255, 255, .12));
+    color: #f4a08d;
+    background: color-mix(in srgb, var(--alarm) 16%, transparent);
 }
 
 .node--lead {
-    border-color: var(--accent-bright);
-    color: var(--accent-bright);
+    border-color: var(--aurora-2);
+    color: var(--aurora-2);
     font-weight: 600;
 }
 
 .arrow {
     text-align: center;
     font-size: 0.8rem;
-    color: var(--ink-faint);
+    color: rgba(226, 234, 244, .45);
     line-height: 1;
 }
 
@@ -181,19 +203,19 @@
 /*
     The bridge is the one piece of motion that carries meaning rather than decorating:
     the line grows left-to-right, so the diagram performs the transformation the whole
-    page is about instead of just depicting it. It is now one beat of the hero sequence
+    page is about instead of just depicting it. It is one beat of the hero sequence
     below rather than an animation that fires on its own timer.
 */
 .bridge__line {
     width: 100%;
     height: 2px;
-    background: var(--accent-bright);
+    background: linear-gradient(90deg, var(--aurora-1), var(--aurora-2));
     transform-origin: left center;
 }
 
 .bridge__arrow {
     font-size: 1.05rem;
-    color: var(--accent-bright);
+    color: var(--aurora-2);
 }
 
 /* =========================================================================
@@ -201,27 +223,30 @@
 
    One orchestrated moment: the headline unmasks, the legacy estate builds, the
    blocker is flagged, the bridge draws, the modernized services arrive, and only
-   then does the blocker dissolve. The motion states the argument before any prose
+   then does the facts line settle. The motion states the argument before any prose
    is read.
 
-   Every rule is gated on BOTH .js-motion (set by motion.js) and .is-playing. If the
-   script never runs, nothing here applies and the hero renders as plain static
-   content — an unconditional opacity:0 would leave it blank forever instead.
+   Every rule is gated on .js-motion (set by motion.js), .is-armed, and .is-playing.
+   motion.js only arms the hero — applies the hidden starting states — when it has
+   decided this visit gets the sequence; a skipped visitor is never armed and the hero
+   renders as plain static content. Arming without playing would leave the hero at
+   opacity:0 forever: content present, selectable, invisible. That failure class is
+   the reason the hiding class lives in exactly one place and every restore path is
+   proved against it.
    ========================================================================= */
 
-.js-motion .hero .line > span,
-.js-motion .hero__eyebrow,
-.js-motion .hero__pitch,
-.js-motion .hero__actions,
-.js-motion .diagram,
-.js-motion .stats,
-.js-motion .node,
-.js-motion .arrow,
-.js-motion .bridge__arrow {
+.js-motion .hero.is-armed .line > span,
+.js-motion .hero.is-armed .hero__pitch,
+.js-motion .hero.is-armed .hero__actions,
+.js-motion .hero.is-armed .hero__facts,
+.js-motion .hero.is-armed .diagram,
+.js-motion .hero.is-armed .node,
+.js-motion .hero.is-armed .arrow,
+.js-motion .hero.is-armed .bridge__arrow {
     opacity: 0;
 }
 
-.js-motion .bridge__line {
+.js-motion .hero.is-armed .bridge__line {
     transform: scaleX(0);
 }
 
@@ -234,11 +259,10 @@
 .js-motion .hero.is-playing .line:nth-of-type(2) > span { animation-delay: 220ms; }
 .js-motion .hero.is-playing .line:nth-of-type(3) > span { animation-delay: 320ms; }
 
-.js-motion .hero.is-playing .hero__eyebrow { animation: rise-in .5s ease both; }
 .js-motion .hero.is-playing .hero__pitch   { animation: rise-in .6s cubic-bezier(.2, .7, .3, 1) both 480ms; }
 .js-motion .hero.is-playing .hero__actions { animation: rise-in .6s cubic-bezier(.2, .7, .3, 1) both 580ms; }
 .js-motion .hero.is-playing .diagram       { animation: rise-in .7s cubic-bezier(.2, .7, .3, 1) both 400ms; }
-.js-motion .hero.is-playing .stats         { animation: fade-in .6s ease both 2150ms; }
+.js-motion .hero.is-playing .hero__facts   { animation: rise-in .6s cubic-bezier(.2, .7, .3, 1) both 2150ms; }
 
 /*
     nth-child counts every sibling in .panel__stack, and the arrow spans sit in that
@@ -270,71 +294,70 @@
 .js-motion .hero.is-playing .panel--after .node:nth-child(4) { animation: node-in .5s ease both 2070ms; }
 .js-motion .hero.is-playing .panel--after .node:nth-child(5) { animation: node-in .5s ease both 2160ms; }
 
+@keyframes line-rise {
+    from { transform: translateY(105%); }
+    to   { transform: none; }
+}
+
+@keyframes rise-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes node-in {
+    from { opacity: 0; transform: translateY(8px) scale(.97); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes draw-x {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+}
+
+@keyframes draw-y {
+    from { transform: scaleY(0); }
+    to   { transform: scaleY(1); }
+}
+
+/* The blocker is flagged before it is removed, so the eye is on it when it goes. */
+@keyframes flag {
+    0%, 100% { box-shadow: 0 0 0 0 transparent; }
+    40%      { box-shadow: 0 0 0 5px color-mix(in srgb, var(--alarm) 30%, transparent); }
+}
+
+@keyframes dissolve {
+    from { opacity: 1; }
+    to   { opacity: .26; filter: grayscale(1); }
+}
+
+/* Mirror of the hidden-start list above: under reduced motion nothing may stay
+   invisible, whatever happened with the script. */
 @media (prefers-reduced-motion: reduce) {
-    /* The drifting field becomes a still wash rather than disappearing, so the hero
-       keeps its depth for readers who simply do not want movement. */
-    .hero::before {
-        animation: none;
+    .js-motion .hero.is-armed .line > span,
+    .js-motion .hero.is-armed .hero__pitch,
+    .js-motion .hero.is-armed .hero__actions,
+    .js-motion .hero.is-armed .hero__facts,
+    .js-motion .hero.is-armed .diagram,
+    .js-motion .hero.is-armed .node,
+    .js-motion .hero.is-armed .arrow,
+    .js-motion .hero.is-armed .bridge__arrow {
+        opacity: 1 !important;
+        transform: none !important;
+        translate: none !important;
+        scale: none !important;
+        filter: none !important;
+        animation: none !important;
     }
-}
 
-/* ---------- stats ---------- */
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 0.75rem;
-    margin: clamp(2rem, 1.5rem + 2vw, 3rem) 0 0;
-    padding: 0;
-}
-
-.stat {
-    margin: 0;
-    padding: 0.85rem 1rem 0.9rem;
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-}
-
-.stat dt {
-    font-size: 0.66rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-}
-
-.stat dd {
-    margin: 0.3rem 0 0;
-    font-family: var(--font-display);
-    font-size: clamp(1.5rem, 1.25rem + 0.9vw, 1.95rem);
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    /* Digits change during the count-up; tabular figures stop the row twitching. */
-    font-variant-numeric: tabular-nums;
-}
-
-.stat__note {
-    margin: 0.3rem 0 0;
-    font-size: 0.72rem;
-    color: var(--ink-faint);
-}
-
-/* Gold is the page's only emphasis colour and marks exactly one thing: the awarded
-   metric. Spending it anywhere else would cost it its meaning. */
-.stat--feature {
-    border-color: color-mix(in srgb, var(--gold) 45%, var(--line));
-    background: var(--gold-wash);
-}
-
-.stat--feature dt,
-.stat--feature .stat__note {
-    color: color-mix(in srgb, var(--gold) 70%, var(--ink-faint));
-}
-
-.stat--feature dd {
-    color: var(--gold);
+    .js-motion .hero.is-armed .bridge__line {
+        transform: scaleX(1) !important;
+        animation: none !important;
+    }
 }
 
 @media (max-width: 900px) {

@@ -1,109 +1,107 @@
 @*
-    Opening screen — Direction A from the design canvas.
+    Opening screen — the Frosted Keynote first viewport.
 
-    The hero carries the before/after architecture itself, so an architect reader sees
-    the kind of problem being solved before reading a word of prose. That is the whole
-    argument for this direction over a purely editorial one.
+    The hero is one solid sheet floating on the aurora field, and it carries the
+    before/after architecture itself, so an architect reader sees the kind of problem
+    being solved before reading a word of prose. The verified metrics live in a single
+    mono facts line rather than a stat-card band: they skim in one fixation and no card
+    grid is spent on them. The award figure keeps the page's only gold.
 *@
 
-<section class="hero">
-    <div class="shell">
-        <div class="hero__grid">
+<section class="sheet hero" aria-label="Introduction">
+    <div class="hero__grid">
 
-            <div class="hero__lede">
-                <p class="mono hero__eyebrow">
-                    @Profile.Location <span class="dot">·</span> Open to senior engineering and architecture roles
-                </p>
+        <div class="hero__lede">
+            @*
+                Each line is its own clipping box so the headline can rise line by
+                line rather than fading in as one block. The break points are set
+                here rather than left to the wrap, so the emphasis lands on
+                "constraint" on its own line at every width.
+            *@
+            <h1 class="hero__headline">
+                <span class="line"><span>I remove the</span></span>
+                <span class="line"><span class="hero__accent">constraint</span></span>
+                <span class="line"><span>that froze the estate.</span></span>
+            </h1>
 
-                @*
-                    Each line is its own clipping box so the headline can rise line by
-                    line rather than fading in as one block. The break points are set
-                    here rather than left to the wrap, so the emphasis lands on
-                    "constraint" on its own line at every width.
-                *@
-                <h1 class="hero__headline">
-                    <span class="line"><span>I remove the</span></span>
-                    <span class="line"><span class="hero__accent">constraint</span></span>
-                    <span class="line"><span>that froze the estate.</span></span>
-                </h1>
+            <p class="hero__pitch">
+                Senior .NET engineer working at architecture level. I take the architectural
+                decisions on systems people have stopped touching — then write the template,
+                the rules, and the workflow that let the next team repeat it.
+            </p>
 
-                <p class="hero__pitch">
-                    Senior .NET engineer working at architecture level. I take the architectural
-                    decisions on systems people have stopped touching — then write the template,
-                    the rules, and the workflow that let the next team repeat it.
-                </p>
+            @*
+                One line, not a band of cards. The figures are the skim, and they carry
+                their final values in the markup — if the script never runs the correct
+                numbers are already on screen, so the count-up can only ever be an
+                enhancement, never the difference between a number and a zero. The
+                separators are drawn by CSS on the fact they FOLLOW, so a wrap between
+                facts never strands a leading middot on the next line.
+            *@
+            <p class="hero__facts" aria-label="Track record at a glance">
+                <span class="hero__fact">upgrade cycle <strong class="mono" data-count-to="3" data-count-from="7">3</strong> days, from 5–7</span>
+                <span class="hero__fact"><strong class="mono" data-count-to="9">9</strong> payment markets</span>
+                <span class="hero__fact">@ExperiencePhrase</span>
+                <span class="hero__fact hero__fact--gold"><strong class="mono" data-count-to="@AwardCount">@AwardCount</strong> awards, one a company award</span>
+            </p>
 
-                <div class="hero__actions">
-                    <a class="btn btn--primary" href="/cv">Read the CV</a>
-                    <a class="btn btn--ghost" href="#work">Selected work</a>
-                    @if (!string.IsNullOrWhiteSpace(Profile.GitHub))
-                    {
-                        <a class="btn btn--ghost" href="@Profile.GitHub">GitHub</a>
-                    }
-                </div>
+            <div class="hero__actions">
+                <a class="btn btn--primary" href="/cv">Read the CV</a>
+                <a class="btn btn--ghost" href="#work">Selected work</a>
+                @if (!string.IsNullOrWhiteSpace(Profile.GitHub))
+                {
+                    <a class="btn btn--ghost" href="@Profile.GitHub">GitHub</a>
+                }
             </div>
-
-            <figure class="diagram">
-                <figcaption class="mono diagram__label">The decision, in one diagram</figcaption>
-
-                <div class="diagram__body">
-                    <div class="panel panel--before">
-                        <p class="mono panel__label">Before</p>
-                        <div class="panel__stack">
-                            <span class="node">Service · .NET FW 4.5</span>
-                            <span class="node">Service · Core 2.2</span>
-                            <span class="node">Service</span>
-                            <span class="arrow" aria-hidden="true">↓</span>
-                            <span class="node node--blocker">Distributed Transaction Coordinator</span>
-                        </div>
-                    </div>
-
-                    <div class="bridge" aria-hidden="true">
-                        <span class="bridge__line"></span>
-                        <span class="bridge__arrow">→</span>
-                    </div>
-
-                    <div class="panel panel--after">
-                        <p class="mono panel__label">After</p>
-                        <div class="panel__stack">
-                            <span class="node node--lead">Orchestrator</span>
-                            <span class="arrow" aria-hidden="true">↓</span>
-                            <span class="node">Service · modernized</span>
-                            <span class="node">Service · modernized</span>
-                            <span class="node">Service</span>
-                        </div>
-                    </div>
-                </div>
-            </figure>
         </div>
 
-        @*
-            Counters carry their final value in the markup. If the script never runs the
-            correct figure is already on screen, so the animation can only ever be an
-            enhancement — never the difference between a number and a zero.
-        *@
-        <dl class="stats">
-            <div class="stat stat--feature">
-                <dt class="mono">Upgrade cycle</dt>
-                <dd>5–7 d &rarr; <span data-count-to="3" data-count-from="7">3</span></dd>
-                <p class="stat__note">Company award</p>
+        <figure class="diagram">
+            <figcaption class="mono diagram__label">The decision, in one diagram</figcaption>
+
+            @*
+                The diagram's meaning cannot live in its pixels for everyone: this text
+                alternative carries the argument — including the blocker, whose point is
+                otherwise made only by colour and a dashed border — to screen readers
+                and to any visitor the animation never reaches.
+            *@
+            <p class="visually-hidden">
+                Before: three legacy services — .NET Framework 4.5, .NET Core 2.2, and one
+                unversioned service — all depend on a Distributed Transaction Coordinator,
+                the component pinning them to runtimes that stopped receiving support.
+                After: an explicit orchestrator coordinates the same services, modernized,
+                with the coordinator removed entirely. The transformation is repeatable:
+                a template, rules, and an AI-guided workflow let other teams run it too.
+            </p>
+
+            <div class="diagram__body">
+                <div class="panel panel--before">
+                    <p class="mono panel__label">Before</p>
+                    <div class="panel__stack">
+                        <span class="node">Service · .NET FW 4.5</span>
+                        <span class="node">Service · Core 2.2</span>
+                        <span class="node">Service</span>
+                        <span class="arrow" aria-hidden="true">↓</span>
+                        <span class="node node--blocker">Distributed Transaction Coordinator</span>
+                    </div>
+                </div>
+
+                <div class="bridge" aria-hidden="true">
+                    <span class="bridge__line"></span>
+                    <span class="bridge__arrow">→</span>
+                </div>
+
+                <div class="panel panel--after">
+                    <p class="mono panel__label">After</p>
+                    <div class="panel__stack">
+                        <span class="node node--lead">Orchestrator</span>
+                        <span class="arrow" aria-hidden="true">↓</span>
+                        <span class="node">Service · modernized</span>
+                        <span class="node">Service · modernized</span>
+                        <span class="node">Service</span>
+                    </div>
+                </div>
             </div>
-            <div class="stat">
-                <dt class="mono">Payment markets</dt>
-                <dd><span data-count-to="9">9</span> countries</dd>
-                <p class="stat__note">One integration surface</p>
-            </div>
-            <div class="stat">
-                <dt class="mono">Experience</dt>
-                <dd>@ExperiencePhrase</dd>
-                <p class="stat__note">Computed from dates</p>
-            </div>
-            <div class="stat">
-                <dt class="mono">Recognition</dt>
-                <dd><span data-count-to="@AwardCount">@AwardCount</span> awards</dd>
-                <p class="stat__note">Delivery · AI enablement</p>
-            </div>
-        </dl>
+        </figure>
     </div>
 </section>
 
