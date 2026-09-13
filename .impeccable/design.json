@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-12T00:00:00Z",
+  "title": "Design System: Frosted Keynote",
+  "world": {
+    "name": "Frosted Keynote",
+    "direction": "FROSTED KEYNOTE",
+    "seedKey": "d60cb62c",
+    "decidedAt": "2026-09-12",
+    "decision": { "answer": "model-pick", "buildPath": "code", "declined": "Retrospective roll (numbered wayfinding conflicts with the no-kicker craft floor)" },
+    "surfaceBrief": ".impeccable/surfaces/src-cv-web-pages-home-razor.md",
+    "sourcesOfRecord": [
+      "src/Cv.Web/wwwroot/css/app.css",
+      "src/Cv.Web/Layout/MainLayout.razor",
+      "src/Cv.Web/Components/Showcase/Hero.razor",
+      "src/Cv.Web/Components/Showcase/Hero.razor.css",
+      "src/Cv.Web/Components/Showcase/SkillMatrix.razor.css",
+      "src/Cv.Web/Components/Showcase/CareerTimeline.razor.css",
+      "src/Cv.Web/Components/Showcase/CaseStudyPanel.razor.css",
+      "src/Cv.Web/Components/Showcase/Credentials.razor.css",
+      "src/Cv.Web/wwwroot/js/motion.js",
+      "src/Cv.Web/wwwroot/index.html",
+      "src/Cv.Web/wwwroot/css/print.css",
+      "_tools/prerender.py"
+    ],
+    "dosageRules": [
+      "backdrop-filter (saturate(180%) blur(20px)) is spent ONLY on the header capsule; content sheets are translucent-without-blur at .88-.9 alpha (sub-second first paint + GPU budget)",
+      "Glass is chrome, sheets are solid: pills and chips sitting ON a sheet use --pill-line/--pill-bg (ghost treatment), never --glass-* tokens or blur",
+      "Gold (--gold/--gold-wash) is spent on exactly one subject: the award metric (hero award fact, metric-chips, award tiles, return badge)",
+      "Alarm (--alarm) is spent only on the diagram's blocker node",
+      "One blue accent owns action, links, focus, and the timeline spine; aurora hues live only in the field, stage washes, selection, and progress bar",
+      "Dark tokens are written twice in app.css: the prefers-color-scheme block guarded by :not([data-theme=\"light\"]) AND :root[data-theme=\"dark\"] - change both",
+      "One shared ease-out clock cubic-bezier(.16,1,.3,1) for reveals and hover lifts; reveals animate translate/scale, never transform (reserved for hover lifts)"
+    ],
+    "bannedPatterns": [
+      "Kickers/eyebrows above headings (craft-floor ban)",
+      "Border-left accent stripes (craft-floor ban)",
+      "Numbered section wayfinding (declined at direction time)",
+      "Stat-card bands (facts are one woven mono line)",
+      "backdrop-filter on any content surface",
+      "Gold outside award content",
+      "Unconditional opacity: 0 or any hiding rule not gated behind .js-motion from motion.js",
+      "IntersectionObserver thresholds > 0 (blanks tall sections on phones)",
+      "Visual design on the printed CV - it stays ATS-plain by product rule",
+      "Aurora field or reading-progress bar reaching paper (both hidden in @media print)"
+    ]
+  },
+  "extensions": {
+    "colorMeta": {
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#1d1d1f", "darkCanonical": "#f5f5f7", "tonalRamp": ["oklch(15% .006 260)", "oklch(27% .006 260)", "oklch(39% .006 260)", "oklch(51% .006 260)", "oklch(63% .005 260)", "oklch(75% .004 260)", "oklch(85% .003 260)", "oklch(95% .003 260)"] },
+      "ink-soft": { "role": "neutral", "displayName": "Ink Soft", "canonical": "#424245", "darkCanonical": "#c6cdd8", "tonalRamp": ["oklch(15% .006 260)", "oklch(27% .006 260)", "oklch(39% .006 260)", "oklch(51% .006 260)", "oklch(63% .005 260)", "oklch(75% .004 260)", "oklch(85% .003 260)", "oklch(95% .003 260)"] },
+      "ink-faint": { "role": "neutral", "displayName": "Ink Faint", "canonical": "#56575b", "darkCanonical": "#9aa4b1", "tonalRamp": ["oklch(15% .007 260)", "oklch(27% .007 260)", "oklch(39% .007 260)", "oklch(51% .007 260)", "oklch(63% .006 260)", "oklch(75% .005 260)", "oklch(85% .004 260)", "oklch(95% .004 260)"] },
+      "paper": { "role": "neutral", "displayName": "Airy Ground / Deep-Space Ground", "canonical": "#f5f5f7", "darkCanonical": "#0b1220", "tonalRamp": ["oklch(15% .01 260)", "oklch(27% .01 260)", "oklch(39% .009 260)", "oklch(51% .008 260)", "oklch(63% .007 260)", "oklch(75% .006 260)", "oklch(85% .005 260)", "oklch(95% .004 260)"] },
+      "sheet-bg": { "role": "neutral", "displayName": "Sheet", "canonical": "rgba(255, 255, 255, .9)", "darkCanonical": "rgba(21, 29, 41, .88)", "tonalRamp": ["oklch(15% .008 255)", "oklch(27% .008 255)", "oklch(39% .007 255)", "oklch(51% .006 255)", "oklch(63% .005 255)", "oklch(75% .004 255)", "oklch(85% .003 255)", "oklch(95% .002 255)"] },
+      "sheet-line": { "role": "neutral", "displayName": "Sheet Hairline", "canonical": "rgba(0, 0, 0, .08)", "darkCanonical": "rgba(255, 255, 255, .09)", "tonalRamp": ["oklch(15% .006 260)", "oklch(27% .006 260)", "oklch(39% .006 260)", "oklch(51% .006 260)", "oklch(63% .005 260)", "oklch(75% .004 260)", "oklch(85% .003 260)", "oklch(95% .003 260)"] },
+      "accent": { "role": "primary", "displayName": "Action Blue (link/text)", "canonical": "#0066cc", "darkCanonical": "#8abaff", "tonalRamp": ["oklch(15% .05 253)", "oklch(27% .08 253)", "oklch(39% .11 253)", "oklch(51% .14 253)", "oklch(63% .15 253)", "oklch(75% .12 253)", "oklch(85% .08 253)", "oklch(95% .04 253)"] },
+      "accent-bright": { "role": "primary", "displayName": "Accent Bright (focus ring, spine)", "canonical": "#0071e3", "darkCanonical": "#a8ccff", "tonalRamp": ["oklch(15% .05 255)", "oklch(27% .08 255)", "oklch(39% .11 255)", "oklch(51% .14 255)", "oklch(63% .16 255)", "oklch(75% .13 255)", "oklch(85% .08 255)", "oklch(95% .04 255)"] },
+      "accent-wash": { "role": "primary", "displayName": "Accent Wash", "canonical": "#e8f1fb", "darkCanonical": "#16283c", "tonalRamp": ["oklch(15% .05 253)", "oklch(27% .08 253)", "oklch(39% .11 253)", "oklch(51% .14 253)", "oklch(63% .15 253)", "oklch(75% .12 253)", "oklch(85% .08 253)", "oklch(95% .04 253)"] },
+      "action-bg": { "role": "primary", "displayName": "Action Fill", "canonical": "#0066cc", "darkCanonical": "#0a84ff", "tonalRamp": ["oklch(15% .05 253)", "oklch(27% .08 253)", "oklch(39% .11 253)", "oklch(51% .14 253)", "oklch(63% .15 253)", "oklch(75% .12 253)", "oklch(85% .08 253)", "oklch(95% .04 253)"] },
+      "action-bg-hover": { "role": "primary", "displayName": "Action Fill Hover", "canonical": "#0059b3", "darkCanonical": "#3d9bff", "tonalRamp": ["oklch(15% .05 253)", "oklch(27% .08 253)", "oklch(39% .11 253)", "oklch(51% .14 253)", "oklch(63% .15 253)", "oklch(75% .12 253)", "oklch(85% .08 253)", "oklch(95% .04 253)"] },
+      "action-ink": { "role": "primary", "displayName": "Action Ink", "canonical": "#ffffff", "darkCanonical": "#071018", "tonalRamp": ["oklch(15% .01 255)", "oklch(27% .01 255)", "oklch(39% .009 255)", "oklch(51% .008 255)", "oklch(63% .007 255)", "oklch(75% .006 255)", "oklch(85% .005 255)", "oklch(95% .004 255)"] },
+      "gold": { "role": "tertiary", "displayName": "Award Gold", "canonical": "#8a6116", "darkCanonical": "#e0b95f", "tonalRamp": ["oklch(15% .03 80)", "oklch(27% .05 80)", "oklch(39% .06 80)", "oklch(51% .08 80)", "oklch(63% .09 80)", "oklch(75% .09 80)", "oklch(85% .08 80)", "oklch(95% .05 80)"] },
+      "gold-wash": { "role": "tertiary", "displayName": "Gold Wash", "canonical": "#fbf3e2", "darkCanonical": "#2a2213", "tonalRamp": ["oklch(15% .03 80)", "oklch(27% .05 80)", "oklch(39% .06 80)", "oklch(51% .08 80)", "oklch(63% .09 80)", "oklch(75% .09 80)", "oklch(85% .08 80)", "oklch(95% .05 80)"] },
+      "alarm": { "role": "tertiary", "displayName": "Blocker Alarm", "canonical": "#b0432c", "darkCanonical": "#e5806a", "tonalRamp": ["oklch(15% .04 35)", "oklch(27% .07 35)", "oklch(39% .10 35)", "oklch(51% .12 35)", "oklch(63% .13 35)", "oklch(75% .11 35)", "oklch(85% .07 35)", "oklch(95% .04 35)"] },
+      "alarm-wash": { "role": "tertiary", "displayName": "Alarm Wash", "canonical": "#fbeae6", "darkCanonical": "#2c1a15", "tonalRamp": ["oklch(15% .04 35)", "oklch(27% .07 35)", "oklch(39% .10 35)", "oklch(51% .12 35)", "oklch(63% .13 35)", "oklch(75% .11 35)", "oklch(85% .07 35)", "oklch(95% .04 35)"] },
+      "aurora-blue": { "role": "secondary", "displayName": "Aurora Blue", "canonical": "#0a84ff", "darkCanonical": "#0a84ff", "tonalRamp": ["oklch(15% .06 255)", "oklch(27% .10 255)", "oklch(39% .13 255)", "oklch(51% .16 255)", "oklch(63% .18 255)", "oklch(75% .15 255)", "oklch(85% .10 255)", "oklch(95% .05 255)"] },
+      "aurora-teal": { "role": "secondary", "displayName": "Aurora Teal", "canonical": "#5ac8d8", "darkCanonical": "#5ac8d8", "tonalRamp": ["oklch(15% .03 210)", "oklch(27% .05 210)", "oklch(39% .06 210)", "oklch(51% .08 210)", "oklch(63% .09 210)", "oklch(75% .10 210)", "oklch(85% .08 210)", "oklch(95% .04 210)"] },
+      "aurora-violet": { "role": "secondary", "displayName": "Aurora Violet", "canonical": "#7d7aff", "darkCanonical": "#7d7aff", "tonalRamp": ["oklch(15% .05 285)", "oklch(27% .08 285)", "oklch(39% .11 285)", "oklch(51% .13 285)", "oklch(63% .15 285)", "oklch(75% .12 285)", "oklch(85% .08 285)", "oklch(95% .04 285)"] },
+      "glass-bg": { "role": "neutral", "displayName": "Glass Fill", "canonical": "rgba(255, 255, 255, .58)", "darkCanonical": "rgba(16, 24, 36, .55)", "tonalRamp": ["oklch(15% .01 255)", "oklch(27% .01 255)", "oklch(39% .009 255)", "oklch(51% .008 255)", "oklch(63% .007 255)", "oklch(75% .006 255)", "oklch(85% .005 255)", "oklch(95% .004 255)"] },
+      "glass-line": { "role": "neutral", "displayName": "Glass Edge", "canonical": "rgba(255, 255, 255, .65)", "darkCanonical": "rgba(255, 255, 255, .14)", "tonalRamp": ["oklch(15% .006 255)", "oklch(27% .006 255)", "oklch(39% .006 255)", "oklch(51% .006 255)", "oklch(63% .005 255)", "oklch(75% .004 255)", "oklch(85% .003 255)", "oklch(95% .003 255)"] },
+      "pill-line": { "role": "neutral", "displayName": "Ghost Pill Edge", "canonical": "rgba(0, 0, 0, .24)", "darkCanonical": "rgba(255, 255, 255, .18)", "tonalRamp": ["oklch(15% .006 260)", "oklch(27% .006 260)", "oklch(39% .006 260)", "oklch(51% .006 260)", "oklch(63% .005 260)", "oklch(75% .004 260)", "oklch(85% .003 260)", "oklch(95% .003 260)"] },
+      "pill-bg": { "role": "neutral", "displayName": "Ghost Pill Fill", "canonical": "rgba(255, 255, 255, .7)", "darkCanonical": "rgba(255, 255, 255, .06)", "tonalRamp": ["oklch(15% .008 255)", "oklch(27% .008 255)", "oklch(39% .007 255)", "oklch(51% .006 255)", "oklch(63% .005 255)", "oklch(75% .004 255)", "oklch(85% .003 255)", "oklch(95% .002 255)"] },
+      "line": { "role": "neutral", "displayName": "Hairline", "canonical": "rgba(0, 0, 0, .1)", "darkCanonical": "rgba(255, 255, 255, .11)", "tonalRamp": ["oklch(15% .006 260)", "oklch(27% .006 260)", "oklch(39% .006 260)", "oklch(51% .006 260)", "oklch(63% .005 260)", "oklch(75% .004 260)", "oklch(85% .003 260)", "oklch(95% .003 260)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero headline only; each line in its own clipping box for the one-time unmask." },
+      "headline": { "displayName": "Headline", "purpose": "Sheet section titles." },
+      "title": { "displayName": "Title", "purpose": "Case-study page titles." },
+      "body": { "displayName": "Body", "purpose": "All prose, capped at the 68ch measure." },
+      "label": { "displayName": "Mono Label", "purpose": "Geist Mono uppercase labels, data, and the hero facts line; carries all numerals with tabular-nums." }
+    },
+    "shadows": [
+      { "name": "shadow-sheet", "value": "0 1px 2px rgba(16,24,40,.05), 0 12px 32px rgba(16,24,40,.08), 0 32px 80px rgba(10,80,160,.07)", "darkValue": "0 1px 2px rgba(0,0,0,.5), 0 12px 32px rgba(0,0,0,.38), 0 32px 80px rgba(0,0,0,.32)", "purpose": "Every content sheet: contact step, mid lift, wide blue-tinted atmosphere." },
+      { "name": "shadow-float", "value": "0 2px 6px rgba(16,24,40,.08), 0 12px 28px rgba(16,24,40,.12)", "darkValue": "0 2px 6px rgba(0,0,0,.45), 0 12px 28px rgba(0,0,0,.4)", "purpose": "Header capsule and the diagram stage." },
+      { "name": "glass-highlight", "value": "inset 0 1px 0 rgba(255,255,255,.45)", "darkValue": "inset 0 1px 0 rgba(255,255,255,.09)", "purpose": "Inner top edge that says real glass; glass chrome only." },
+      { "name": "aurora-glow", "value": "0 10px 26px rgba(10,132,255,.14)", "darkValue": "0 10px 26px rgba(90,200,216,.12)", "purpose": "Hover-only halo under buttons, chips (0 6px 18px), and study links; never at rest." }
+    ],
+    "motion": [
+      { "name": "ease-clock", "value": "cubic-bezier(.16, 1, .3, 1)", "purpose": "The shared ease-out clock: reveals (.7s), stagger (.55s, 50ms/item), button and chip translate (.2-.22s)." },
+      { "name": "hero-ease-rise", "value": "cubic-bezier(.2, .7, .3, 1)", "purpose": "Hero sequence rise-in beats." },
+      { "name": "hero-ease-line", "value": "cubic-bezier(.16, .84, .28, 1)", "purpose": "Headline line unmask." },
+      { "name": "aurora-drift", "value": "transform-only, 84s / 63s / 77s linear infinite alternate", "purpose": "Three blobs phase in and out of alignment; gradients rasterize exactly once." },
+      { "name": "reveal-property-rule", "value": "translate / scale, never transform", "purpose": "transform is reserved for hover lifts so the individual properties compose with it." },
+      { "name": "hero-guard", "value": "sessionStorage heroPlayed=1; scrollY > 40; performance.now() > 1500ms boot deadline - any one skips and the hero is never armed", "purpose": "Motion never replays over a reader; a skipped visitor gets the static hero, never armed-but-invisible." },
+      { "name": "progress-bar", "value": "animation-timeline: scroll(), 2px aurora gradient", "purpose": "Reading progress with no script and no markup; @supports guarded; hidden in print." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px", "purpose": "Testimonials grid to one column." },
+      { "name": "md", "value": "720px", "purpose": "Header capsule wraps to two rows (radius 24px); scroll-margin-top 92px -> 216px." },
+      { "name": "lg", "value": "900px", "purpose": "Hero grid stacks; diagram body to one column, bridge rotates horizontal." },
+      { "name": "xl", "value": "940px", "purpose": "Timeline gains the 10.5rem right-aligned period column." }
+    ],
+    "material": {
+      "glass-blur": "saturate(180%) blur(20px)",
+      "aurora-veil": { "light": ".35", "dark": ".3" },
+      "aurora-hues": ["#0a84ff", "#5ac8d8", "#7d7aff"],
+      "stage": "linear-gradient(180deg, #101a2c, #0b1220) plus aurora radial washes; dark in both themes; colours local to the stage",
+      "iconStroke": "1.6"
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Blue capsule action; hover lifts 1px and throws the aurora glow.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">Read the CV</a>",
+      "css": ".ds-btn-primary { display:inline-flex; align-items:center; justify-content:center; gap:.45rem; min-height:44px; padding:.6rem 1.35rem; border-radius:999px; border:1px solid transparent; font:inherit; font-size:.95rem; font-weight:600; text-decoration:none; cursor:pointer; background:var(--action-bg,#0066cc); color:var(--action-ink,#ffffff); transition: translate .22s cubic-bezier(.16,1,.3,1), box-shadow .22s ease, background-color .22s ease; } .ds-btn-primary:hover { background:var(--action-bg-hover,#0059b3); translate:0 -1px; box-shadow:0 10px 26px var(--aurora-glow,rgba(10,132,255,.14)); } .ds-btn-primary:active { translate:0 0; } .ds-btn-primary:focus-visible { outline:2px solid var(--accent-bright,#0071e3); outline-offset:3px; border-radius:4px; }"
+    },
+    {
+      "name": "Ghost Pill Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "On-sheet ghost capsule: pill tokens, no blur; hover takes the accent.",
+      "html": "<a class=\"ds-btn-ghost\" href=\"#\">Selected work</a>",
+      "css": ".ds-btn-ghost { display:inline-flex; align-items:center; justify-content:center; gap:.45rem; min-height:44px; padding:.6rem 1.35rem; border-radius:999px; font:inherit; font-size:.95rem; font-weight:600; text-decoration:none; cursor:pointer; border:1px solid var(--pill-line,rgba(0,0,0,.24)); background:var(--pill-bg,rgba(255,255,255,.7)); color:var(--ink,#1d1d1f); transition: translate .22s cubic-bezier(.16,1,.3,1), border-color .22s ease, color .22s ease; } .ds-btn-ghost:hover { border-color:var(--accent,#0066cc); color:var(--accent,#0066cc); } .ds-btn-ghost:focus-visible { outline:2px solid var(--accent-bright,#0071e3); outline-offset:3px; border-radius:4px; }"
+    },
+    {
+      "name": "Glass Header Capsule",
+      "kind": "nav",
+      "refersTo": "header-capsule",
+      "description": "The one true glass: floating capsule with backdrop-filter, deepening when content scrolls beneath (add the is-scrolled class).",
+      "html": "<div class=\"ds-capsule\"><a class=\"ds-capsule__name\" href=\"#\">Bahaa Aldeen Mohamed</a><nav class=\"ds-capsule__nav\"><a href=\"#\">Skills</a><a href=\"#\">Experience</a><a href=\"#\">Work</a><a href=\"#\">CV</a></nav></div>",
+      "css": ".ds-capsule { display:flex; align-items:center; justify-content:space-between; gap:.75rem; min-height:56px; padding:.35rem .4rem .35rem 1.1rem; border-radius:999px; background:var(--glass-bg,rgba(255,255,255,.58)); border:1px solid var(--glass-line,rgba(255,255,255,.65)); box-shadow:var(--shadow-float,0 2px 6px rgba(16,24,40,.08),0 12px 28px rgba(16,24,40,.12)), var(--glass-highlight,inset 0 1px 0 rgba(255,255,255,.45)); backdrop-filter:var(--glass-blur,saturate(180%) blur(20px)); -webkit-backdrop-filter:var(--glass-blur,saturate(180%) blur(20px)); transition: background-color .35s ease, box-shadow .35s ease; } .ds-capsule.is-scrolled { background:color-mix(in srgb, var(--glass-bg,rgba(255,255,255,.58)) 72%, var(--paper,#f5f5f7)); } .ds-capsule__name { font-weight:600; font-size:.98rem; letter-spacing:-.01em; color:var(--ink,#1d1d1f); text-decoration:none; white-space:nowrap; } .ds-capsule__nav { display:flex; gap:.15rem; align-items:center; flex-wrap:wrap; } .ds-capsule__nav a { display:inline-flex; align-items:center; min-height:44px; padding:0 .85rem; border-radius:999px; color:var(--ink-soft,#424245); text-decoration:none; font-size:.92rem; transition: color .2s ease, background-color .2s ease; } .ds-capsule__nav a:hover { color:var(--ink,#1d1d1f); background:color-mix(in srgb, var(--ink,#1d1d1f) 7%, transparent); }"
+    },
+    {
+      "name": "Theme Toggle",
+      "kind": "custom",
+      "refersTo": "theme-toggle",
+      "description": "44px circle holding both drawn SVG icons (1.6 stroke); which shows is CSS state, so it can never diverge from the palette. Add class ds-dark to preview the dark-state icon.",
+      "html": "<button type=\"button\" class=\"ds-theme-toggle\" aria-label=\"Switch theme\"><svg class=\"ds-icon-sun\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"4\"></circle><path d=\"M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41\"></path></svg><svg class=\"ds-icon-moon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z\"></path></svg></button>",
+      "css": ".ds-theme-toggle { display:grid; place-items:center; width:44px; height:44px; padding:0; color:var(--ink-soft,#424245); background:transparent; border:1px solid var(--line,rgba(0,0,0,.1)); border-radius:50%; cursor:pointer; transition: color .2s ease, border-color .2s ease, background-color .2s ease; } .ds-theme-toggle:hover { color:var(--accent,#0066cc); border-color:var(--accent,#0066cc); background:color-mix(in srgb, var(--accent,#0066cc) 8%, transparent); } .ds-theme-toggle svg { width:18px; height:18px; } .ds-theme-toggle .ds-icon-sun { display:none; } .ds-theme-toggle .ds-icon-moon { display:block; } .ds-theme-toggle.ds-dark .ds-icon-sun { display:block; } .ds-theme-toggle.ds-dark .ds-icon-moon { display:none; }"
+    },
+    {
+      "name": "Skill Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Scannable skill pill; the employer backing it sits in mono. Hover lifts and takes the accent border.",
+      "html": "<span class=\"ds-chip\">ASP.NET Core <span class=\"ds-chip__where\">PS Digital</span></span>",
+      "css": ".ds-chip { display:inline-flex; align-items:baseline; gap:.4rem; max-width:100%; min-height:32px; padding:.3rem .85rem; border:1px solid var(--sheet-line,rgba(0,0,0,.08)); border-radius:999px; background:color-mix(in srgb, var(--sheet-bg,rgba(255,255,255,.9)) 80%, transparent); color:var(--ink-soft,#424245); font-size:.88rem; transition: translate .2s cubic-bezier(.16,1,.3,1), border-color .2s ease, box-shadow .2s ease, color .2s ease; } .ds-chip:hover { translate:0 -1px; border-color:var(--accent,#0066cc); box-shadow:0 6px 18px var(--aurora-glow,rgba(10,132,255,.14)); color:var(--ink,#1d1d1f); } .ds-chip__where { font-family:var(--font-mono,\"Geist Mono\",ui-monospace,monospace); font-size:.72rem; font-weight:400; color:var(--ink-faint,#56575b); }"
+    },
+    {
+      "name": "Evidenced Chip",
+      "kind": "chip",
+      "refersTo": "chip-evidenced",
+      "description": "An evidenced skill outranks an unevidenced one: ink weight, accent wash, accent-mixed border.",
+      "html": "<span class=\"ds-chip-evidenced\">Clean Architecture <span class=\"ds-chip-evidenced__where\">Andalusia</span></span>",
+      "css": ".ds-chip-evidenced { display:inline-flex; align-items:baseline; gap:.4rem; min-height:32px; padding:.3rem .85rem; border-radius:999px; font-size:.88rem; color:var(--ink,#1d1d1f); font-weight:600; border:1px solid color-mix(in srgb, var(--accent,#0066cc) 38%, var(--sheet-line,rgba(0,0,0,.08))); background:var(--accent-wash,#e8f1fb); } .ds-chip-evidenced__where { font-family:var(--font-mono,\"Geist Mono\",ui-monospace,monospace); font-size:.72rem; font-weight:400; color:var(--ink-faint,#56575b); }"
+    },
+    {
+      "name": "Award Metric Chip",
+      "kind": "chip",
+      "refersTo": "metric-chip",
+      "description": "The page's only gold: the squared 8px chip marking an award-earning metric.",
+      "html": "<span class=\"ds-metric-chip\">Company award &times;2</span>",
+      "css": ".ds-metric-chip { display:inline-block; padding:.12rem .55rem; border-radius:8px; background:var(--gold-wash,#fbf3e2); color:var(--gold,#8a6116); font-weight:700; font-size:.85rem; }"
+    },
+    {
+      "name": "Content Sheet",
+      "kind": "card",
+      "refersTo": null,
+      "description": "The content slab: translucent without blur, 16px radius, three-stage shadow. All dense text lives on one of these.",
+      "html": "<div class=\"ds-sheet\"><h2 class=\"ds-sheet__title\">Sheet title</h2><p class=\"ds-sheet__lede\">Dense content floats as one rounded slab over the aurora field.</p></div>",
+      "css": ".ds-sheet { padding:clamp(2rem, 1.2rem + 3vw, 3.75rem) clamp(1.25rem, 3.5vw, 3.25rem); background:var(--sheet-bg,rgba(255,255,255,.9)); border:1px solid var(--sheet-line,rgba(0,0,0,.08)); border-radius:16px; box-shadow:var(--shadow-sheet,0 1px 2px rgba(16,24,40,.05),0 12px 32px rgba(16,24,40,.08),0 32px 80px rgba(10,80,160,.07)); } .ds-sheet__title { margin:0 0 .6rem; font-weight:600; font-size:clamp(1.85rem,1.15rem + 2.6vw,2.9rem); letter-spacing:-.028em; line-height:1.18; color:var(--ink,#1d1d1f); } .ds-sheet__lede { margin:0; max-width:68ch; font-size:1.05rem; line-height:1.6; color:var(--ink-soft,#424245); }"
+    },
+    {
+      "name": "Testimonial Tile",
+      "kind": "card",
+      "refersTo": "testimonial-tile",
+      "description": "Solid quote tile - content, not chrome, so no blur rides under it. The quote mark is tall quiet punctuation in accent.",
+      "html": "<figure class=\"ds-testimonial\"><blockquote class=\"ds-testimonial__quote\"><p>Quote text.</p></blockquote><figcaption class=\"ds-testimonial__by\"><span class=\"ds-testimonial__avatar\" aria-hidden=\"true\">BM</span><span class=\"ds-testimonial__who\"><span class=\"ds-testimonial__name\">Name</span><span class=\"ds-testimonial__meta\">Colleague</span></span></figcaption></figure>",
+      "css": ".ds-testimonial { margin:0; padding:1.5rem 1.5rem 1.25rem; background:color-mix(in srgb, var(--sheet-bg,rgba(255,255,255,.9)) 70%, var(--paper,#f5f5f7)); border:1px solid var(--sheet-line,rgba(0,0,0,.08)); border-radius:12px; } .ds-testimonial__quote { margin:0 0 1.1rem; } .ds-testimonial__quote p { margin:0; color:var(--ink,#1d1d1f); line-height:1.65; font-size:.98rem; } .ds-testimonial__quote p::before { content:\"\\201C\"; display:block; font-family:var(--font-display,\"Geist\",sans-serif); font-size:2rem; line-height:.6; color:var(--accent,#0066cc); margin:.4rem 0 .7rem; } .ds-testimonial__by { display:flex; align-items:center; gap:.75rem; } .ds-testimonial__avatar { flex:none; display:grid; place-items:center; width:2.6rem; height:2.6rem; border-radius:50%; background:var(--accent-wash,#e8f1fb); color:var(--accent,#0066cc); font-weight:600; font-size:.9rem; letter-spacing:.04em; } .ds-testimonial__who { display:grid; gap:.1rem; } .ds-testimonial__name { font-weight:600; color:var(--ink,#1d1d1f); } .ds-testimonial__meta { color:var(--ink-faint,#56575b); font-size:.86rem; }"
+    },
+    {
+      "name": "Diagram Stage",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "The signature recessed keynote stage: dark in both themes, aurora-washed, colours local to the stage. Before panel borders alarm, after panel and lead node border aurora teal; the bridge line performs the transformation.",
+      "html": "<div class=\"ds-stage\"><p class=\"ds-stage__label\">The decision, in one diagram</p><div class=\"ds-stage__body\"><div class=\"ds-stage__panel ds-stage__panel--before\"><span class=\"ds-node\">Service</span><span class=\"ds-node ds-node--blocker\">Distributed Transaction Coordinator</span></div><span class=\"ds-bridge\" aria-hidden=\"true\"></span><div class=\"ds-stage__panel ds-stage__panel--after\"><span class=\"ds-node ds-node--lead\">Orchestrator</span><span class=\"ds-node\">Service &middot; modernized</span></div></div></div>",
+      "css": ".ds-stage { padding:1.4rem 1.5rem 1.6rem; border:1px solid color-mix(in srgb, var(--aurora-blue,#0a84ff) 26%, rgba(255,255,255,.1)); border-radius:14px; background:radial-gradient(120% 90% at 80% -10%, rgba(90,200,216,.16), transparent 60%), radial-gradient(120% 90% at 15% 110%, rgba(125,122,255,.14), transparent 60%), linear-gradient(180deg, #101a2c, #0b1220); box-shadow:inset 0 1px 0 rgba(255,255,255,.07), var(--shadow-float,0 2px 6px rgba(16,24,40,.08),0 12px 28px rgba(16,24,40,.12)); } .ds-stage__label { margin:0 0 1.1rem; font-family:var(--font-mono,\"Geist Mono\",ui-monospace,monospace); font-size:.78rem; color:rgba(226,234,244,.6); } .ds-stage__body { display:grid; grid-template-columns:1fr 2.25rem 1fr; gap:.85rem; align-items:stretch; } .ds-stage__panel { display:flex; flex-direction:column; gap:.4rem; padding:.9rem .8rem; border:1px solid rgba(255,255,255,.12); border-radius:10px; background:rgba(255,255,255,.045); } .ds-stage__panel--before { border-color:color-mix(in srgb, var(--alarm,#b0432c) 42%, rgba(255,255,255,.12)); } .ds-stage__panel--after { border-color:color-mix(in srgb, var(--aurora-teal,#5ac8d8) 46%, rgba(255,255,255,.12)); } .ds-node { padding:.42rem .55rem; border:1px solid rgba(255,255,255,.14); border-radius:6px; font-size:.72rem; color:rgba(226,234,244,.82); text-align:center; } .ds-node--blocker { border-style:dashed; border-color:color-mix(in srgb, var(--alarm,#b0432c) 65%, rgba(255,255,255,.12)); color:#f4a08d; background:color-mix(in srgb, var(--alarm,#b0432c) 16%, transparent); } .ds-node--lead { border-color:var(--aurora-teal,#5ac8d8); color:var(--aurora-teal,#5ac8d8); font-weight:600; } .ds-bridge { width:2px; justify-self:center; align-self:stretch; background:linear-gradient(180deg, var(--aurora-blue,#0a84ff), var(--aurora-teal,#5ac8d8)); border-radius:999px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Frosted Keynote",
+    "overview": "The site behaves like a native Apple app: one aurora-lit field behind everything, frosted glass reserved for chrome (the header capsule), and near-opaque rounded content sheets carrying every dense word. The world proves the candidate engineers calm — it refuses the category-default scrolling document and its sticky stat band. The dosage law governs everything: glass is chrome, sheets are solid. backdrop-filter is spent exactly once, on the header capsule; content sheets are translucent without blur, so a long page never holds a live GPU blur under the reader and first paint stays under a second — a product rule, not a preference. Motion is one orchestrated system on a shared ease-out clock: sections settle in as sheets, items stagger at 50ms per index, and the hero plays a single sequence — only for qualifying visits. Hiding is additive-only, gated behind .js-motion added by motion.js and nowhere else.",
+    "keyCharacteristics": [
+      "Aurora field: three transform-only radial-gradient blobs on one shared drift clock, present at first paint from the shell, outside the app runtime.",
+      "Frosted capsule header is the only real glass; sheets are translucent-without-blur slabs (16px radius).",
+      "One blue accent for action, links, and focus; gold spent on exactly one subject (awards); alarm red only for the diagram's blocker.",
+      "Geist + Geist Mono; negative tracking on every heading; mono carries all data and labels.",
+      "Capsule radii (999px) for all interactive chrome; hairlines, not boxes, separate content inside a sheet.",
+      "Reduced motion restores every hidden state; the printed CV sits outside this system entirely (ATS-plain by product rule)."
+    ],
+    "rules": [
+      { "name": "The Gold Is Singular Rule", "body": "Gold is spent on exactly one subject — the award metric — and nowhere else. Its rarity is what makes the award land.", "section": "colors" },
+      { "name": "The Twice-Written Rule", "body": "Dark tokens are written twice in app.css — the guarded prefers-color-scheme block and the [data-theme=\"dark\"] rule. Any token change is made in both places, always.", "section": "colors" },
+      { "name": "The No-Kicker Rule", "body": "Nothing sits above a heading — no kickers, no eyebrows, no numbered wayfinding. A section opens with its heading; attribution goes below it, in mono, in Ink Faint.", "section": "typography" },
+      { "name": "The Two-Row Capsule Rule", "body": "At 720px the capsule wraps to two rows inside one capsule (~200px tall); the mobile scroll-margin-top is 216px because of it. If the capsule is ever compacted, that 216px must shrink with it — the two are one decision.", "section": "layout" },
+      { "name": "The Chrome-Only Blur Rule", "body": "backdrop-filter (saturate(180%) blur(20px)) is spent exclusively on the header capsule. Content sheets are translucent without blur — render cost for nothing behind a .9-alpha sheet.", "section": "elevation" },
+      { "name": "The Scrolled-Depth Rule", "body": "The capsule's glass deepens once content passes underneath (.is-scrolled at scrollY > 8) — state, not motion, so it runs regardless of reduced-motion.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do write any dark token change in both places — the guarded prefers-color-scheme block and the [data-theme=\"dark\"] rule (The Twice-Written Rule).",
+      "Do gate every hiding rule behind .js-motion from motion.js, and restore every hidden state in the reduced-motion blocks.",
+      "Do keep backdrop-filter on chrome only; sheets stay translucent-without-blur at .88–.9 alpha.",
+      "Do keep gold on awards only, and the alarm on the diagram's blocker only.",
+      "Do keep 44px tap targets, the 68ch measure, and the 216px mobile scroll-margin in step with the two-row capsule.",
+      "Do keep the prerendered <div class=\"prerendered\"> a direct child of #app, and mirror any header change in prerender.py's static_shell_header byte-for-byte.",
+      "Do carry final values in markup for anything a script counts or reveals — the static layer is the contract.",
+      "Do verify both themes at 390×844 and desktop width before calling anything done."
+    ],
+    "donts": [
+      "Don't put kickers or eyebrows above headings, and don't add border-left accent stripes — both are below the craft floor (The No-Kicker Rule).",
+      "Don't build a stat-card band; the facts are one mono line woven into the hero.",
+      "Don't blur content, animate the aurora with anything but transform, or repaint the field after first raster.",
+      "Don't give the hero sequence to a visitor who scrolled, has seen it this session, or waited past the 1500ms boot deadline — and never arm without a proved restore path.",
+      "Don't raise the reveal IntersectionObserver threshold above 0 — a height-ratio threshold blanks tall sections on phones.",
+      "Don't print the design: the aurora and progress bar are hidden in print, and the printed CV (/cv document, print.css, EmptyLayout) stays deliberately ATS-plain outside this system by product rule.",
+      "Don't adopt numbered section wayfinding — the \"Retrospective\" discipline was declined at direction time; section numbers conflict with the No-Kicker Rule."
+    ]
+  }
+}

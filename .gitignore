@@ -51,3 +51,25 @@ design/portfolio-landing-page.html
 # an old phone number and content that output/ now supersedes.
 /resume 2-9-26.pdf
 /Bahaa Aldeen Mohamed.pdf
+
+# Local agent tooling state. Never published: ZCode writes session plans here, and the
+# delegate lane map carries an approval hash bound to this worktree's git metadata —
+# committing it would hand collaborators lanes that fail closed anyway.
+/.zcode/
+/.delegate/
+
+# Impeccable design-guidance skill (github.com/pbakaus/impeccable), installed locally
+# for the redesign phase. Third-party agent tooling, not project content — reinstall
+# from a fresh clone rather than restoring from history.
+/.agents/
+/.claude/skills/
+/.claude/agents/
+
+# Impeccable working state: capture evidence, decision mocks, and live-session
+# journals are large and ephemeral. The durable records (critique snapshots,
+# design.json, surface briefs) are tracked alongside DESIGN.md.
+/.impeccable/review/
+/.impeccable/mocks/
+/.impeccable/live/
+/.impeccable/questions/
+/.impeccable/build/
