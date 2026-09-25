@@ -110,10 +110,19 @@ async function draw(element, id, definition) {
 
     const rendered = element.querySelector('svg');
     if (rendered) {
-        // Let the SVG shrink to its container instead of forcing the page sideways.
         rendered.removeAttribute('width');
-        rendered.style.maxWidth = '100%';
         rendered.style.height = 'auto';
+        // A diagram wider than its card renders at natural size and pans inside the
+        // canvas's .scroll-x instead of shrinking to fit — the payment graph squeezed
+        // into a ~700px card was drawing its labels near 8px. Only diagrams that fit
+        // stay shrink-to-fit, so the page itself never scrolls sideways.
+        const natural = rendered.viewBox?.baseVal?.width ?? 0;
+        if (natural > element.clientWidth) {
+            rendered.style.maxWidth = 'none';
+            rendered.style.width = `${Math.ceil(natural)}px`;
+        } else {
+            rendered.style.maxWidth = '100%';
+        }
     }
 
     drawn.set(element, { id, definition });

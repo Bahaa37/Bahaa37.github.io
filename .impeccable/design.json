@@ -1,12 +1,12 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-13T00:00:00Z",
-  "title": "Design System: Frosted Keynote",
+  "generatedAt": "2026-09-24T00:00:00Z",
+  "title": "Design System: Sky Aluminum",
   "world": {
-    "name": "Frosted Keynote",
-    "direction": "FROSTED KEYNOTE",
+    "name": "Sky Aluminum",
+    "direction": "SKY ALUMINUM",
     "seedKey": "d60cb62c",
-    "decidedAt": "2026-09-12",
+    "decidedAt": "2026-09-14",
     "decision": {
       "answer": "model-pick",
       "buildPath": "code",
@@ -559,7 +559,7 @@
       {
         "name": "md",
         "value": "720px",
-        "purpose": "Header capsule wraps to two rows (radius 24px); scroll-margin-top 92px -> 216px."
+        "purpose": "Header capsule wraps to two rows (radius 24px); scroll-margin-top 92px -> 112px."
       },
       {
         "name": "lg",
@@ -670,7 +670,7 @@
     }
   ],
   "narrative": {
-    "northStar": "Frosted Keynote",
+    "northStar": "Sky Aluminum",
     "overview": "The site behaves like a native Apple app: frosted glass chrome and anodized-silver metal edges over solid content sheets on one still Sky Aluminum ground (silvery blue-paper light, blue-slate night, Apple's action blue - the user's own proposal after three re-tints, 2026-09-13). The dosage law: glass is chrome - exactly two fixed blurs, capsule and dock; sheets are solid. First paint stays under a second - a product rule, not a preference. Motion is one orchestrated system on a shared ease-out clock: sections settle in as sheets, items stagger at 50ms per index, and the hero plays a single sequence - only for qualifying visits. Hiding is additive-only, gated behind .js-motion added by motion.js and nowhere else.",
     "keyCharacteristics": [
       "Still ground: one flat surface on html (silvery blue-paper light, blue-slate night) - nothing layered, nothing animated behind the content.",
@@ -722,7 +722,7 @@
       "Do gate every hiding rule behind .js-motion from motion.js, and restore every hidden state in the reduced-motion blocks.",
       "Do keep backdrop-filter on chrome only; sheets stay translucent-without-blur at .88–.9 alpha.",
       "Do keep gold on awards only, and the alarm on the diagram's blocker only.",
-      "Do keep 44px tap targets, the 68ch measure, and the 216px mobile scroll-margin in step with the two-row capsule.",
+      "Do keep 44px tap targets, the 68ch measure, and the 112px mobile scroll-margin in step with the two-row capsule.",
       "Do keep the prerendered <div class=\"prerendered\"> a direct child of #app, and mirror any header or contact-dock change in prerender.py (static_shell_header / static_contact_dock) byte-for-byte.",
       "Do carry final values in markup for anything a script counts or reveals — the static layer is the contract.",
       "Do verify both themes at 390×844 and desktop width before calling anything done."

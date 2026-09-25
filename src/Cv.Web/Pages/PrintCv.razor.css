@@ -96,6 +96,9 @@
 
 .cv-contact {
     margin: 0;
+    /* On-screen measure only: ATS extraction is linear, so wrapping changes nothing
+       it reads, and the cap ≈ the print content width anyway. */
+    max-width: 68ch;
     font-size: 9.5pt;
     color: #333;
 }

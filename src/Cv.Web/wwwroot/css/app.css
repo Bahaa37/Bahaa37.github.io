@@ -490,6 +490,13 @@ a {
     background: color-mix(in srgb, var(--ink) 7%, transparent);
 }
 
+/* Current-section state, applied by motion.js's scroll-spy. Same treatment as hover
+   but persistent, so "where am I" answers itself without reading the page. */
+.site-nav a.is-current {
+    color: var(--ink);
+    background: color-mix(in srgb, var(--ink) 7%, transparent);
+}
+
 /*
     The theme control: an iOS-style switch. A tap toggles — Blazor's handler after
     boot, the shell's delegated click before it — and the shell's drag enhancement
@@ -706,11 +713,74 @@ a {
     }
 }
 
+/*
+    Back-to-top: runtime chrome (MainLayout.razor) wired by motion.js's
+    initBackToTop, which adds .is-shown — the one visibility class — after a
+    viewport of scroll. The stylesheet never hides rendered content with an
+    unconditional opacity rule, so the resting state here is display:none and
+    everything visible about the button lives under the JS-added class.
+
+    It parks ABOVE the contact dock, on the dock's own baseline: the dock's top
+    edge sits at .9rem + safe-area + ~3.5rem (44px action + padding + border), so
+    a bottom offset of .9rem + safe-area + 4.5rem keeps ~16px of paper between
+    them at every width — the dock-clearance arithmetic of .site-footer, applied
+    one layer up. z-index sits just under the dock's (40): the dock is the
+    primary control at the foot, and the two never overlap anyway.
+
+    The face is a solid sheet with the single-tone silver edge — new fixed chrome
+    could ask for glass (the Chrome-Only Blur Rule permits it), but the dosage law
+    spends the page's two blurs on the capsule and the dock, and a third matchbox
+    blur is not worth the GPU layer for a control most visits never show.
+*/
+.back-to-top {
+    display: none; /* shown only by motion.js's .is-shown — see the note above */
+    position: fixed;
+    inset-block-end: calc(0.9rem + env(safe-area-inset-bottom, 0px) + 4.5rem);
+    inset-inline-end: 0.9rem;
+    z-index: 39;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--edge-silver);
+    border-radius: 999px;
+    background: var(--sheet-solid);
+    color: var(--ink-soft);
+    cursor: pointer;
+    box-shadow: var(--shadow-float);
+    transition: color .2s ease, border-color .2s ease, translate .2s ease, box-shadow .2s ease;
+}
+
+.back-to-top.is-shown {
+    display: inline-flex;
+    animation: rise-in .3s cubic-bezier(.16, 1, .3, 1);
+}
+
+.back-to-top svg {
+    width: 18px;
+    height: 18px;
+}
+
+.back-to-top:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    translate: 0 -1px;
+    box-shadow: var(--shadow-lift);
+}
+
+/* The global :focus-visible rule squares radii to 4px, which on a round control
+   draws the outline as a misshapen ring — the circle keeps its shape. */
+.back-to-top:focus-visible {
+    border-radius: 999px;
+}
+
 /* The dock is screen chrome: it must never reach paper, and sections hidden by the
    reveal system (below-fold .reveal starts at opacity:0) must not print blank —
    Ctrl+P on the showcase prints the document, not the animation state. */
 @media print {
     .contact-dock,
+    .back-to-top,
     .theme-pulse {
         display: none;
     }
@@ -816,7 +886,10 @@ a {
 
         .site-nav a {
             scroll-snap-align: start;
-            padding: 0 0.7rem;
+            /* 0.6rem keeps all five links (plus CV) inside a 390px strip: at 0.7rem the
+               last link slides under the mask and "CV" — the recruiter's destination —
+               is the one that disappears. */
+            padding: 0 0.6rem;
             min-height: 44px;
             font-size: 0.9rem;
         }
@@ -824,9 +897,18 @@ a {
 
 
 .site-footer {
-    padding: 2.5rem 0 3.5rem;
+    /* The bottom padding clears the floating contact dock: at 3.5rem the dock sat on
+       the footer's last line at scroll end. 4.5rem + safe-area keeps paper between
+       them at every width. */
+    padding: 2.5rem 0 calc(4.5rem + env(safe-area-inset-bottom, 0px));
     color: var(--ink-faint);
     font-size: 0.9rem;
+}
+
+/* The name + full title line runs ~105 characters uncapped — past every body-measure
+   rule on the site. The footer is still prose. */
+.site-footer p {
+    max-width: var(--measure);
 }
 
 .site-footer a {

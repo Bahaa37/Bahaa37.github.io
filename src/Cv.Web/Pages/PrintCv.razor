@@ -29,8 +29,8 @@ else
         @* target keeps this out of Blazor's router — see the note in Home.razor. *@
         <a class="cv-download" href="/Bahaa-Aldeen-Mohamed-CV.pdf"
            target="_blank" rel="noopener" download>Download CV (PDF)</a>
-        <button type="button" @onclick="PrintAsync">Save as PDF</button>
-        <span>Choose "Save as PDF" in the print dialog. Margins: default. Background graphics: off.</span>
+        <button type="button" @onclick="PrintAsync">Print this page</button>
+        <span>Choose "Save as PDF" in the dialog to get a PDF. Margins: default. Background graphics: off.</span>
     </div>
 
     <article class="cv">
@@ -165,7 +165,7 @@ else
             @if (remainingCertifications > 0)
             {
                 <p class="cert-note">
-                    @remainingCertifications more, plus case studies and architecture diagrams, at
+                    @remainingCertifications more certifications, plus in-depth case studies, at
                     @if (!string.IsNullOrWhiteSpace(document.Profile.Website))
                     {
                         <a href="@document.Profile.Website">@StripScheme(document.Profile.Website)</a>

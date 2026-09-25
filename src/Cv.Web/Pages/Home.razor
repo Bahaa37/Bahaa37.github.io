@@ -28,18 +28,45 @@ else
 
     <section class="sheet reveal" id="work">
         <div class="shell">
-            <h2 class="sheet__title">Five pieces of work, in depth</h2>
+            @*
+                One featured case, four index rows. Five equal panels made the signature
+                DTC re-architecture — the site's whole argument — carry the same weight
+                as a routine rebuild, and a 5-way equal choice is a skim-killer. The
+                first case by display order gets the full panel; the rest are one skim
+                each, and every row opens a page with the real depth.
+            *@
+            @{
+                var orderedStudies = document.CaseStudies.OrderBy(c => c.DisplayOrder).ToList();
+                var featuredStudy = orderedStudies.FirstOrDefault();
+                var indexStudies = orderedStudies.Skip(1).ToList();
+            }
+            <h2 class="sheet__title">Selected work, in depth</h2>
             <p class="sheet__lede">
-                Each one covers the problem, the decisions made, and what actually changed.
-                Where a diagram helps, it renders on demand rather than on page load.
+                The DTC re-architecture in full; the rest, one skim each — every row
+                opens its own page.
             </p>
 
-            @foreach (var (study, index) in document.CaseStudies
-                .OrderBy(c => c.DisplayOrder)
-                .Select((study, index) => (study, index + 1)))
+            @if (featuredStudy is not null)
             {
-                <CaseStudyPanel Study="study" Index="index" />
+                <CaseStudyPanel Study="featuredStudy" Index="1" />
             }
+
+            <ol class="case-index">
+                @foreach (var study in indexStudies)
+                {
+                    <li>
+                        <a class="case-index__item" href="/work/@study.Slug">
+                            <span class="case-index__title">@study.ShortTitle</span>
+                            <span class="case-index__org mono">@study.Organisation</span>
+                            <span class="case-index__summary">@study.Summary</span>
+                            @if (study.Outcomes.Count > 0)
+                            {
+                                <span class="case-index__outcome mono">@study.Outcomes[0]</span>
+                            }
+                        </a>
+                    </li>
+                }
+            </ol>
         </div>
     </section>
 
@@ -56,7 +83,8 @@ else
             <div class="shell">
                 <h2 class="sheet__title">What people say</h2>
                 <p class="sheet__lede">
-                    Recommendations from colleagues, each attributed to its author.
+                    Recommendations from colleagues and collaborators, each attributed
+                    to its author.
                     <a href="/testimonials">Read them all</a>.
                 </p>
                 <div class="testimonials__grid">
@@ -73,12 +101,26 @@ else
         <div class="shell contact">
             <h2 class="sheet__title">Open to senior .NET and architecture roles</h2>
             <p class="sheet__lede">
-                The quickest way to reach me is email. The CV below is the same content as
-                this page, formatted for printing and for applicant tracking systems.
+                Email is the quickest way to reach me. The CV carries the same content,
+                formatted for printing and for applicant tracking systems.
             </p>
             <div class="contact__actions">
-                <a class="btn btn--primary" href="mailto:@document.Profile.Email">
-                    @document.Profile.Email
+                @*
+                    A verb and an icon, not a bare address: a filled button showing only
+                    an email address reads as a label to copy rather than an action to
+                    tap. The icon matches the contact dock's envelope so the two read as
+                    one system.
+                *@
+                <a class="btn btn--primary contact__email" href="mailto:@document.Profile.Email">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="2" y="4" width="20" height="16" rx="2" />
+                        <path d="m22 6-10 7L2 6" />
+                    </svg>
+                    <span class="contact__email-lines">
+                        <span>Email me</span>
+                        <span class="contact__email-addr mono">@document.Profile.Email</span>
+                    </span>
                 </a>
                 @*
                     The number is deliberately not printed as text here — this is the
@@ -87,7 +129,7 @@ else
                     without displaying them (decision updated 2026-09-13; before that
                     the phone lived only on /cv).
                 *@
-                <a class="btn btn--ghost" href="/cv">Printable CV</a>
+                <a class="btn btn--ghost" href="/cv">Read the CV</a>
                 @*
                     target is load-bearing, not decoration: Blazor's router claims
                     same-origin anchor clicks and tries to resolve them as routes, and a
@@ -96,7 +138,7 @@ else
                     recruiter, who usually wants to look before saving.
                 *@
                 <a class="btn btn--ghost" href="/Bahaa-Aldeen-Mohamed-CV.pdf"
-                   target="_blank" rel="noopener" download>Download PDF</a>
+                   target="_blank" rel="noopener" download>Download CV (PDF)</a>
             </div>
 
             @*
@@ -128,7 +170,7 @@ else
                 @if (!string.IsNullOrWhiteSpace(document.Profile.Relocation))
                 {
                     <div>
-                        <dt class="mono">Location</dt>
+                        <dt class="mono">Working arrangement</dt>
                         <dd>@document.Profile.Relocation</dd>
                     </div>
                 }

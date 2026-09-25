@@ -78,6 +78,10 @@ function prefersReducedMotion() {
 }
 
 export function start() {
+    // Scroll-spy is STATE, not motion — it marks which section the reader is in, so
+    // it runs regardless of reduced motion, exactly like the header's is-scrolled.
+    startScrollSpy();
+
     // Counters carry their final value in the markup, so under reduced motion the
     // figures are simply present and nothing else needs doing.
     if (prefersReducedMotion() || !('IntersectionObserver' in window)) {
@@ -88,6 +92,147 @@ export function start() {
 
     maybePlayHero();
     observe();
+}
+
+/*
+    Current-section state for the header nav (the two heuristics the 2026-09-24
+    critique scored 2/4 both traced here: on a page this tall, nothing told you
+    where you were).
+
+    Scope is deliberately tiny: only the home page has the four sections the nav's
+    section anchors point at, so the spy arms only when both sides exist — nav links
+    matching /#<id> and a section with that id. It never removes anything from the
+    page: the class ADDS emphasis to one link and nothing is ever hidden, which
+    keeps this file's additive-only rule intact. The static shell has no marker
+    (pre-boot there is no scroll state worth claiming), so prerender.py needs no
+    mirror of this.
+*/
+const SPY_TOP_OFFSET = 120; // just below the capsule, so a section counts as "reached" once its heading clears the chrome
+
+let spyTick = false;
+let spyUpdate = null; // the armed spy's throttled update, or null while disarmed
+
+/*
+    A reveal lifts its section the last 26px as it settles (translate 26 → 0 over
+    .7s), and settling fires no scroll event — so a spy sample taken mid-settle
+    reads the just-reached section ~26px below where it will rest and can leave the
+    previous link marked. Every reveal therefore schedules one extra spy pass past
+    the transition window; without it the marker waits for the reader's next scroll.
+*/
+function refreshSpyAfterSettle() {
+    if (!spyUpdate) {
+        return;
+    }
+
+    setTimeout(spyUpdate, 750);
+}
+
+function startScrollSpy() {
+    const links = [...document.querySelectorAll('.site-nav a[href^="/#"]')]
+        .filter((link) => document.querySelector(link.hash));
+
+    if (links.length === 0) {
+        spyUpdate = null;
+        return;
+    }
+
+    const update = () => {
+        spyTick = false;
+
+        // The binding survives client-side navigation away from the home page — only
+        // the sections don't. A missing section is skipped, not dereferenced: a bare
+        // call threw on every scrolled frame of every other route, and left the last
+        // .is-current stranded on the nav. Skipping it clears the marker instead, and
+        // navigation itself scrolls to top, so the next scrolled frame fires at once.
+        const current = links
+            .map((link) => document.querySelector(link.hash))
+            .filter((section) => section && section.getBoundingClientRect().top <= SPY_TOP_OFFSET)
+            .pop();
+
+        for (const link of links) {
+            const isCurrent = link.hash === `#${current?.id}`;
+            link.classList.toggle('is-current', isCurrent);
+            // The class alone is invisible to assistive tech — aria-current is what a
+            // screen reader announces as the section you are in.
+            if (isCurrent) {
+                link.setAttribute('aria-current', 'true');
+            } else {
+                link.removeAttribute('aria-current');
+            }
+        }
+    };
+
+    const requestUpdate = () => {
+        if (!spyTick) {
+            spyTick = true;
+            requestAnimationFrame(update);
+        }
+    };
+
+    spyUpdate = requestUpdate;
+
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+
+    update();
+}
+
+/*
+    Back-to-top: the floating control in MainLayout.razor (.back-to-top) that appears
+    after roughly one viewport of scroll and returns the reader to the top.
+
+    The scroll logic lives here rather than in a new module because this file is the
+    accepted bare-path import (CLAUDE.md) — a newly fetched JS file would inherit the
+    manual cache-busting problem the warning describes. The button is runtime chrome
+    with no static-shell copy on purpose: the footer's "Back to top" hash link is the
+    no-script path to the same place, so a visitor the runtime never reaches loses an
+    affordance, never an ability. The stylesheet keeps the button display:none and
+    .is-shown — the only visibility class — is applied from here and nowhere else,
+    which keeps this file's additive-only rule intact: the button contains no content,
+    so a failure here leaves an enhancement absent, never content invisible.
+*/
+const BACK_TO_TOP_VIEWPORTS = 1; // viewports of scroll before the control earns its place
+
+let backToTopTick = false;
+
+export function initBackToTop() {
+    const button = document.querySelector('.back-to-top');
+
+    // Idempotent: MainLayout owns the wiring and re-runs its first render only once
+    // per layout instance, but a second binding against the same button would double
+    // every scroll callback for the life of the page.
+    if (!button || button.dataset.backToTopBound) {
+        return;
+    }
+
+    button.dataset.backToTopBound = '1';
+
+    const update = () => {
+        backToTopTick = false;
+        const y = window.scrollY || window.pageYOffset || 0;
+        button.classList.toggle('is-shown', y > window.innerHeight * BACK_TO_TOP_VIEWPORTS);
+    };
+
+    button.addEventListener('click', () => {
+        // Reduced motion gets the instant jump the user asked for, and so does any
+        // browser without scroll-behavior — a coerced ScrollToOptions object would
+        // scroll nowhere predictable there.
+        if (!prefersReducedMotion() && 'scrollBehavior' in document.documentElement.style) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            window.scrollTo(0, 0);
+        }
+    });
+
+    window.addEventListener('scroll', () => {
+        if (!backToTopTick) {
+            backToTopTick = true;
+            requestAnimationFrame(update);
+        }
+    }, { passive: true });
+
+    // Deep links such as /#work land already scrolled; the control must not wait for
+    // the reader's first scroll event to learn that.
+    update();
 }
 
 /**
@@ -156,6 +301,10 @@ export function observe() {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
                     observer.unobserve(entry.target);
+                    // The section now settles upward into place; give the spy one
+                    // post-settle sample so the current-section marker agrees with
+                    // where the section finally rests.
+                    refreshSpyAfterSettle();
                 }
             }
         },
@@ -223,7 +372,9 @@ function runCounters() {
         }
 
         const started = performance.now();
-        const duration = 900;
+        // Short enough that a glancing reader never settles on the "before" figure:
+        // the count-down dramatizes 7 → 3, but 900ms of visible "7" read as the number.
+        const duration = 550;
 
         const step = (now) => {
             const progress = Math.min(1, Math.max(0, (now - started - delay) / duration));

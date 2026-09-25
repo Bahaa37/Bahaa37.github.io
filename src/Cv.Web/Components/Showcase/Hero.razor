@@ -1,7 +1,7 @@
 @*
-    Opening screen — the Frosted Keynote first viewport.
+    Opening screen — the Sky Aluminum first viewport.
 
-    The hero is one solid sheet floating on the flat graphite ground, and it carries the
+    The hero is one solid sheet on the flat sky ground, and it carries the
     before/after architecture itself, so an architect reader sees the kind of problem
     being solved before reading a word of prose. The verified metrics live in a single
     mono facts line rather than a stat-card band: they skim in one fixation and no card
@@ -21,13 +21,14 @@
             <h1 class="hero__headline">
                 <span class="line"><span>I remove the</span></span>
                 <span class="line"><span class="hero__accent">constraint</span></span>
-                <span class="line"><span>that froze the estate.</span></span>
+                <span class="line"><span>that froze</span></span>
+                <span class="line"><span>the estate.</span></span>
             </h1>
 
             <p class="hero__pitch">
-                Senior .NET engineer working at architecture level. I take the architectural
-                decisions on systems people have stopped touching — then write the template,
-                the rules, and the workflow that let the next team repeat it.
+                Senior .NET engineer for the systems everyone else stopped touching. I make
+                the architectural call, rebuild what's frozen, and leave behind the template
+                and rules that let the next team repeat it.
             </p>
 
             @*
@@ -36,14 +37,21 @@
                 numbers are already on screen, so the count-up can only ever be an
                 enhancement, never the difference between a number and a zero. The
                 separators are drawn by CSS on the fact they FOLLOW, so a wrap between
-                facts never strands a leading middot on the next line.
+                facts never strands a leading middot on the next line. A div, not a p:
+                paragraphs are not exposed to accessible naming, and this group needs
+                its label to reach a screen reader.
+
+                Each count-up is split in two: the animated number is aria-hidden
+                decoration, and a visually-hidden twin carries the final value — what a
+                screen reader reads is the settled figure, never whatever the counter
+                is mid-flight.
             *@
-            <p class="hero__facts" aria-label="Track record at a glance">
-                <span class="hero__fact">upgrade cycle <strong class="mono" data-count-to="3" data-count-from="7">3</strong> days, from 5–7</span>
-                <span class="hero__fact"><strong class="mono" data-count-to="9">9</strong> payment markets</span>
+            <div class="hero__facts" role="group" aria-label="Track record at a glance">
+                <span class="hero__fact">upgrade cycle <strong class="mono"><span data-count-to="3" aria-hidden="true">3</span><span class="visually-hidden">3</span></strong> days max, from 5–7</span>
+                <span class="hero__fact"><strong class="mono"><span data-count-to="9" aria-hidden="true">9</span><span class="visually-hidden">9</span></strong> payment markets</span>
                 <span class="hero__fact">@ExperiencePhrase</span>
-                <span class="hero__fact hero__fact--gold"><strong class="mono" data-count-to="@AwardCount">@AwardCount</strong> awards, one a company award</span>
-            </p>
+                <span class="hero__fact hero__fact--gold"><strong class="mono"><span data-count-to="@AwardCount" aria-hidden="true">@AwardCount</span><span class="visually-hidden">@AwardCount</span></strong> company awards</span>
+            </div>
 
             <div class="hero__actions">
                 <a class="btn btn--primary" href="/cv">Read the CV</a>

@@ -42,7 +42,7 @@ fine in a browser:
 
 **Cache-busting is manual, and there are now three layers of it.** Only `_framework/*`
 fingerprints itself. Head assets get `?v=<content hash>` appended by `prerender.py`;
-`data/cv.json` and `data/decisions.json` are fetched with `BrowserRequestCache.NoCache` in
+`data/cv.json` and `data/testimonials.json` are fetched with `BrowserRequestCache.NoCache` in
 `CvDataService`; and `service-worker.js` sits underneath both — cache-first for `_framework`
 and any `?v=` URL (immutable by construction), strictly network-first for `/data/` and page
 navigations, so it can never serve a stale CV. It is stamped and registered by
@@ -54,7 +54,7 @@ exception: the two JS modules imported from C# by literal path (`js/motion.js`,
 `js/diagram-interop.js`), which change rarely.
 
 **The prerendered page is the product, not a placeholder.** `boot.js` starts Blazor on idle
-with `autostart="false"`, and skips it entirely on data-saver or 2G connections (ADR-0007).
+with `autostart="false"`, and skips it entirely on data-saver or 2G connections.
 So for some visitors the runtime never boots at all. Anything a reader must be able to do
 has to work in the static layer — which is why `prerender.py` injects a static copy of the
 theme switch that the inline script in `index.html` wires up by delegation, and why Blazor
@@ -70,7 +70,7 @@ history were content that was present, selectable and invisible. Never write an
 unconditional `opacity: 0`.
 
 **Adding a route** costs nothing extra: `prerender.py` derives the route table from
-`cv.json` and `decisions.json`, and the sitemap, `llms.txt` and 200-status materialization
+`cv.json` and `testimonials.json`, and the sitemap, `llms.txt` and 200-status materialization
 all follow from it. There is no hand-maintained list to update any more.
 
 ## Data
@@ -78,14 +78,15 @@ all follow from it. There is no hand-maintained list to update any more.
 `src/Cv.Web/wwwroot/data/cv.json` is the single source of truth. The showcase page, the
 printable CV and `CvValidator` are three projections of it; none holds content of its own.
 
-`data/decisions.json` is deliberately separate — architecture decision records are a
-different document for a different audience, and nothing in them belongs on a printed CV or
-in an ATS.
+`data/testimonials.json` is deliberately separate — recommendations are a different
+document for a different audience, and nothing in them belongs on a printed CV or in an
+ATS. It ships empty: an honest "no recommendations yet" beats an invented quote.
 
-Tests run against the real data files, not fixtures. `DecisionRecordTests` enforces that
-every record names exactly one chosen option, at least one rejected option, and at least two
-consequences. A half-written ADR fails the build on purpose: on a page whose subject is
-honest reasoning, a bad record is worse than no record.
+Tests run against the real data files, not fixtures. `TestimonialRecordTests` enforces that
+every entry carries a real name, real words, and an absolute LinkedIn or GitHub URL — a
+reader can check that the person exists and actually said it. An unattributable quote fails
+the build on purpose: on a page whose subject is honest reasoning, a bad quote is worse
+than no quote.
 
 `CvValidator` fails the build on overlapping full-time roles and on technology claimed
 before its release date. Unquantified achievements are warnings, never auto-filled — a
@@ -134,8 +135,8 @@ dissolve. A hero is already in view on load; scroll-linking it would be a downgr
 modernization.
 
 **A `testimonials: []` stub in `cv.json`.** An unrendered schema field is dead weight. The
-full `Testimonial` record is specified properly as part of the control-plane work and should
-arrive with the feature that uses it.
+full `Testimonial` record arrived with the feature that renders it, in its own curated
+`data/testimonials.json`.
 
 **A number on the `mvc-to-webapi-rebuild` case study.** Every other case study carries one;
 this one does not, because no real figure exists. `CvValidator` flags unquantified
@@ -156,5 +157,5 @@ CI cannot see an unstyled button or a dead link. Phases 1–4 of this work were 
 entirely through CI and never looked at, and two defects reached production as a result —
 a theme toggle rendering as a grey bar, and a download link that did nothing.
 
-Run the app. Open the pages. Check `/`, `/cv`, `/work/{slug}` and `/architecture` at 390×844
+Run the app. Open the pages. Check `/`, `/cv`, `/work/{slug}` and `/testimonials` at 390×844
 and at desktop width, in both themes, before calling anything done.

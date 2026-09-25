@@ -69,12 +69,22 @@
                 nowhere. Testimonials render only when there is something real to show —
                 a nav link to an empty page is a wasted click for the one visitor a
                 portfolio cannot afford to waste.
+
+                Labels stay short on purpose: the capsule's nav row is a nowrap strip at
+                ≤720px, and every link must fit a 390px screen without pushing "CV" —
+                the recruiter's destination — off past the mask. "Timeline" and "Work"
+                are the strip-length spellings of the sections they jump to.
             *@
             <nav class="site-nav">
                 <a href="/#skills">Skills</a>
-                <a href="/#timeline">Experience</a>
-                <a href="/#work">Selected work</a>
+                <a href="/#timeline">Timeline</a>
+                <a href="/#work">Work</a>
                 <a href="/#credentials">Credentials</a>
+                @*
+                    The section anchors above gain .is-current at runtime from
+                    motion.js's scroll-spy — an additive emphasis class only, so the
+                    static shell needs no marker and prerender.py stays untouched.
+                *@
                 @if (hasTestimonials)
                 {
                     <a href="/testimonials">Testimonials</a>
@@ -106,7 +116,18 @@
                 {
                     <span> · </span><a href="@profile.LinkedIn">LinkedIn</a>
                 }
-                <span> · </span><a href="/cv">Printable CV</a>
+                <span> · </span><a href="/cv">CV</a>
+                @*
+                    The page is ~5,000px tall and the footer is where a reader
+                    finishes; a plain hash link gets them back to the hero with no
+                    script and no extra chrome. The target is #main — the skip link's
+                    existing target — because a BARE "#" is the one fragment Blazor's
+                    navigation intercepts without scrolling (it reads as
+                    navigate-to-self); a named fragment scrolls normally. Scrolled to
+                    top is also where motion.js's scroll-spy clears the
+                    current-section marker, so the nav returns to rest state.
+                *@
+                <span> · </span><a href="#main">Back to top</a>
             </p>
         }
         <p>Built with Blazor WebAssembly on .NET 10. This site is itself a work sample.</p>
@@ -146,6 +167,24 @@
     </nav>
 }
 
+@*
+    The floating back-to-top (app.css .back-to-top): runtime chrome, wired by
+    motion.js's initBackToTop below, which adds its one visibility class (.is-shown)
+    after roughly a viewport of scroll. It deliberately has no static-shell copy —
+    prerender.py stays untouched — because the footer's "Back to top" hash link is
+    the no-script path to the same place, so a data-saver visitor who never boots
+    loses an affordance, never an ability. It parks above the contact dock rather
+    than beside it: the dock spans the viewport's foot at ≤720px, so above-the-dock
+    is the only placement that clears it at every width.
+*@
+<button type="button" class="back-to-top" aria-label="Back to top" title="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 19V5" />
+        <path d="m5 12 7-7 7 7" />
+    </svg>
+</button>
+
 @code {
     [Inject]
     private IJSRuntime JS { get; set; } = default!;
@@ -153,6 +192,7 @@
     private Profile? profile;
     private bool isDark;
     private bool hasTestimonials;
+    private IJSObjectReference? motion;
 
     protected override async Task OnInitializedAsync()
     {
@@ -176,6 +216,13 @@
         var effective = await JS.InvokeAsync<string>("themeControl.effective");
         isDark = effective == "dark";
         StateHasChanged();
+
+        // The back-to-top is layout chrome — present on every showcase route like the
+        // dock it parks above — so it is wired here rather than on individual pages.
+        // motion.js is the accepted bare-path import (CLAUDE.md) and initBackToTop is
+        // idempotent, so sharing the module with Home.razor's start() is safe.
+        motion = await JS.InvokeAsync<IJSObjectReference>("import", "./js/motion.js");
+        await motion.InvokeVoidAsync("initBackToTop");
     }
 
     private async Task ToggleThemeAsync()

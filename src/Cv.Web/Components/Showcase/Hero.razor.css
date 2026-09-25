@@ -257,6 +257,7 @@
 .js-motion .hero.is-playing .line:nth-of-type(1) > span { animation-delay: 120ms; }
 .js-motion .hero.is-playing .line:nth-of-type(2) > span { animation-delay: 220ms; }
 .js-motion .hero.is-playing .line:nth-of-type(3) > span { animation-delay: 320ms; }
+.js-motion .hero.is-playing .line:nth-of-type(4) > span { animation-delay: 420ms; }
 
 .js-motion .hero.is-playing .hero__pitch   { animation: rise-in .6s cubic-bezier(.2, .7, .3, 1) both 480ms; }
 .js-motion .hero.is-playing .hero__actions { animation: rise-in .6s cubic-bezier(.2, .7, .3, 1) both 580ms; }

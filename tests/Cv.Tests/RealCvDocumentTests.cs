@@ -83,14 +83,16 @@ public class RealCvDocumentTests
     public void TheAwardedMetricIsPresentOnTheFlagshipAchievement()
     {
         // The 5-7 days to 3 figure is the strongest line on the CV. If a refactor of the
-        // data ever drops it, that is a regression worth failing the build over.
-        var metrics = LoadDocument().Experience
+        // data ever drops it, that is a regression worth failing the build over. Since
+        // the 2026-09-25 rewrite the figure lives in the bullet prose itself, not in the
+        // metric field — a scanner hits the number inside the sentence.
+        var prose = LoadDocument().Experience
             .SelectMany(e => e.Highlights)
-            .Where(h => h.HasMetric)
-            .Select(h => h.Metric!)
+            .Select(h => h.Text)
             .ToList();
 
-        Assert.Contains(metrics, m => m.Contains("3", StringComparison.Ordinal) && m.Contains("5-7", StringComparison.Ordinal));
+        Assert.Contains(prose, t => t.Contains("5-7 working days", StringComparison.Ordinal)
+                                    && t.Contains("a maximum of 3", StringComparison.Ordinal));
     }
 
     [Fact]

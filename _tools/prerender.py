@@ -514,8 +514,8 @@ VERSIONED_ASSETS = [
 # boot — and Blazor replaces the whole block when it takes over.
 NAV_LINKS = (
     ("/#skills", "Skills"),
-    ("/#timeline", "Experience"),
-    ("/#work", "Selected work"),
+    ("/#timeline", "Timeline"),
+    ("/#work", "Work"),
     ("/#credentials", "Credentials"),
     ("/testimonials", "Testimonials"),
     ("/cv", "CV"),

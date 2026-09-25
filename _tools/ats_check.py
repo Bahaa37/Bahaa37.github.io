@@ -37,7 +37,9 @@ REQUIRED_FACTS = [
     # The portfolio URL is the CV's only route to the case studies and diagrams. If it
     # does not extract, it is as broken as an unreadable phone number.
     "bahaa37.github.io",
-    "5-7 working days reduced to a maximum of 3",
+    # The flagship metric. Lives in the Andalusia bullet prose (the number was moved
+    # out of the separate metric field so a scanner hits it inside the sentence).
+    "5-7 working days to a maximum of 3",
     "9 countries",
 ]
 

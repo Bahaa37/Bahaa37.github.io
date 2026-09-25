@@ -18,9 +18,9 @@ reading by an engineer during the process, because it doubles as the work sample
 
 The personal portfolio and CV of Bahaa Aldeen Mohamed: an interactive showcase, a
 downloadable ATS-clean printable CV, and per-engagement case studies, all projected
-from one data file. It exists to win interviews for solution architecture and systems
-analysis roles by presenting evidence — a verifiable timeline, quantified outcomes,
-and a site that demonstrates the engineering it claims.
+from one data file. It exists to win interviews for senior .NET engineering roles on
+the solution-architecture track by presenting evidence — a verifiable timeline,
+quantified outcomes, and a site that demonstrates the engineering it claims.
 
 ## Positioning
 
