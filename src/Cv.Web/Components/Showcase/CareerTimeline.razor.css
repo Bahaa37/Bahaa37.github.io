@@ -196,6 +196,15 @@
     font-size: 0.95rem;
 }
 
+/* The stack byline: where the company line names who, this names with what. Mono
+   because it is a data line, ink-faint because the bullets below carry the weight. */
+.entry__stack {
+    margin: -0.45rem 0 0.7rem;
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    overflow-wrap: anywhere;
+}
+
 .entry__points {
     margin: 0;
     padding-left: 1.1rem;

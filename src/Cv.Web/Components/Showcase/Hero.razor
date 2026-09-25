@@ -47,15 +47,24 @@
                 is mid-flight.
             *@
             <div class="hero__facts" role="group" aria-label="Track record at a glance">
-                <span class="hero__fact">upgrade cycle <strong class="mono"><span data-count-to="3" aria-hidden="true">3</span><span class="visually-hidden">3</span></strong> days max, from 5–7</span>
-                <span class="hero__fact"><strong class="mono"><span data-count-to="9" aria-hidden="true">9</span><span class="visually-hidden">9</span></strong> payment markets</span>
+                <span class="hero__fact">upgrade cycle <strong class="mono"><span data-count-to="@UpgradeCycleDays" aria-hidden="true">@UpgradeCycleDays</span><span class="visually-hidden">@UpgradeCycleDays</span></strong> days max, from 5–7</span>
+                <span class="hero__fact"><strong class="mono"><span data-count-to="@PaymentMarkets" aria-hidden="true">@PaymentMarkets</span><span class="visually-hidden">@PaymentMarkets</span></strong> payment markets</span>
                 <span class="hero__fact">@ExperiencePhrase</span>
+                <span class="hero__fact">@Profile.Location — @Profile.Timezone</span>
                 <span class="hero__fact hero__fact--gold"><strong class="mono"><span data-count-to="@AwardCount" aria-hidden="true">@AwardCount</span><span class="visually-hidden">@AwardCount</span></strong> company awards</span>
             </div>
 
             <div class="hero__actions">
                 <a class="btn btn--primary" href="/cv">Read the CV</a>
-                <a class="btn btn--ghost" href="#work">Selected work</a>
+                @*
+                    The PDF itself, one tap from the hero: the person this button exists
+                    for is the screener who wants the file without reading a page first.
+                    target is load-bearing (see Home.razor's download link) — an anchor
+                    carrying target is left to the browser instead of Blazor's router,
+                    which matches no PDF route.
+                *@
+                <a class="btn btn--ghost" href="/Bahaa-Aldeen-Mohamed-CV.pdf"
+                   target="_blank" rel="noopener" download>Download CV (PDF)</a>
                 @if (!string.IsNullOrWhiteSpace(Profile.GitHub))
                 {
                     <a class="btn btn--ghost" href="@Profile.GitHub">GitHub</a>
@@ -122,4 +131,54 @@
 
     [Parameter]
     public int AwardCount { get; set; }
+
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<CaseStudy> CaseStudies { get; set; }
+
+    /// <summary>
+    /// The two hero figures are read out of the case-study record, not written into
+    /// this markup — the hero used to hardcode "3" and "9", which let it drift from
+    /// the very studies the numbers come from. The featured study's outcome carries
+    /// the cycle time ("…to a maximum of 3"); the payment study's summary names its
+    /// markets ("…across 9 countries"). A missing figure renders 0 in the count-up
+    /// target but the fact keeps its words — and the visual-hidden twin still reads
+    /// the true sentence, so no wrong number is ever asserted.
+    /// </summary>
+    private int UpgradeCycleDays => ExtractNumber(FindOutcome("5-7 working days"), "maximum of");
+
+    private int PaymentMarkets => ExtractNumber(FindSummary("9 countries"), "across");
+
+    private string? FindOutcome(string contains) => CaseStudies
+        .SelectMany(s => s.Outcomes)
+        .FirstOrDefault(o => o.Contains(contains, StringComparison.OrdinalIgnoreCase));
+
+    private string? FindSummary(string contains) => CaseStudies
+        .FirstOrDefault(s => s.Summary.Contains(contains, StringComparison.OrdinalIgnoreCase))
+        ?.Summary;
+
+    /// <summary>
+    /// The number that follows the given anchor phrase — "a maximum of 3", "9 countries"
+    /// — not the leading digits, which these sentences do not start with.
+    /// </summary>
+    private static int ExtractNumber(string? text, string anchor)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return 0;
+        }
+
+        var anchorIndex = text.IndexOf(anchor, StringComparison.OrdinalIgnoreCase);
+
+        if (anchorIndex < 0)
+        {
+            return 0;
+        }
+
+        var digits = new string(text[(anchorIndex + anchor.Length)..]
+            .TakeWhile(c => char.IsDigit(c) || char.IsWhiteSpace(c))
+            .ToArray())
+            .Trim();
+
+        return int.TryParse(digits, out var value) ? value : 0;
+    }
 }

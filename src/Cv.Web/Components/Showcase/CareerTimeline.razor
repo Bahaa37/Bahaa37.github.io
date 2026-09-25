@@ -9,8 +9,8 @@
     <div class="shell">
         <h2 class="sheet__title">@ExperiencePhrase across @Employers.Count employers</h2>
         <p class="sheet__lede">
-            Every achievement below is drawn from the same record as the printable CV.
-            Where a real number exists it is shown; where one does not, none is invented.
+            Each role's stack line names only what that role's own record mentions —
+            and numbers appear only where they are real.
         </p>
 
         <ol class="timeline">
@@ -42,6 +42,18 @@
                         <p class="entry__company">
                             @role.Company@(role.Location is null ? "" : $" · {role.Location}")
                         </p>
+                        @{
+                            // The per-role stack, derived from this role's own highlight
+                            // record against the grouped vocabulary (see ForRole). Real
+                            // senior profiles tag the stack on every role; the derivation
+                            // keeps the line honest — only what the bullets themselves
+                            // name can appear here.
+                            var stack = SkillEvidence.ForRole(role, SkillGroups);
+                        }
+                        @if (stack.Count > 0)
+                        {
+                            <p class="entry__stack mono">Stack — @string.Join(" · ", stack.Take(StackLineLimit))</p>
+                        }
                         <ul class="entry__points">
                             @foreach (var highlight in role.Highlights.Take(PrimaryHighlightCount))
                             {
@@ -97,12 +109,21 @@
     [Parameter, EditorRequired]
     public required IReadOnlyList<string> Employers { get; set; }
 
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<SkillGroup> SkillGroups { get; set; }
+
     /// <summary>
     /// Highlights shown at first paint per role; the rest sit behind a disclosure.
     /// Three is the skim budget — the strongest achievements lead, and the cv.json
     /// order already ranks them.
     /// </summary>
     private const int PrimaryHighlightCount = 3;
+
+    /// <summary>
+    /// The stack line is a byline, not a second skills section: six names is where a
+    /// skimmable line stops being one. The full vocabulary lives in the skills sheet.
+    /// </summary>
+    private const int StackLineLimit = 6;
 
     /// <summary>
     /// True when an earlier role at the same employer exists further down the list —

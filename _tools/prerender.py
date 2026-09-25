@@ -221,8 +221,8 @@ def home_body(cv: dict, testimonials: list[dict] | None = None) -> str:
       <p>{e(cv['summary'])}</p>
       <dl>{fact_list}</dl>
       <h2>Skills</h2>{skills}
-      <h2>Experience</h2>{experience}
       <h2>Selected work</h2>{case_studies}
+      <h2>Experience</h2>{experience}
       {testimonials_band}
       <h2>Contact</h2>
       <p><a href="mailto:{e(profile['email'])}">{e(profile['email'])}</a></p>
@@ -514,8 +514,8 @@ VERSIONED_ASSETS = [
 # boot — and Blazor replaces the whole block when it takes over.
 NAV_LINKS = (
     ("/#skills", "Skills"),
-    ("/#timeline", "Timeline"),
     ("/#work", "Work"),
+    ("/#timeline", "Timeline"),
     ("/#credentials", "Credentials"),
     ("/testimonials", "Testimonials"),
     ("/cv", "CV"),

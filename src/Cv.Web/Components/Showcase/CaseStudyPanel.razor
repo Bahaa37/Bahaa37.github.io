@@ -48,7 +48,13 @@
     <div class="case__diagram">
         <a class="btn btn--ghost" href="@($"/work/{Study.Slug}")">Read the case study</a>
 
-        @if (Study.HasWriteup)
+        @*
+            The write-up button renders only when it goes somewhere the case-study
+            button does not: the panel once showed both as two pills to the same URL,
+            which reads as padding on the one study whose claims most need a second
+            destination (an external repo or essay) to be believed.
+        *@
+        @if (Study.HasWriteup && Study.WriteupUrl != $"/work/{Study.Slug}")
         {
             <a class="btn btn--ghost" href="@Study.WriteupUrl">Full technical write-up</a>
         }

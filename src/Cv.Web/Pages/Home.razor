@@ -14,7 +14,8 @@ else
 {
     <Hero Profile="document.Profile"
           ExperiencePhrase="@experiencePhrase"
-          AwardCount="document.Awards.Count" />
+          AwardCount="document.Awards.Count"
+          CaseStudies="document.CaseStudies" />
 
     <section class="sheet sheet--slim reveal">
         <div class="shell">
@@ -24,8 +25,12 @@ else
 
     <SkillMatrix Groups="document.SkillGroups" Experience="document.Experience" />
 
-    <CareerTimeline Roles="roles" ExperiencePhrase="@experiencePhrase" Employers="employers" />
-
+    @*
+        Proof of work sits above the career detail. On the benchmarked real profiles
+        of senior .NET engineers, projects-above-experience is the senior ordering
+        for a case-study portfolio: the featured study is the argument, the timeline
+        is the evidence trail behind it.
+    *@
     <section class="sheet reveal" id="work">
         <div class="shell">
             @*
@@ -42,8 +47,8 @@ else
             }
             <h2 class="sheet__title">Selected work, in depth</h2>
             <p class="sheet__lede">
-                The DTC re-architecture in full; the rest, one skim each — every row
-                opens its own page.
+                Five engagements, told as the decisions behind them — the flagship in
+                full, the rest one skim each, every row opening its own page.
             </p>
 
             @if (featuredStudy is not null)
@@ -69,6 +74,9 @@ else
             </ol>
         </div>
     </section>
+
+    <CareerTimeline Roles="roles" ExperiencePhrase="@experiencePhrase" Employers="employers"
+                    SkillGroups="document.SkillGroups" />
 
     <Credentials Awards="document.Awards"
                  Education="document.Education"
@@ -130,6 +138,16 @@ else
                     the phone lived only on /cv).
                 *@
                 <a class="btn btn--ghost" href="/cv">Read the CV</a>
+                @*
+                    LinkedIn sits beside them here rather than in the hero: it is the
+                    recruiter's verification channel, and this is the row where a
+                    reader who has decided to check arrives.
+                *@
+                @if (!string.IsNullOrWhiteSpace(document.Profile.LinkedIn))
+                {
+                    <a class="btn btn--ghost" href="@document.Profile.LinkedIn" target="_blank"
+                       rel="noopener">LinkedIn</a>
+                }
                 @*
                     target is load-bearing, not decoration: Blazor's router claims
                     same-origin anchor clicks and tries to resolve them as routes, and a
