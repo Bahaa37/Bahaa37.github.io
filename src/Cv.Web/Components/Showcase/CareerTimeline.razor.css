@@ -88,7 +88,7 @@
     left: 6px;
     width: 2px;
     height: 100%;
-    background: linear-gradient(var(--accent-bright), color-mix(in srgb, var(--accent-bright) 25%, transparent));
+    background: linear-gradient(var(--accent), var(--sheet-line));
     transform-origin: top center;
     transform: scaleY(0);
 }
@@ -118,7 +118,7 @@
 }
 
 @keyframes pulse-node {
-    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-bright) 45%, transparent); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(74, 165, 131, .4); }
     50%      { box-shadow: 0 0 0 6px transparent; }
 }
 
@@ -146,7 +146,7 @@
     height: 14px;
     border-radius: 50%;
     background: var(--paper);
-    border: 2px solid color-mix(in srgb, var(--accent-bright) 55%, var(--line));
+    border: 2px solid var(--accent);
 }
 
 .entry--current .entry__rail::before {
@@ -179,9 +179,10 @@
     color: var(--paper);
 }
 
+/* Trajectory marker, not recognition — accent, never bronze. */
 .badge--return {
-    background: var(--gold-wash);
-    color: var(--gold);
+    background: var(--accent-wash);
+    color: var(--accent);
 }
 
 .entry__role {

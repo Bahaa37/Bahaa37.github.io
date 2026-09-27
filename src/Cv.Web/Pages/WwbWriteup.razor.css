@@ -40,7 +40,7 @@
 .study code {
     padding: 0.08em 0.35em;
     border-radius: 4px;
-    background: color-mix(in srgb, var(--ink) 5%, transparent);
+    background: var(--wash);
     color: var(--ink);
 }
 
@@ -49,7 +49,7 @@
 .pull {
     margin: 1.4rem 0;
     padding: 1rem 1.25rem;
-    border: 1px solid color-mix(in srgb, var(--gold) 38%, transparent);
+    border: 1px solid var(--gold);
     background: var(--gold-wash);
     color: var(--ink) !important;
     border-radius: var(--radius);
@@ -62,7 +62,7 @@
     border: 1px solid var(--sheet-line);
     border-radius: 10px;
     overflow: hidden;
-    background: color-mix(in srgb, var(--ink) 4%, transparent);
+    background: var(--wash);
 }
 
 .code__head {
@@ -72,7 +72,7 @@
     gap: 1rem;
     padding: 0.6rem 1rem;
     border-bottom: 1px solid var(--sheet-line);
-    background: color-mix(in srgb, var(--ink) 6%, transparent);
+    background: var(--wash);
     font-size: 0.75rem;
     color: var(--ink-faint);
 }
@@ -140,7 +140,7 @@
     padding: 1.4rem 1.25rem 1.1rem;
     border: 1px solid var(--sheet-line);
     border-radius: 12px;
-    background: color-mix(in srgb, var(--ink) 4%, transparent);
+    background: var(--wash);
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -73,7 +73,7 @@
 .diagram__canvas {
     margin-top: 1rem;
     padding: 1.25rem;
-    background: color-mix(in srgb, var(--ink) 4%, transparent);
+    background: var(--wash);
     border: 1px solid var(--sheet-line);
     border-radius: var(--radius);
     text-align: center;
@@ -89,7 +89,7 @@
 .diagram__fallback pre {
     overflow-x: auto;
     padding: 0.9rem;
-    background: color-mix(in srgb, var(--ink) 4%, transparent);
+    background: var(--wash);
     border-radius: var(--radius);
     font-size: 0.8rem;
     line-height: 1.45;

@@ -1,530 +1,449 @@
-/*
-    Design system for the showcase site — "Frosted Keynote", Sky Aluminum revision.
+/* ==========================================================================
+   LEGAL TENDER — the showcase's visual world.
 
-    The site behaves like a native Apple app: frosted glass for chrome, near-opaque
-    rounded sheets carrying all dense content, and one still ground behind everything.
-    Direction chosen on the impeccable decision page; re-tinted three times on
-    2026-09-13 — the drifting aurora died first (generated decor), neutral graphite
-    died the same morning (generic), Terminal Green by afternoon (the user's pick from
-    four, then rejected on review) — and the user then proposed this direction
-    themselves: Apple's anodized baby-blue aluminum, frosted glass, metallic silver
-    edges. Silvery blue-paper light, blue-slate night, steel-blue ink; anodized-silver
-    gradient borders on the sheets and dock; gold metal stays reserved for awards so
-    it keeps its value. The full contract lives in
-    .impeccable/surfaces/src-cv-web-pages-home-razor.md.
+   The portfolio as an engraved banknote: rag-paper ground, intaglio ink,
+   one banknote-green accent, bronze reserved for recognition (medallions),
+   engine-turned line geometry as structure. Bodoni Moda carries the
+   denomination-scale display, Spectral the document body, Fragment Mono the
+   serials and data lines.
 
-    Two performance rules shaped by the site's sub-second first-paint budget:
+   Direction chosen on the impeccable decision page 2026-09-27 (answer:
+   model-pick — the user locked "Legal Tender" over the assigned Swiss-report
+   roll), replacing the Sky Aluminum world at the user's word. The old hero
+   diagram is gone; its argument lives in the flagship case study.
 
-    - The ground never animates. Depth comes from the sheets' shadows, not from
-      anything moving behind them.
-    - backdrop-filter is spent exclusively on chrome: the header capsule and small
-      controls. Content sheets use plain translucent backgrounds so long pages never
-      keep a GPU blurred layer alive under the reader's eyes.
+   Tokens keep the NAMES of the previous world so every scoped component
+   stylesheet resolves unchanged — only values moved. --gold is bronze now
+   and still marks recognition only; --glass-* resolve to flat paper because
+   intaglio is flat ink and this world spends no blur anywhere.
 
-    Colours are defined once as tokens on :root, so no colour has its sole definition
-    inside a conditional block. They are overridden in two places — the dark media query
-    and the data-theme attribute rule — which is what makes an explicit theme choice
-    possible without giving up the system default. See the note above those rules.
-*/
+   Dark values are written TWICE — under prefers-color-scheme (guarded for
+   explicit light) and under [data-theme="dark"] — because plain CSS cannot
+   share one declaration list between them.
+   ========================================================================== */
 
 :root {
-    /* Ink on sheets. The faint step is the smallest text on the page, so it is held
-       at or above 4.5:1 on its sheet. Every step is steel — blue undertoned. */
-    --ink: #16222e;
-    --ink-soft: #44586b;
-    --ink-faint: #5c7086;
+    /* Rag paper and plate faces */
+    --paper: #f3eede;
+    --sheet-bg: rgba(255, 252, 242, .92);
+    --sheet-solid: #faf6ea;
+    --sheet-line: rgba(20, 38, 30, .2);
 
-    /* The ground everything floats above; sheets sit between it and the reader.
-       Glacier #e8f2ff — the exact --finish token of the iPhone 18 Pro's baby blue,
-       taken from Apple's own published CSS (their .finish-background uses the same
-       values for page backgrounds). */
-    --paper: #e8f2ff;
-    --sheet-bg: rgba(255, 255, 255, .88);
-    /* The sheets carry an anodized-silver gradient edge (see --edge-metal), which is
-       painted UNDER the sheet face — so the face needs a solid stand-in, not a
-       translucent colour, or the metal would sheen through. Composite of sheet over
-       paper; visually identical now that nothing moves behind them. */
-    --sheet-solid: #fdfeff;
-    --sheet-line: rgba(22, 34, 46, .1);
+    /* Ink steps — green-black, like intaglio on rag. The faint step is the
+       smallest text on the page; held at or above 4.5:1 on the plate face. */
+    --ink: #14261e;
+    --ink-soft: #3d5347;
+    --ink-faint: #5d7263;
 
-    /* Action and link colour — steel blue in the light theme. The pair is split
-       because a button's fill and a text link need different contrast solutions:
-       the fill carries white text at AA, the link sits as text on a white sheet at AA. */
-    --accent: #0e6398;
-    --accent-bright: #0071e3;
-    --accent-wash: #e3f1fa;
-    --action-bg: #0066cc;
-    --action-bg-hover: #0059b3;
-    --action-ink: #ffffff;
+    /* The one accent: banknote green. Fill and text link split as before. */
+    --accent: #0c5a45;
+    --accent-bright: #0a6b52;
+    --accent-wash: #e4e9d6;
+    --action-bg: #0c5a45;
+    --action-bg-hover: #094a38;
+    --action-ink: #f6f1e2;
 
-    /* Gold is spent on exactly one element — the award metric — and nowhere else.
-       In an aluminum world the award is the gold metal: silver edges everywhere,
-       gold only where recognition is the subject. */
-    --gold: #8a6116;
-    --gold-wash: #fbf3e2;
+    /* Bronze — the medallion metal, recognition only. Same rule as the old
+       gold: spent on awards and nothing else, or it loses its value. */
+    --gold: #7a4a2b;
+    --gold-wash: #f0e4d2;
 
-    /* The diagram's blocker colour; earned its own token when it started animating. */
-    --alarm: #b0432c;
-    --alarm-wash: #fbeae6;
+    --alarm: #a03d28;
+    --alarm-wash: #f2e3dc;
 
-    /* The diagram stage's local colours — the recessed panel in the hero is dark in
-       both themes. Silver-steel marks the legacy estate, sky marks what replaced it;
-       nothing outside the stage uses either. */
-    --stage-legacy: #9aa8b6;
-    --stage-lead: #7fc4ff;
+    /* Stage hues survive only as diagram-fallback colours. */
+    --stage-legacy: #5d7263;
+    --stage-lead: #0a6b52;
 
-    /* The anodized edge: a 1px gradient that reads as machined aluminum rather than
-       a flat line. Spent on sheets, the study slab, and (single-tone) on glass chrome.
-       Gold metal is NOT here — awards only. */
-    --edge-metal: linear-gradient(135deg, #ffffff, #b9c6d3 38%, #8ea1b2 52%, #c9d5e0 78%, #eef3f8);
-    --edge-silver: #b3c1ce;
+    /* Rules and hairlines. --edge-silver is now the aged-brass hairline on
+       chrome; --edge-metal collapses to it (no gradient metal in this world). */
+    --line: rgba(20, 38, 30, .16);
+    --wash: rgba(20, 38, 30, .05);
+    --edge-metal: #b8ab8c;
+    --edge-silver: #b8ab8c;
 
-    /* Glass is chrome-only. The inner top highlight is the tell of real glass. */
-    --glass-bg: rgba(255, 255, 255, .58);
-    --glass-line: rgba(255, 255, 255, .75);
-    --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, .5);
-    --glass-blur: saturate(180%) blur(20px);
+    /* This world spends no blur: glass tokens resolve to flat paper. */
+    --glass-bg: var(--sheet-solid);
+    --glass-line: var(--edge-silver);
+    --glass-highlight: none;
+    --glass-blur: 0px;
+    --dock-bg: var(--sheet-solid);
 
-    /* The floating contact dock: true frosted glass with a silver edge — the second
-       and last blur on the page. */
-    --dock-bg: rgba(255, 255, 255, .6);
+    /* Type — the engraved didone for display, the document serif for body,
+       the registry mono for serials and data. */
+    --font-display: "Bodoni Moda", "Didot", "Bodoni MT", "Times New Roman", serif;
+    --font-body: "Spectral", Georgia, "Times New Roman", serif;
+    --font-mono: "Fragment Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
 
-    /* Ghost pills sit ON a sheet, not over the ground, so their edge must be visible
-       against the sheet — white-on-white glass has no affordance in the light theme.
-       The alpha is held near the 3:1 non-text guideline for component boundaries on a
-       low-grade panel. */
-    --pill-line: rgba(22, 34, 46, .24);
-    --pill-bg: rgba(255, 255, 255, .7);
+    /* Geometry — notes have gently rounded corners; pills stay on controls. */
+    --radius-sheet: 10px;
+    --radius: 8px;
+    --radius-sm: 6px;
 
-    --line: rgba(22, 34, 46, .12);
-    --shadow-sheet: 0 1px 2px rgba(30, 45, 65, .05), 0 12px 32px rgba(30, 45, 65, .08), 0 32px 80px rgba(30, 45, 65, .08);
-    --shadow-float: 0 2px 6px rgba(30, 45, 65, .08), 0 12px 28px rgba(30, 45, 65, .12);
-    /* The hover response: a neutral lift, not a coloured glow. */
-    --shadow-lift: 0 10px 24px rgba(30, 45, 65, .14);
+    /* Elevation — a paper lift, never a halo. */
+    --shadow-sheet: 0 1px 2px rgba(20, 38, 30, .05), 0 14px 36px rgba(20, 38, 30, .09);
+    --shadow-float: 0 2px 6px rgba(20, 38, 30, .08), 0 12px 26px rgba(20, 38, 30, .13);
+    --shadow-lift: 0 8px 20px rgba(20, 38, 30, .15);
 
-    --measure: 68ch;
-    --page: 1160px;
-    --radius: 12px;
-    --radius-sheet: 16px;
-
-    --font-display: "Geist", "Segoe UI", system-ui, sans-serif;
-    --font-body: "Geist", "Segoe UI", system-ui, -apple-system, Helvetica, sans-serif;
-    --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-
-    color-scheme: light dark;
+    /* Layout */
+    --page: 1120px;
+    --measure: 66ch;
+    --gutter: 1.25rem;
+    --header-band: 3.4rem;
+    --scroll-margin: calc(var(--header-band) + 1.3rem);
 }
 
-/*
-    Three theme states, not two: an explicit choice stamps data-theme on <html>, and the
-    default — no attribute — follows the operating system.
-
-    The dark tokens are therefore written twice. The media query is guarded with
-    :not([data-theme="light"]) so a reader who picks light gets light on a dark OS, and
-    the attribute rule follows it so a reader who picks dark gets dark on a light OS.
-    Plain CSS has no way to share one declaration list between the two selectors, and
-    combining them into a single rule would break the guard — so the duplication is
-    deliberate. Any token change has to be made in both.
-*/
+/* Dark: the intaglio plate — deep green-black ground, aged-cream ink. */
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-        --ink: #eef4fa;
-        --ink-soft: #c2d0de;
-        --ink-faint: #92a4b6;
-        --paper: #0d141d;
-        --sheet-bg: rgba(27, 38, 52, .88);
-        --sheet-solid: #192431;
-        --sheet-line: rgba(205, 226, 245, .09);
-        --accent: #8ec7f2;
-        --accent-bright: #b0d8f7;
-        --accent-wash: #1d2c3b;
-        --action-bg: #0a84ff;
-        --action-bg-hover: #3d9bff;
-        --action-ink: #071018;
-        --gold: #e0b95f;
-        --gold-wash: #2c2413;
+        --paper: #0d1712;
+        --sheet-bg: rgba(19, 33, 26, .92);
+        --sheet-solid: #122019;
+        --sheet-line: rgba(230, 220, 194, .18);
+
+        --ink: #e6dcc2;
+        --ink-soft: #c0bda3;
+        --ink-faint: #9a9574;
+
+        --accent: #4ba583;
+        --accent-bright: #63bd97;
+        --accent-wash: #182b22;
+        --action-bg: #2e7d5f;
+        --action-bg-hover: #276b50;
+        --action-ink: #f2eede;
+
+        --gold: #c98a4b;
+        --gold-wash: #292117;
+
         --alarm: #e5806a;
         --alarm-wash: #2c1a15;
-        --stage-legacy: #8496a8;
-        --stage-lead: #7fc4ff;
-        --edge-metal: linear-gradient(135deg, #3a4a5c, #1a2531 38%, #93a7bb 52%, #26333f 78%, #3c4d60);
-        --edge-silver: #55677a;
-        --glass-bg: rgba(17, 25, 35, .55);
-        --glass-line: rgba(160, 185, 210, .3);
-        --glass-highlight: inset 0 1px 0 rgba(214, 232, 247, .1);
-        --dock-bg: rgba(20, 29, 40, .6);
-        --pill-line: rgba(205, 226, 245, .18);
-        --pill-bg: rgba(205, 226, 245, .06);
-        --line: rgba(205, 226, 245, .11);
-        --shadow-sheet: 0 1px 2px rgba(0, 0, 0, .5), 0 12px 32px rgba(0, 0, 0, .38), 0 32px 80px rgba(0, 0, 0, .32);
-        --shadow-float: 0 2px 6px rgba(0, 0, 0, .45), 0 12px 28px rgba(0, 0, 0, .4);
-        --shadow-lift: 0 10px 24px rgba(0, 0, 0, .55);
-        color-scheme: dark;
+
+        --stage-legacy: #9a9574;
+        --stage-lead: #63bd97;
+
+        --line: rgba(230, 220, 194, .15);
+        --wash: rgba(230, 220, 194, .06);
+        --edge-metal: #56685a;
+        --edge-silver: #56685a;
+
+        --shadow-sheet: 0 1px 2px rgba(0, 0, 0, .3), 0 16px 40px rgba(0, 0, 0, .35);
+        --shadow-float: 0 2px 6px rgba(0, 0, 0, .35), 0 12px 28px rgba(0, 0, 0, .4);
+        --shadow-lift: 0 8px 20px rgba(0, 0, 0, .45);
     }
 }
 
 :root[data-theme="dark"] {
-    --ink: #eef4fa;
-    --ink-soft: #c2d0de;
-    --ink-faint: #92a4b6;
-    --paper: #0d141d;
-    --sheet-bg: rgba(27, 38, 52, .88);
-    --sheet-solid: #192431;
-    --sheet-line: rgba(205, 226, 245, .09);
-    --accent: #8ec7f2;
-    --accent-bright: #b0d8f7;
-    --accent-wash: #1d2c3b;
-    --action-bg: #0a84ff;
-    --action-bg-hover: #3d9bff;
-    --action-ink: #071018;
-    --gold: #e0b95f;
-    --gold-wash: #2c2413;
+    --paper: #0d1712;
+    --sheet-bg: rgba(19, 33, 26, .92);
+    --sheet-solid: #122019;
+    --sheet-line: rgba(230, 220, 194, .18);
+
+    --ink: #e6dcc2;
+    --ink-soft: #c0bda3;
+    --ink-faint: #9a9574;
+
+    --accent: #4ba583;
+    --accent-bright: #63bd97;
+    --accent-wash: #182b22;
+    --action-bg: #2e7d5f;
+    --action-bg-hover: #276b50;
+    --action-ink: #f2eede;
+
+    --gold: #c98a4b;
+    --gold-wash: #292117;
+
     --alarm: #e5806a;
     --alarm-wash: #2c1a15;
-    --stage-legacy: #8496a8;
-    --stage-lead: #7fc4ff;
-    --edge-metal: linear-gradient(135deg, #3a4a5c, #1a2531 38%, #93a7bb 52%, #26333f 78%, #3c4d60);
-    --edge-silver: #55677a;
-    --glass-bg: rgba(17, 25, 35, .55);
-    --glass-line: rgba(160, 185, 210, .3);
-    --glass-highlight: inset 0 1px 0 rgba(214, 232, 247, .1);
-    --dock-bg: rgba(20, 29, 40, .6);
-    --pill-line: rgba(205, 226, 245, .18);
-    --pill-bg: rgba(205, 226, 245, .06);
-    --line: rgba(205, 226, 245, .11);
-    --shadow-sheet: 0 1px 2px rgba(0, 0, 0, .5), 0 12px 32px rgba(0, 0, 0, .38), 0 32px 80px rgba(0, 0, 0, .32);
-    --shadow-float: 0 2px 6px rgba(0, 0, 0, .45), 0 12px 28px rgba(0, 0, 0, .4);
-    --shadow-lift: 0 10px 24px rgba(0, 0, 0, .55);
-    color-scheme: dark;
+
+    --stage-legacy: #9a9574;
+    --stage-lead: #63bd97;
+
+    --line: rgba(230, 220, 194, .15);
+    --wash: rgba(230, 220, 194, .06);
+    --edge-metal: #56685a;
+    --edge-silver: #56685a;
+
+    --shadow-sheet: 0 1px 2px rgba(0, 0, 0, .3), 0 16px 40px rgba(0, 0, 0, .35);
+    --shadow-float: 0 2px 6px rgba(0, 0, 0, .35), 0 12px 28px rgba(0, 0, 0, .4);
+    --shadow-lift: 0 8px 20px rgba(0, 0, 0, .45);
 }
 
-:root[data-theme="light"] {
-    color-scheme: light;
-}
+/* ==========================================================================
+   Base
+   ========================================================================== */
 
-* {
-    box-sizing: border-box;
-}
+*,
+*::before,
+*::after { box-sizing: border-box; }
 
-html,
-body {
-    margin: 0;
-    padding: 0;
-}
-
-/* The ground lives on html, not body: it is one flat, still surface, and everything
-   the design adds — sheets, chrome, the dock — floats above it. */
 html {
-    scroll-behavior: smooth;
     background: var(--paper);
+    color-scheme: light dark;
+    caret-color: var(--accent);
+    scrollbar-color: var(--edge-silver) var(--paper);
 }
+html[data-theme="dark"] { color-scheme: dark; }
 
 body {
-    font-family: var(--font-body);
-    font-size: 16px;
-    line-height: 1.6;
-    color: var(--ink);
-    -webkit-font-smoothing: antialiased;
-}
-
-/* Browser surfaces carry the design too: selection, caret, scrollbar. */
-::selection {
-    background: color-mix(in srgb, var(--accent) 26%, transparent);
-}
-
-input,
-textarea {
-    caret-color: var(--accent);
-}
-
-::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: color-mix(in srgb, var(--ink-faint) 38%, transparent);
-    border-radius: 999px;
-    border: 3px solid transparent;
-    background-clip: content-box;
-}
-
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-h1, h2, h3, h4 {
-    font-family: var(--font-display);
-    line-height: 1.18;
     margin: 0;
-    letter-spacing: -0.025em;
-    font-weight: 600;
-    text-wrap: balance;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
 
-.mono {
-    font-family: var(--font-mono);
-}
+/* Browser surfaces carry the design too. */
+::selection { background: rgba(12, 90, 69, .26); }
 
-p {
-    margin: 0 0 1rem;
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: var(--paper); }
+::-webkit-scrollbar-thumb {
+    background: var(--edge-silver);
+    border: 3px solid var(--paper);
+    border-radius: 8px;
 }
-
-a {
-    color: var(--accent);
-}
+::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
 
 :focus-visible {
     outline: 2px solid var(--accent-bright);
     outline-offset: 3px;
-    border-radius: 4px;
+    border-radius: 2px;
 }
 
-/* ---------- motion ----------
+a { color: var(--accent); text-underline-offset: .18em; }
+a:hover { color: var(--accent-bright); }
 
-   One orchestrated system: sections settle in as sheets, the hero plays its sequence,
-   counters run once. Every hiding rule is gated behind .js-motion, added only from
-   motion.js — a script failure can never leave content invisible. Everything here is
-   disabled by the reduced-motion block at the foot of this file.
+h1, h2, h3, h4 { margin: 0; line-height: 1.12; }
 
-   Reveals move on `translate` and `scale`, not `transform`, deliberately: `transform`
-   is spent on hover lifts, and the individual transform properties compose cleanly
-   with it. */
+p { margin: 0; }
 
-.js-motion .reveal {
-    opacity: 0;
-    translate: 0 26px;
-    scale: .985;
-    transition:
-        opacity .7s cubic-bezier(.16, 1, .3, 1),
-        translate .7s cubic-bezier(.16, 1, .3, 1),
-        scale .7s cubic-bezier(.16, 1, .3, 1);
+img, svg { display: block; max-width: 100%; }
+
+.mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .01em;
 }
 
-.js-motion .reveal.is-visible {
-    opacity: 1;
-    translate: 0 0;
-    scale: 1;
+.visually-hidden {
+    position: absolute !important;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0; border: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    overflow: hidden;
+    white-space: nowrap;
 }
 
-/* Items inside a revealed section cascade rather than arriving as one block. Each sets
-   --i to its index; the section's own reveal is what triggers them. */
-.js-motion .reveal .stagger {
-    opacity: 0;
-    translate: 0 14px;
-    transition:
-        opacity .55s cubic-bezier(.16, 1, .3, 1) calc(var(--i, 0) * 50ms),
-        translate .55s cubic-bezier(.16, 1, .3, 1) calc(var(--i, 0) * 50ms);
+.skip-link {
+    position: fixed;
+    top: .75rem; left: .75rem;
+    z-index: 100;
+    padding: .6rem 1rem;
+    background: var(--sheet-solid);
+    border: 1px solid var(--edge-silver);
+    border-radius: 999px;
+    color: var(--ink);
+    font-family: var(--font-body);
+    text-decoration: none;
+    transform: translateY(-300%);
 }
+.skip-link:focus { transform: none; }
 
-.js-motion .reveal.is-visible .stagger {
-    opacity: 1;
-    translate: 0 0;
-}
-
-@keyframes rise-in {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: none; }
-}
-
-.rise {
-    animation: rise-in .55s cubic-bezier(.16, 1, .3, 1) both;
-}
-
-/* ---------- layout primitives ---------- */
+/* ==========================================================================
+   Layout — the page is a plate series on the paper ground
+   ========================================================================== */
 
 .shell {
-    max-width: var(--page);
-    margin: 0 auto;
-    padding: 0 1.25rem;
+    width: min(100% - 2.5rem, var(--page));
+    margin-inline: auto;
 }
 
-/*
-    The content sheet: every dense surface floats as one rounded slab over the ground.
-    The edge is the anodized-silver gradient (--edge-metal) painted in the border-box
-    layer under a solid face (--sheet-solid) — the padding-box/border-box composite is
-    what lets a 1px border carry a gradient and still take the 16px radius. No
-    backdrop-filter here, so a 6000px page never holds a live blur under the reader.
-*/
+main { display: block; padding-bottom: 5rem; }
+
+/* Mobile: the shown dock rides in the thumb zone — the page ends with a clear
+   band so the last content is never seated beneath it. Mid-scroll overlap above
+   the page end is the fixed-dock tradeoff, accepted in the finish review. */
+@media (max-width: 720px) {
+    main { padding-bottom: 7rem; }
+}
+
 .sheet {
-    width: min(100% - 1.5rem, var(--page));
-    margin: 1.4rem auto;
-    padding: clamp(2rem, 1.2rem + 3vw, 3.75rem) clamp(1.25rem, 3.5vw, 3.25rem);
-    border: 1px solid transparent;
-    background:
-        linear-gradient(var(--sheet-solid), var(--sheet-solid)) padding-box,
-        var(--edge-metal) border-box;
+    width: min(100% - 2.5rem, var(--page));
+    margin-inline: auto;
+    margin-top: 1.6rem;
+    background: var(--sheet-solid);
+    border: 1px solid var(--sheet-line);
     border-radius: var(--radius-sheet);
     box-shadow: var(--shadow-sheet);
+    position: relative;
+    padding: clamp(1.8rem, 1.2rem + 3vw, 3.4rem) clamp(1.3rem, 3.5vw, 3rem);
 }
 
+/* The plate frame: the inner rule of a banknote border, inset off the edge. */
+.sheet::before {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    border: 1px solid var(--line);
+    border-radius: calc(var(--radius-sheet) - 5px);
+    pointer-events: none;
+}
+.sheet::after {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    border-radius: calc(var(--radius-sheet) - 5px);
+    pointer-events: none;
+    /* Machined quarter-dots seated just INSIDE each corner of the inner rule —
+       centers at 6px,6px so the box's own 5px corner radius never clips them. */
+    background-image:
+        radial-gradient(circle at 6px 6px, var(--ink-faint) 0 2.2px, transparent 2.8px),
+        radial-gradient(circle at calc(100% - 6px) 6px, var(--ink-faint) 0 2.2px, transparent 2.8px),
+        radial-gradient(circle at 6px calc(100% - 6px), var(--ink-faint) 0 2.2px, transparent 2.8px),
+        radial-gradient(circle at calc(100% - 6px) calc(100% - 6px), var(--ink-faint) 0 2.2px, transparent 2.8px);
+}
+
+.sheet--slim { padding-block: 1.5rem; }
+
 .sheet__title {
-    font-size: clamp(1.85rem, 1.15rem + 2.6vw, 2.9rem);
-    letter-spacing: -0.028em;
-    margin-bottom: 0.6rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.65rem, 1.1rem + 2.3vw, 2.55rem);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.08;
+    /* The double rule above a plate title — banknote border language. */
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--line);
+    position: relative;
+}
+.sheet__title::before {
+    content: "";
+    position: absolute;
+    top: 3px; left: 0; right: 0;
+    border-top: 1px solid var(--line);
 }
 
 .sheet__lede {
-    color: var(--ink-soft);
+    margin-top: .85rem;
     max-width: var(--measure);
-    margin-bottom: 2rem;
-    font-size: 1.05rem;
+    color: var(--ink-soft);
+    font-size: 1.02rem;
 }
 
-/* The slim variant: one paragraph of prose on its own slab, so it reads as a beat
-   between the hero and the skill matrix rather than as a section of its own. */
-.sheet--slim {
-    padding-block: clamp(1.5rem, 1rem + 2vw, 2.25rem);
+.summary {
+    max-width: var(--measure);
+    margin-inline: auto;
+    font-size: 1.06rem;
+    line-height: 1.68;
 }
 
-.sheet--slim p:last-child {
-    margin-bottom: 0;
+.sub {
+    font-family: var(--font-mono);
+    font-size: .76rem;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--ink-faint);
+    margin: 0 0 .9rem;
 }
 
-/*
-    Anchor targets: every section is a nav destination (#skills, #timeline, #work,
-    #credentials), and without a scroll margin the sticky capsule swallows the heading
-    the reader jumped to — ~15px of clip on desktop, the entire heading at 390px where
-    the capsule wraps to two rows.
-*/
-.sheet[id] {
-    scroll-margin-top: 92px;
-}
+.scroll-x { overflow-x: auto; }
 
-/* ---------- site chrome ----------
-
-   The header is a floating glass capsule, not a full-width bar: chrome, not content.
-   It sits sticky above the ground and never carries a background of its own — the
-   capsule inside it is the glass. */
+/* ==========================================================================
+   Header — an opaque paper band under a double rule
+   ========================================================================== */
 
 .site-header {
     position: sticky;
     top: 0;
-    z-index: 50;
-    padding-top: 0.75rem;
-    background: none;
-    border: none;
+    z-index: 40;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    /* Second rule of the double border, inset below the first. */
+    box-shadow: inset 0 -4px 0 -3px var(--line);
 }
 
 .header-capsule {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    /* flex-start, not space-between: the nav and the theme toggle form one cluster at
-       the capsule's end. Under space-between the toggle stranded at the far edge,
-       visually disconnected from the links it sits with. */
-    justify-content: flex-start;
-    gap: 0.75rem;
-    min-height: 56px;
-    padding: 0.35rem 0.4rem 0.35rem 1.1rem;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-line);
-    border-radius: 999px;
-    box-shadow: var(--shadow-float), var(--glass-highlight);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    /* Glass reads against what scrolls behind it, so the capsule needs its own
-       scroll-linked state: the shell's inline script (index.html) adds .is-scrolled
-       when content has passed underneath — it lives there rather than here because
-       the state must exist before the runtime boots and after Blazor replaces the
-       header — deepening the fill just enough to keep nav text at AA. */
-    transition: background-color .35s ease, box-shadow .35s ease;
-}
-
-.header-capsule.is-scrolled {
-    background: color-mix(in srgb, var(--glass-bg) 72%, var(--paper));
+    gap: .3rem .9rem;
+    min-height: var(--header-band);
+    padding-block: .3rem;
 }
 
 .site-header__name {
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: 0.98rem;
-    letter-spacing: -0.01em;
-    text-decoration: none;
+    font-size: 1.08rem;
+    letter-spacing: .015em;
     color: var(--ink);
+    text-decoration: none;
+    margin-right: auto;
     white-space: nowrap;
 }
 
 .site-nav {
     display: flex;
-    gap: 0.15rem;
     align-items: center;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    /* Pushes the nav + toggle cluster to the capsule's end (the toggle follows the
-       nav in visual order via `order` below). */
-    margin-inline-start: auto;
+    gap: .1rem;
+    flex-basis: 100%;
+    order: 3;
+    overflow-x: auto;
+    scrollbar-width: none;
 }
+.site-nav::-webkit-scrollbar { display: none; }
 
-/*
-    DOM order is name → toggle → nav, so the wrapped mobile capsule keeps the name and
-    toggle on its first row. On wide screens the capsule is one row and the toggle must
-    sit AFTER the nav at the far end — order puts it there visually without touching
-    the DOM the mobile wrap depends on.
-*/
-@media (min-width: 721px) {
-    .site-nav {
-        order: 2;
-    }
-
-    .theme-toggle {
-        order: 3;
-    }
-}
-
-/* Tap targets: 44px is the floor a thumb gets. Padding carries the size; the visual
-   stays a quiet capsule per link. */
 .site-nav a {
     display: inline-flex;
     align-items: center;
-    min-height: 44px;
-    padding: 0 0.85rem;
+    min-height: 2.75rem;
+    padding: 0 .8rem;
     border-radius: 999px;
     color: var(--ink-soft);
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
     text-decoration: none;
-    font-size: 0.92rem;
     white-space: nowrap;
-    transition: color .2s ease, background-color .2s ease;
 }
-
 .site-nav a:hover {
     color: var(--ink);
-    background: color-mix(in srgb, var(--ink) 7%, transparent);
+    background: rgba(20, 38, 30, .08);
 }
-
-/* Current-section state, applied by motion.js's scroll-spy. Same treatment as hover
-   but persistent, so "where am I" answers itself without reading the page. */
 .site-nav a.is-current {
-    color: var(--ink);
-    background: color-mix(in srgb, var(--ink) 7%, transparent);
+    color: var(--action-ink);
+    background: var(--action-bg);
 }
 
-/*
-    The theme control: an iOS-style switch. A tap toggles — Blazor's handler after
-    boot, the shell's delegated click before it — and the shell's drag enhancement
-    lets the knob be pulled past the midpoint for the tactile version. The whole
-    button keeps the 44px tap floor; the track inside is the visible switch;
-    touch-action: none is scoped to this control only, so a thumb resting here never
-    holds the page's scroll.
+@media (min-width: 721px) {
+    .site-nav {
+        flex-basis: auto;
+        order: 0;
+        margin-inline-start: auto;
+    }
+    .header-capsule { flex-wrap: nowrap; }
+}
 
-    The knob's side and its sun/moon icon are pure CSS state — the theme selectors
-    below decide both, so the control is identical between the prerendered shell and
-    the Blazor render and can never fall out of sync with the palette.
-*/
+/* ==========================================================================
+   Theme toggle — the medallion switch (same mechanics, new metal)
+   ========================================================================== */
+
 .theme-toggle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    flex: none;
-    min-width: 44px;
-    min-height: 44px;
-    /* Holds the switch off the capsule's rounded end (mobile parks it on row one at
-       the corner). */
-    margin-inline-end: 0.15rem;
+    width: 2.75rem;
+    height: 2.75rem;
     padding: 0;
     background: transparent;
-    border: none;
+    border: 0;
+    border-radius: 999px;
     cursor: pointer;
-    touch-action: none;
-    -webkit-tap-highlight-color: transparent;
 }
 
 .theme-toggle__track {
@@ -533,619 +452,630 @@ a {
     width: 46px;
     height: 26px;
     border-radius: 999px;
-    /* Solid fallback first: older WebViews without color-mix still get a visible
-       track (the in-app browser the switch was reported broken in). */
-    background: rgba(22, 34, 46, .12);
-    background: color-mix(in srgb, var(--ink) 12%, transparent);
-    border: 1px solid var(--line);
-    box-shadow: inset 0 1px 3px rgba(10, 18, 28, .16);
-    transition: background-color .25s ease, border-color .25s ease;
-}
-
-.theme-toggle:hover .theme-toggle__track {
-    background: rgba(22, 34, 46, .2);
-    background: color-mix(in srgb, var(--ink) 20%, transparent);
+    background: rgba(20, 38, 30, .14);
+    border: 1px solid var(--edge-silver);
+    box-shadow: inset 0 1px 3px rgba(20, 38, 30, .12);
+    transition: background .22s ease;
 }
 
 .theme-toggle__knob {
     position: absolute;
     top: 2px;
     left: 2px;
-    display: grid;
-    place-items: center;
     width: 20px;
     height: 20px;
-    border-radius: 50%;
-    /* The knob is the one piece of polished aluminum a finger actually moves. */
-    background: linear-gradient(145deg, #ffffff, #d9e3ec);
-    border: 1px solid rgba(255, 255, 255, .65);
-    box-shadow: 0 1px 3px rgba(15, 28, 42, .35);
-    color: var(--ink-soft);
-    /* transform, not the individual translate property: the switch must travel in
-       older WebViews too (it was reported stuck in the in-app browser). */
-    transform: translateX(0);
-    transition: transform .18s cubic-bezier(.3, .7, .4, 1), background .25s ease;
-}
-
-.theme-toggle.is-dragging .theme-toggle__knob {
-    transition: none;
-}
-
-.theme-toggle__knob svg {
-    width: 12px;
-    height: 12px;
-}
-
-/* Light: knob left, sun showing. */
-.theme-toggle .icon-sun { display: block; }
-.theme-toggle .icon-moon { display: none; }
-
-/* Dark: knob right, moon showing — flipped by the same selectors that flip the
-   palette, so the control and the colours can never disagree. */
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .theme-toggle__knob {
-        transform: translateX(22px);
-        background: linear-gradient(145deg, #c7d5e2, #8fa3b5);
-    }
-
-    :root:not([data-theme="light"]) .theme-toggle .icon-sun { display: none; }
-    :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: block; }
-}
-
-:root[data-theme="dark"] .theme-toggle__knob {
-    transform: translateX(22px);
-    background: linear-gradient(145deg, #c7d5e2, #8fa3b5);
-}
-
-:root[data-theme="dark"] .theme-toggle .icon-sun { display: none; }
-:root[data-theme="dark"] .theme-toggle .icon-moon { display: block; }
-
-/*
-    The theme pulse: one ripple element, driven entirely by WAAPI from the shell
-    script. During a knob drag it grows inside-out from the switch — a live preview
-    of the other theme's ground expanding under the finger — and on commit it pulses
-    out across the viewport once and fades. Transform + opacity only: one short-lived
-    composited layer, hidden in print, never started under reduced motion.
-*/
-.theme-pulse {
-    position: fixed;
-    top: var(--pulse-y, 50%);
-    left: var(--pulse-x, 50%);
-    width: 24px;
-    height: 24px;
-    margin: -12px 0 0 -12px;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 60;
-    opacity: 0;
-    display: none;
-}
-
-.theme-pulse.is-live {
-    display: block;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .theme-toggle {
-        transition: none;
-    }
-}
-
-/*
-    Skip link: the first focusable element on every page. Visually absent until a
-    keyboard reader lands on it — then it is the loudest thing on screen.
-*/
-.skip-link {
-    position: fixed;
-    top: 0.75rem;
-    inset-inline-start: 0.75rem;
-    z-index: 100;
-    padding: 0.7rem 1.2rem;
     border-radius: 999px;
-    background: var(--action-bg);
-    color: var(--action-ink);
-    font-weight: 600;
-    text-decoration: none;
-    translate: 0 -300%;
-    transition: translate .2s ease;
-}
-
-.skip-link:focus-visible {
-    translate: 0 0;
-    outline-offset: 2px;
-}
-
-/*
-    The contact dock: call and email as one frosted capsule fixed to the viewport's
-    foot — reachable from every scroll position, on every showcase page. It is the
-    page's second and last blur (with the header capsule): small, fixed, and chrome —
-    a live GPU layer the size of a matchbox, not a page. Pure anchors and no script,
-    so it exists identically in the prerendered shell (prerender.py) and the Blazor
-    render; a data-saver visitor who never boots the runtime can still call or email
-    in one tap. The tel: href carries the number without ever printing it as text.
-*/
-.contact-dock {
-    position: fixed;
-    inset-block-end: calc(0.9rem + env(safe-area-inset-bottom, 0px));
-    inset-inline-end: 0.9rem;
-    z-index: 40;
-    display: flex;
-    gap: 0.3rem;
-    margin: 0;
-    padding: 0.3rem;
-    background: var(--dock-bg);
+    background: linear-gradient(160deg, #f8f3e6, #d9cdb0);
     border: 1px solid var(--edge-silver);
-    border-radius: 999px;
-    box-shadow: var(--shadow-float), var(--glass-highlight);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-}
-
-.contact-dock__action {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    min-height: 44px;
-    padding: 0 1rem;
-    border-radius: 999px;
-    color: var(--ink-soft);
-    text-decoration: none;
-    font-size: 0.92rem;
-    font-weight: 600;
-    transition: color .2s ease, background-color .2s ease;
-}
-
-.contact-dock__action svg {
-    width: 17px;
-    height: 17px;
-}
-
-.contact-dock__action:hover {
-    color: var(--accent);
-    background: color-mix(in srgb, var(--ink) 7%, transparent);
-}
-
-/* On a phone the dock centres in the thumb zone instead of hugging the corner. */
-@media (max-width: 720px) {
-    .contact-dock {
-        inset-inline: 0.9rem;
-        justify-content: center;
-    }
-}
-
-/*
-    Back-to-top: runtime chrome (MainLayout.razor) wired by motion.js's
-    initBackToTop, which adds .is-shown — the one visibility class — after a
-    viewport of scroll. The stylesheet never hides rendered content with an
-    unconditional opacity rule, so the resting state here is display:none and
-    everything visible about the button lives under the JS-added class.
-
-    It parks ABOVE the contact dock, on the dock's own baseline: the dock's top
-    edge sits at .9rem + safe-area + ~3.5rem (44px action + padding + border), so
-    a bottom offset of .9rem + safe-area + 4.5rem keeps ~16px of paper between
-    them at every width — the dock-clearance arithmetic of .site-footer, applied
-    one layer up. z-index sits just under the dock's (40): the dock is the
-    primary control at the foot, and the two never overlap anyway.
-
-    The face is a solid sheet with the single-tone silver edge — new fixed chrome
-    could ask for glass (the Chrome-Only Blur Rule permits it), but the dosage law
-    spends the page's two blurs on the capsule and the dock, and a third matchbox
-    blur is not worth the GPU layer for a control most visits never show.
-*/
-.back-to-top {
-    display: none; /* shown only by motion.js's .is-shown — see the note above */
-    position: fixed;
-    inset-block-end: calc(0.9rem + env(safe-area-inset-bottom, 0px) + 4.5rem);
-    inset-inline-end: 0.9rem;
-    z-index: 39;
+    transform: translateX(0);
+    transition: transform .22s cubic-bezier(.3, .9, .3, 1);
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border: 1px solid var(--edge-silver);
-    border-radius: 999px;
-    background: var(--sheet-solid);
-    color: var(--ink-soft);
-    cursor: pointer;
-    box-shadow: var(--shadow-float);
-    transition: color .2s ease, border-color .2s ease, translate .2s ease, box-shadow .2s ease;
 }
 
-.back-to-top.is-shown {
-    display: inline-flex;
-    animation: rise-in .3s cubic-bezier(.16, 1, .3, 1);
+.theme-toggle .icon-sun,
+.theme-toggle .icon-moon {
+    width: 12px;
+    height: 12px;
+    color: #5d5236;
 }
 
-.back-to-top svg {
-    width: 18px;
-    height: 18px;
-}
+/* Light (explicit or system): sun only. Moon is hidden at the base so the two
+   glyphs can never superimpose, whatever the route or breakpoint. */
+.theme-toggle .icon-moon { display: none; }
 
-.back-to-top:hover {
-    color: var(--accent);
-    border-color: var(--accent);
-    translate: 0 -1px;
-    box-shadow: var(--shadow-lift);
+/* Dark by explicit choice. */
+:root[data-theme="dark"] .theme-toggle__track {
+    background: rgba(230, 220, 194, .16);
 }
-
-/* The global :focus-visible rule squares radii to 4px, which on a round control
-   draws the outline as a misshapen ring — the circle keeps its shape. */
-.back-to-top:focus-visible {
-    border-radius: 999px;
+:root[data-theme="dark"] .theme-toggle__knob {
+    transform: translateX(20px);
+    background: linear-gradient(160deg, #35473b, #1b2a21);
 }
+:root[data-theme="dark"] .theme-toggle .icon-sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .icon-moon { display: block; color: var(--accent-bright); }
 
-/* The dock is screen chrome: it must never reach paper, and sections hidden by the
-   reveal system (below-fold .reveal starts at opacity:0) must not print blank —
-   Ctrl+P on the showcase prints the document, not the animation state. */
-@media print {
-    .contact-dock,
-    .back-to-top,
-    .theme-pulse {
-        display: none;
+/* Dark by system, with no explicit light choice. */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-toggle__track {
+        background: rgba(230, 220, 194, .16);
     }
-
-    .js-motion .reveal,
-    .js-motion .reveal .stagger {
-        opacity: 1 !important;
-        translate: none !important;
-        scale: none !important;
-        /* The restore must be instant: a print snapshot taken mid-transition would
-           render faint text on paper. */
-        transition: none !important;
+    :root:not([data-theme="light"]) .theme-toggle__knob {
+        transform: translateX(20px);
+        background: linear-gradient(160deg, #35473b, #1b2a21);
     }
+    :root:not([data-theme="light"]) .theme-toggle .icon-sun { display: none; }
+    :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: block; color: var(--accent-bright); }
 }
 
-/*
-    Reading-progress bar.
-
-    Scroll-driven, so it needs no script and no markup — it is the document's own scroll
-    progress expressed as a transform, running on the compositor. Browsers without
-    scroll-driven animations simply never draw it, which is why it lives entirely inside
-    the @supports block rather than degrading to a static full-width bar.
-*/
-@supports (animation-timeline: scroll()) {
-    body::before {
-        content: "";
-        position: fixed;
-        inset: 0 0 auto 0;
-        height: 2px;
-        z-index: 100;
-        background: var(--accent);
-        transform: scaleX(0);
-        transform-origin: left center;
-        animation: draw-x linear both;
-        animation-timeline: scroll(root block);
-    }
-
-    /* app.css is global, so without this the bar — being position:fixed — would print
-       as a 2px gradient rule across the top of the first page of the CV. */
-    @media print {
-        body::before {
-            display: none;
-        }
-    }
-}
-
-@keyframes draw-x {
-    from { transform: scaleX(0); }
-    to   { transform: scaleX(1); }
-}
-
-    /*
-        The capsule is one floating object, so on a narrow screen it stays one object:
-        the name and toggle hold the first row, and the nav becomes a horizontal scroll
-        strip on the second — wrapping nav links used to grow the capsule to three rows
-        (~165px), a fifth of every screen for the whole read. The strip scrolls with
-        native momentum and hides its scrollbar; the faded edge tells the reader there
-        is more. Snap points keep a thumb-swipe landing on a whole link.
-    */
-    @media (max-width: 720px) {
-        .site-header {
-            padding-top: 0.4rem;
-        }
-
-        /* The collapsed capsule is ~98px tall; anchor jumps need a proportionate
-           margin or the target heading lands underneath the chrome. Coupled to the
-           Two-Row Capsule Rule in DESIGN.md — change them together. */
-        .sheet[id],
-        .case[id] {
-            scroll-margin-top: 112px;
-        }
-
-        .header-capsule {
-            flex-wrap: wrap;
-            border-radius: 24px;
-            /* The column gap separates name and toggle; the near-zero row gap keeps
-               the nav strip visually attached to the name row — a full row gap here
-               read as a hole in the chrome and cost the viewport ~20px. */
-            gap: 0.05rem 0.5rem;
-            padding: 0.2rem 0.35rem 0.2rem 0.8rem;
-        }
-
-        .site-header__name {
-            flex: 1 1 auto;
-            padding-block: 0.3rem;
-        }
-
-        .site-nav {
-            flex-basis: 100%;
-            justify-content: flex-start;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            scrollbar-width: none;
-            scroll-snap-type: x proximity;
-            padding-bottom: 0.15rem;
-            mask-image: linear-gradient(90deg, #000 92%, transparent);
-            -webkit-mask-image: linear-gradient(90deg, #000 92%, transparent);
-        }
-
-        .site-nav::-webkit-scrollbar {
-            display: none;
-        }
-
-        .site-nav a {
-            scroll-snap-align: start;
-            /* 0.6rem keeps all five links (plus CV) inside a 390px strip: at 0.7rem the
-               last link slides under the mask and "CV" — the recruiter's destination —
-               is the one that disappears. */
-            padding: 0 0.6rem;
-            min-height: 44px;
-            font-size: 0.9rem;
-        }
-    }
-
-
-.site-footer {
-    /* The bottom padding clears the floating contact dock: at 3.5rem the dock sat on
-       the footer's last line at scroll end. 4.5rem + safe-area keeps paper between
-       them at every width. */
-    padding: 2.5rem 0 calc(4.5rem + env(safe-area-inset-bottom, 0px));
-    color: var(--ink-faint);
-    font-size: 0.9rem;
-}
-
-/* The name + full title line runs ~105 characters uncapped — past every body-measure
-   rule on the site. The footer is still prose. */
-.site-footer p {
-    max-width: var(--measure);
-}
-
-.site-footer a {
-    color: var(--ink-soft);
-    text-underline-offset: 3px;
-}
-
-.site-footer a:hover {
-    color: var(--accent);
-}
-
-/* ---------- buttons: capsules ---------- */
+/* ==========================================================================
+   Buttons — the intaglio seal and the ruled ghost
+   ========================================================================== */
 
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.45rem;
-    min-height: 44px;
-    padding: 0.6rem 1.35rem;
+    gap: .5rem;
+    min-height: 2.75rem;
+    padding: .55rem 1.3rem;
     border-radius: 999px;
-    border: 1px solid transparent;
-    font: inherit;
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-family: var(--font-mono);
+    font-size: .78rem;
+    letter-spacing: .07em;
+    text-transform: uppercase;
     text-decoration: none;
     cursor: pointer;
-    background: none;
-    transition:
-        translate .22s cubic-bezier(.16, 1, .3, 1),
-        box-shadow .22s ease,
-        border-color .22s ease,
-        background-color .22s ease,
-        color .22s ease;
-}
-
-.btn:hover {
-    translate: 0 -1px;
-    box-shadow: var(--shadow-lift);
-}
-
-.btn:active {
-    translate: 0 0;
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease, color .18s ease, border-color .18s ease;
 }
 
 .btn--primary {
     background: var(--action-bg);
     color: var(--action-ink);
+    border: 1px solid var(--action-bg);
+    box-shadow: inset 0 0 0 1px rgba(246, 241, 226, .32), var(--shadow-float);
 }
-
 .btn--primary:hover {
     background: var(--action-bg-hover);
+    transform: translateY(-1px);
+    box-shadow: inset 0 0 0 1px rgba(246, 241, 226, .32), var(--shadow-lift);
 }
+.btn--primary:active { transform: none; }
 
-/* Glass pill: chrome, so it may use the blur when it floats over the ground — but the
-   pills that sit on a sheet get a sheet-visible edge instead, and no blur at all (the
-   sheet beneath is nearly opaque, so a blur there is render cost for nothing). */
 .btn--ghost {
-    border-color: var(--pill-line);
-    background: var(--pill-bg);
+    background: var(--sheet-solid);
     color: var(--ink);
+    border: 1px solid var(--edge-silver);
 }
-
 .btn--ghost:hover {
-    border-color: var(--accent);
     color: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lift);
+}
+.btn--ghost:active { transform: none; }
+
+.badge {
+    display: inline-block;
+    padding: .1rem .55rem;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: .62rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    vertical-align: middle;
+}
+.badge--now { color: var(--accent); border: 1px solid var(--accent); background: var(--accent-wash); }
+/* "Returned" is a trajectory marker, not recognition — it takes the accent, not
+   the bronze. Bronze stays medals-only. */
+.badge--return { color: var(--accent); border: 1px solid var(--accent); background: var(--accent-wash); }
+.badge--progress { color: var(--ink-faint); border: 1px solid var(--line); }
+
+.metric-chip {
+    display: inline-block;
+    margin-left: .4rem;
+    padding: .08rem .5rem;
+    border-radius: 3px;
+    background: var(--gold-wash);
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
 }
 
-/* ---------- chips: glass pills ----------
+/* ==========================================================================
+   Skills — cited seals
+   ========================================================================== */
 
-   Shared by the skill matrix and anywhere else a short label needs to read as a
-   discrete, scannable object rather than a row in a list. */
+.groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.6rem 2rem;
+    margin-top: 1.6rem;
+}
+
+.group__title {
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--accent);
+    margin: 0 0 .8rem;
+    padding-bottom: .5rem;
+    border-bottom: 1px solid var(--line);
+}
 
 .chips {
     list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .45rem;
 }
 
 .chip {
     display: inline-flex;
     align-items: baseline;
-    gap: 0.4rem;
-    /* A chip must never be the thing that widens the page on a narrow screen. */
+    gap: .45rem;
     max-width: 100%;
-    min-height: 32px;
-    padding: 0.3rem 0.85rem;
+    padding: .28rem .8rem;
     border: 1px solid var(--sheet-line);
     border-radius: 999px;
-    background: color-mix(in srgb, var(--sheet-bg) 80%, transparent);
+    background: var(--sheet-bg);
     color: var(--ink-soft);
-    font-size: 0.88rem;
-    transition:
-        translate .2s cubic-bezier(.16, 1, .3, 1),
-        border-color .2s ease,
-        box-shadow .2s ease,
-        color .2s ease;
+    font-size: .88rem;
+    transition: transform .16s ease, border-color .16s ease, color .16s ease, box-shadow .16s ease;
 }
-
 .chip:hover {
-    translate: 0 -1px;
+    transform: translateY(-1px);
     border-color: var(--accent);
-    box-shadow: var(--shadow-lift);
     color: var(--ink);
+    box-shadow: var(--shadow-lift);
 }
 
-/* An evidenced skill outranks an unevidenced one, so it carries the ink and the
-   employer that backs it. */
 .chip--evidenced {
+    background: var(--accent-wash);
+    border-color: var(--accent);
     color: var(--ink);
     font-weight: 600;
-    border-color: color-mix(in srgb, var(--accent) 38%, var(--sheet-line));
-    background: var(--accent-wash);
 }
 
 .chip__where {
     font-family: var(--font-mono);
-    font-size: 0.72rem;
-    font-weight: 400;
+    font-size: .62rem;
+    letter-spacing: .04em;
     color: var(--ink-faint);
 }
 
-/* ---------- misc shared ---------- */
-
-.tag {
-    display: inline-block;
-    padding: 0.15rem 0.6rem;
-    border: 1px solid var(--sheet-line);
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--sheet-bg) 78%, transparent);
-    color: var(--ink-soft);
-    font-size: 0.78rem;
-    white-space: nowrap;
-}
-
-/* The award metric: the one warm note on the page. */
-.metric-chip {
-    display: inline-block;
-    padding: 0.12rem 0.55rem;
-    border-radius: 8px;
-    background: var(--gold-wash);
-    color: var(--gold);
-    font-weight: 700;
-    font-size: 0.85rem;
-}
-
-code {
+.disclosure { margin-top: 1.2rem; }
+.disclosure summary {
+    cursor: pointer;
     font-family: var(--font-mono);
-    font-size: 0.9em;
+    font-size: .76rem;
+    letter-spacing: .07em;
+    color: var(--accent);
+    text-transform: uppercase;
+    padding: .4rem 0;
+    list-style-position: inside;
 }
+.disclosure summary:hover { color: var(--accent-bright); }
+.disclosure[open] summary { margin-bottom: .6rem; }
 
-/* Wide content must scroll inside itself; the page never scrolls sideways. */
-.scroll-x {
-    overflow-x: auto;
-    max-width: 100%;
-}
+.skills__more { border-top: 1px dashed var(--line); padding-top: .8rem; }
 
-/*
-    Visually hidden, fully accessible: for text alternatives that must reach screen
-    readers without altering the composition (diagram summaries, full chip evidence).
-*/
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
+/* ==========================================================================
+   Selected work — the plate series
+   ========================================================================== */
+
+.case-index {
+    list-style: none;
+    margin: 1.6rem 0 0;
     padding: 0;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-    border: 0;
+    display: flex;
+    flex-direction: column;
 }
 
-/*
-    The no-JS disclosure: "Show all N" on timelines, certifications, and skill groups.
-    A details element works without any script, so the static layer keeps the full
-    content reachable; the summary reads as a quiet accent action, never as a heading.
-*/
-details.disclosure {
-    margin-top: 0.6rem;
+.case-index__item {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .3rem 1.2rem;
+    padding: 1.1rem .4rem;
+    border-top: 1px dashed var(--line);
+    color: inherit;
+    text-decoration: none;
+    transition: background .16s ease;
+    border-radius: var(--radius-sm);
+}
+.case-index__item:hover { background: rgba(20, 38, 30, .05); }
+.case-index li:first-child .case-index__item { border-top: 0; }
+
+.case-index__title {
+    font-family: var(--font-display);
+    font-size: 1.16rem;
+    font-weight: 600;
+    color: var(--ink);
 }
 
-details.disclosure > summary {
+.case-index__org {
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+}
+
+.case-index__summary {
+    color: var(--ink-soft);
+    font-size: .95rem;
+    max-width: 62ch;
+}
+
+.case-index__outcome {
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 720px) {
+    .case-index__item { grid-template-columns: minmax(11rem, 15rem) 1fr; }
+    .case-index__title { grid-column: 1; grid-row: 1; }
+    .case-index__org { grid-column: 2; grid-row: 1; align-self: center; }
+    .case-index__summary { grid-column: 2; }
+    .case-index__outcome { grid-column: 2; }
+}
+
+/* ==========================================================================
+   The stack row — a study's technologies as one wrapped registry line
+   ========================================================================== */
+
+.stack {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    margin: 1.1rem 0 0;
+    padding: 0;
+}
+
+.stack .tag {
+    padding: .22rem .7rem;
+    border: 1px solid var(--sheet-line);
+    border-radius: 3px;
+    background: var(--sheet-bg);
+    color: var(--ink-soft);
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    letter-spacing: .02em;
+}
+
+/* ==========================================================================
+   Credentials — education, certifications, medallions
+   ========================================================================== */
+
+.awards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-top: 1.6rem;
+}
+
+.award {
+    padding: 1.1rem 1.2rem;
+    border: 1px solid var(--gold);
+    /* The medallion's inner ring. */
+    box-shadow: inset 0 0 0 3px var(--sheet-solid), inset 0 0 0 4px var(--gold);
+    border-radius: var(--radius);
+    background: var(--gold-wash);
+}
+
+.award__title {
+    font-family: var(--font-display);
+    font-size: 1.08rem;
+    color: var(--gold);
+}
+
+.award__issuer {
+    margin-top: .25rem;
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+}
+
+.award__detail { margin-top: .5rem; color: var(--ink-soft); font-size: .92rem; }
+
+.split {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2.2rem;
+}
+
+.education, .certs { list-style: none; margin: 0; padding: 0; }
+
+.education li { padding: .65rem 0; border-bottom: 1px dashed var(--line); }
+.education li:last-child { border-bottom: 0; }
+
+.education__credential { font-weight: 600; font-size: .98rem; }
+
+.education__meta {
+    margin-top: .15rem;
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    color: var(--ink-faint);
+}
+
+.certs li {
+    display: flex;
+    flex-direction: column;
+    gap: .1rem;
+    padding: .6rem 0;
+    border-bottom: 1px dashed var(--line);
+}
+.certs li:last-child { border-bottom: 0; }
+
+.cert__name { font-size: .95rem; }
+.cert--featured .cert__name { font-weight: 600; }
+
+.cert__meta {
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    color: var(--ink-faint);
+}
+
+/* ==========================================================================
+   /cv — the printable document's on-page chrome (world-styled, page plain)
+   ========================================================================== */
+
+.cv-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .8rem;
+    width: min(100% - 2.5rem, var(--page));
+    margin: 1.4rem auto .4rem;
+}
+
+.cv-actions > * { margin: 0; }
+
+.cv-actions a,
+.cv-actions button {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    min-height: 44px;
-    padding: 0 0.35rem;
+    min-height: 2.75rem;
+    padding: .55rem 1.3rem;
     border-radius: 999px;
-    color: var(--accent);
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-family: var(--font-mono);
+    font-size: .78rem;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    text-decoration: none;
     cursor: pointer;
-    list-style: none;
-    transition: color .2s ease;
 }
 
-details.disclosure > summary::-webkit-details-marker {
-    display: none;
+.cv-actions a {
+    background: var(--action-bg);
+    color: var(--action-ink);
+    border: 1px solid var(--action-bg);
 }
 
-/* The chevron: CSS-drawn, rotates when the disclosure opens. */
-details.disclosure > summary::after {
-    content: "";
-    width: 7px;
-    height: 7px;
-    border-right: 1.6px solid currentColor;
-    border-bottom: 1.6px solid currentColor;
-    translate: 0 -2px;
-    rotate: 45deg;
-    transition: rotate .25s cubic-bezier(.16, 1, .3, 1);
+.cv-actions button {
+    background: var(--sheet-solid);
+    color: var(--ink);
+    border: 1px solid var(--edge-silver);
+    font: inherit;
+    font-family: var(--font-mono);
+    font-size: .78rem;
+    letter-spacing: .07em;
+    text-transform: uppercase;
 }
 
-details.disclosure[open] > summary::after {
-    rotate: 225deg;
-    translate: 0 -1px;
+.cv-actions button:hover {
+    color: var(--accent);
+    border-color: var(--accent);
 }
 
-details.disclosure > summary:hover {
-    color: var(--accent-bright);
+.cv-actions span {
+    color: var(--ink-faint);
+    font-size: .82rem;
 }
 
-@media (prefers-reduced-motion: reduce) {
-    details.disclosure > summary::after {
-        transition: none;
+/* ==========================================================================
+   Contact
+   ========================================================================== */
+
+.contact { text-align: left; }
+
+.contact__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .8rem;
+    margin-top: 1.6rem;
+}
+
+.contact__email { text-decoration: none; }
+
+.contact__email-lines {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.25;
+}
+.contact__email-addr {
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    letter-spacing: 0;
+    text-transform: none;
+    opacity: .85;
+}
+
+.contact__facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.2rem 2rem;
+    margin: 2.2rem 0 0;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--line);
+}
+
+.contact__facts dt {
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--ink-faint);
+}
+
+.contact__facts dd {
+    margin: .3rem 0 0;
+    font-size: .95rem;
+    color: var(--ink);
+}
+
+.contact__overlap { color: var(--ink-soft); }
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+.site-footer {
+    margin-top: 3rem;
+    padding: 1.6rem 0 2rem;
+    border-top: 1px solid var(--line);
+    color: var(--ink-faint);
+    font-size: .84rem;
+}
+.site-footer a { color: var(--ink-soft); }
+.site-footer .mono { font-size: .72rem; }
+
+/* ==========================================================================
+   Contact dock — the seal strip (fixed, opaque; this world spends no blur)
+   ========================================================================== */
+
+.contact-dock {
+    position: fixed;
+    right: max(1rem, env(safe-area-inset-right));
+    bottom: calc(.9rem + env(safe-area-inset-bottom));
+    z-index: 40;
+    display: flex;
+    gap: .3rem;
+    padding: .3rem;
+    background: var(--sheet-solid);
+    border: 1px solid var(--edge-silver);
+    border-radius: 999px;
+    box-shadow: var(--shadow-float);
+}
+
+.contact-dock__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+    padding: 0 .9rem;
+    border-radius: 999px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+.contact-dock__action:hover {
+    color: var(--accent);
+    background: rgba(20, 38, 30, .08);
+}
+
+@media (max-width: 720px) {
+    .contact-dock {
+        right: 50%;
+        transform: translateX(50%);
+        transition: opacity .3s cubic-bezier(.22, .8, .3, 1), transform .3s cubic-bezier(.22, .8, .3, 1);
+    }
+
+    /* Mobile only: the dock stays unprinted until the visitor has moved, so the
+       note face's first viewport is never masked. The class is motion.js's; the
+       gate sits behind .js-motion, so no-JS and reduced-motion keep the dock on. */
+    .js-motion .contact-dock:not(.is-shown) {
+        opacity: 0;
+        transform: translateX(50%) translateY(10px);
+        pointer-events: none;
     }
 }
 
-/* ---------- Blazor plumbing (kept from the template) ---------- */
+/* ==========================================================================
+   Back to top
+   ========================================================================== */
 
+.back-to-top {
+    position: fixed;
+    right: max(1rem, env(safe-area-inset-right));
+    bottom: calc(3.6rem + env(safe-area-inset-bottom) + 4.2rem);
+    z-index: 39;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border-radius: 999px;
+    background: var(--sheet-solid);
+    border: 1px solid var(--edge-silver);
+    color: var(--ink-soft);
+    cursor: pointer;
+    box-shadow: var(--shadow-float);
+}
+.back-to-top.is-shown { display: flex; }
+.back-to-top:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: var(--shadow-lift);
+}
+
+/* ==========================================================================
+   Reveal system — additive only. motion.js adds .js-motion and is the only
+   thing that gates a hidden state; without the script nothing is hidden.
+   ========================================================================== */
+
+.reveal { opacity: 1; transform: none; }
+
+.js-motion .reveal {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .6s cubic-bezier(.22, .8, .3, 1), transform .6s cubic-bezier(.22, .8, .3, 1);
+    transition-delay: calc(var(--i, 0) * 55ms);
+}
+
+.js-motion .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* ==========================================================================
+   Loading / boot
+   ========================================================================== */
+
+.booting { padding: 4rem 1.5rem; color: var(--ink-soft); }
+
+.loading-progress-text::after { content: "Loading…"; }
+
+#app:has(.prerendered) .loading-progress-text { display: none; }
+
+/* Blazor's error bar is hidden by default and shown by the framework JS when a
+   runtime error actually occurs. Its hiding rule used to live in the previous
+   world's stylesheet; the rewrite dropped it and the bar sat visible on every
+   page — a fake crash report above the fold of trust. */
 #blazor-error-ui {
     color-scheme: light only;
-    background: lightyellow;
-    color: #111;
+    background: var(--alarm-wash);
+    color: var(--ink);
     bottom: 0;
     box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
     box-sizing: border-box;
@@ -1157,6 +1087,47 @@ details.disclosure > summary:hover {
     z-index: 1000;
 }
 
+/* Testimonial tiles render only when a real, attributed quote exists — until then
+   these rules wait unused. Styled here so the first real submission arrives into
+   the world, not into unstyled markup. */
+.testimonials__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.testimonial {
+    padding: 1.2rem 1.3rem;
+    border: 1px solid var(--sheet-line);
+    border-radius: var(--radius);
+    background: var(--sheet-bg);
+}
+
+.testimonial__quote { color: var(--ink); font-size: .98rem; }
+
+.testimonial__who {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    margin-top: 1rem;
+}
+
+.testimonial__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 999px;
+    background: var(--accent-wash);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: .8rem;
+}
+
+.testimonial__name { font-weight: 600; font-size: .9rem; }
+.testimonial__meta { font-family: var(--font-mono); font-size: .68rem; color: var(--ink-faint); }
+
 #blazor-error-ui .dismiss {
     cursor: pointer;
     position: absolute;
@@ -1164,450 +1135,100 @@ details.disclosure > summary:hover {
     top: 0.5rem;
 }
 
-.loading-progress {
-    position: absolute;
-    display: block;
-    width: 8rem;
-    height: 8rem;
-    inset: 20vh 0 auto 0;
-    margin: 0 auto;
-}
+/* ==========================================================================
+   Reading progress — the security thread across the top
+   ========================================================================== */
 
-.loading-progress circle {
-    fill: none;
-    stroke: var(--line);
-    stroke-width: 0.6rem;
-    transform-origin: 50% 50%;
-    transform: rotate(-90deg);
-}
-
-.loading-progress circle:last-child {
-    stroke: var(--accent-bright);
-    stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
-    transition: stroke-dasharray 0.05s ease-in-out;
-}
-
-.loading-progress-text {
-    position: absolute;
-    text-align: center;
-    font-weight: bold;
-    color: var(--ink-soft);
-    inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
-}
-
-.loading-progress-text:after {
-    content: var(--blazor-load-percentage-text, "Loading");
-}
-
-/*
-    Prerendered content.
-
-    _tools/prerender.py writes each route's real text into #app at publish time, so that
-    crawlers which never execute WebAssembly — and the assistants people now ask instead
-    of searching — read the CV rather than an empty shell. Blazor clears #app when it
-    boots, so this is also what a person sees for the second before the runtime arrives.
-
-    It is therefore styled, not hidden. Hiding it would be cloaking, and a blank second
-    was the thing worth fixing. The type is deliberately plainer than the sheets: this
-    is the document underneath the design, and it should read as one.
-*/
-#app:has(.prerendered) .loading-progress,
-#app:has(.prerendered) .loading-progress-text {
-    display: none;
-}
-
-.prerendered {
-    max-width: var(--measure);
-    margin: 0 auto;
-    padding: 3rem 1.25rem 4rem;
-    color: var(--ink-soft);
-}
-
-.prerendered h1 {
-    font-size: clamp(1.6rem, 1.2rem + 2vw, 2.4rem);
-    color: var(--ink);
-    margin: 0 0 0.4rem;
-}
-
-.prerendered h2 {
-    margin: 2.5rem 0 0.75rem;
-    color: var(--ink);
-}
-
-.prerendered h3 {
-    margin: 1.5rem 0 0.35rem;
-    font-size: 1.02rem;
-    color: var(--ink);
-}
-
-.prerendered dt {
-    font-size: 0.78rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    margin-top: 0.6rem;
-}
-
-.prerendered dd {
-    margin: 0.1rem 0 0;
-}
-
-.prerendered ul {
-    padding-left: 1.1rem;
-}
-
-.prerendered li {
-    margin-bottom: 0.3rem;
-}
-
-/* =========================================================================
-   LONG-FORM DOCUMENT PAGES
-
-   Shared by the case study pages. These live here rather than in a component
-   stylesheet because Blazor's CSS isolation scopes a .razor.css file to its own
-   component, and three pages now render the same document shape. Isolation is
-   right for a component that owns its look; it is wrong for a layout several
-   routes share. The whole study is one big sheet on the ground.
-   ========================================================================= */
-
-.booting {
-    padding: 4rem 1.25rem;
-    color: var(--ink-faint);
-}
-
-.study {
-    width: min(100% - 1.5rem, calc(var(--measure) + 14rem));
-    margin: 1.4rem auto;
-    padding: clamp(2rem, 1.5rem + 3vw, 4rem) clamp(1.25rem, 3.5vw, 3rem) clamp(3rem, 2rem + 4vw, 5rem);
-    border: 1px solid transparent;
-    background:
-        linear-gradient(var(--sheet-solid), var(--sheet-solid)) padding-box,
-        var(--edge-metal) border-box;
-    border-radius: var(--radius-sheet);
-    box-shadow: var(--shadow-sheet);
-}
-
-.study__shell {
-    /* Prose measure, not page width: long-form argument is the point of these
-       pages, and a 1160px line length would make them unreadable. */
-    max-width: calc(var(--measure) + 4rem);
-    margin: 0 auto;
-    padding: 0;
-}
-
-.crumbs {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    font-size: 0.85rem;
-    color: var(--ink-faint);
-    margin-bottom: 2rem;
-}
-
-.crumbs a {
-    color: var(--ink-faint);
-}
-
-.crumbs a:hover {
-    color: var(--accent);
-}
-
-.study__head {
-    padding-bottom: 2rem;
-    border-bottom: 1px solid var(--line);
-}
-
-/* Attribution reads as a byline under the title, never as a label above it. */
-.study__org {
-    margin: 0.9rem 0 0;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--ink-faint);
-}
-
-.study__title {
-    margin: 0.5rem 0 0;
-    font-size: clamp(1.9rem, 1.3rem + 3vw, 3rem);
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-    text-wrap: balance;
-}
-
-.study__summary {
-    margin: 1rem 0 0;
-    max-width: var(--measure);
-    font-size: clamp(1.02rem, 0.98rem + 0.3vw, 1.15rem);
-    color: var(--ink-soft);
-}
-
-.study__block {
-    margin-top: 2.75rem;
-}
-
-.study__block h2 {
-    margin: 0 0 0.75rem;
-    font-size: 1.35rem;
-    letter-spacing: -0.015em;
-}
-
-.study__block > p {
-    margin: 0;
-    max-width: var(--measure);
-    color: var(--ink-soft);
-    line-height: 1.65;
-}
-
-/* The outcome block is the one tinted moment in a study — matching the home page's
-   panels, so "what actually changed" reads at the same weight in both places. */
-.study__block--outcomes {
-    margin-top: 2.75rem;
-    padding: 1rem 1.15rem;
-    background: var(--accent-wash);
-    border-radius: var(--radius);
-}
-
-.study__block--outcomes h2 {
-    margin: 0 0 0.75rem;
-}
-
-.study__writeup {
-    margin-top: 2.5rem;
-}
-
-.outcomes {
-    margin: 0;
-    padding-left: 1.1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.45rem;
-    max-width: var(--measure);
-    color: var(--ink-soft);
-    line-height: 1.6;
-}
-
-.outcomes li::marker {
-    color: var(--accent);
-}
-
-.stack {
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin: 1.25rem 0 0;
-    padding: 0;
-}
-
-/*
-    Previous / next. auto-fit rather than two fixed columns, so the first and last
-    entries — which have only one neighbour — do not leave a hole where the other
-    would be.
-*/
-.study__nav {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-    gap: 1rem;
-    margin-top: 4rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--line);
-}
-
-.study__link {
-    display: block;
-    padding: 1rem 1.15rem;
-    border: 1px solid var(--sheet-line);
-    border-radius: var(--radius);
-    text-decoration: none;
-    background: color-mix(in srgb, var(--sheet-bg) 70%, transparent);
-    transition: border-color .2s ease, translate .2s ease, box-shadow .2s ease;
-}
-
-.study__link:hover {
-    border-color: var(--accent);
-    translate: 0 -2px;
-    box-shadow: var(--shadow-lift);
-}
-
-.study__link--next {
-    text-align: right;
-}
-
-.study__link-label {
-    display: block;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-}
-
-.study__link-title {
-    display: block;
-    margin-top: 0.3rem;
-    color: var(--ink);
-    font-weight: 600;
-    line-height: 1.35;
-}
-
-/* ---------- testimonials ----------
-
-   Third-party quotes on /testimonials and in the home page's highlights band. The
-   markup is shared with the prerendered pages (see prerender.py), so these rules live
-   here rather than in a component's isolated stylesheet. Quotes are solid sheet tiles
-   — content, not chrome — so no blur rides under a page of them. */
-
-.testimonials {
-    padding: 0;
-}
-
-.testimonials__head {
-    max-width: var(--measure);
-    margin-bottom: 2.5rem;
-}
-
-.testimonials__title {
-    font-family: var(--font-display);
-    color: var(--ink);
-    margin: 0.2rem 0 0.6rem;
-}
-
-.testimonials__lede {
-    color: var(--ink-soft);
-    font-size: 1.05rem;
-    line-height: 1.6;
-    margin: 0;
-}
-
-.testimonials__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
-    gap: 1.25rem;
-    align-items: start;
-}
-
-.testimonial {
-    margin: 0;
-    padding: 1.5rem 1.5rem 1.25rem;
-    background: color-mix(in srgb, var(--sheet-bg) 70%, var(--paper));
-    border: 1px solid var(--sheet-line);
-    border-radius: var(--radius);
-}
-
-.testimonial__quote {
-    margin: 0 0 1.1rem;
-}
-
-.testimonial__quote p {
-    margin: 0;
-    color: var(--ink);
-    line-height: 1.65;
-    font-size: 0.98rem;
-}
-
-/* A quotation mark as tall, quiet punctuation rather than decoration. */
-.testimonial__quote p::before {
-    content: "\201C";
-    display: block;
-    font-family: var(--font-display);
-    font-size: 2rem;
-    line-height: 0.6;
-    color: var(--accent);
-    margin: 0.4rem 0 0.7rem;
-}
-
-.testimonial__by {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.testimonial__avatar {
-    flex: none;
-    display: grid;
-    place-items: center;
-    inline-size: 2.6rem;
-    block-size: 2.6rem;
-    border-radius: 50%;
-    background: var(--accent-wash);
-    color: var(--accent);
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 0.9rem;
-    letter-spacing: 0.04em;
-}
-
-.testimonial__who {
-    display: grid;
-    gap: 0.1rem;
-    min-inline-size: 0;
-}
-
-.testimonial__name {
-    font-weight: 600;
-    color: var(--ink);
-}
-
-.testimonial__name a {
-    color: inherit;
-    text-decoration-color: transparent;
-    text-underline-offset: 3px;
-    transition: text-decoration-color 150ms ease;
-}
-
-.testimonial__name a:hover,
-.testimonial__name a:focus-visible {
-    text-decoration-color: currentColor;
-}
-
-.testimonial__meta {
-    color: var(--ink-faint);
-    font-size: 0.86rem;
-}
-
-@media (max-width: 640px) {
-    .testimonials__grid {
-        grid-template-columns: 1fr;
+@supports (animation-timeline: scroll()) {
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: var(--accent);
+        transform-origin: 0 50%;
+        transform: scaleX(0);
+        animation: thread-read linear both;
+        animation-timeline: scroll();
+        z-index: 50;
+    }
+    @keyframes thread-read {
+        from { transform: scaleX(0); }
+        to { transform: scaleX(1); }
     }
 }
+
+/* ==========================================================================
+   Scroll margins — anchors clear the sticky band
+   ========================================================================== */
+
+.sheet[id], .case[id] { scroll-margin-top: var(--scroll-margin); }
+
+@media (max-width: 720px) {
+    :root { --header-band: 6rem; }
+    .sheet[id], .case[id] { scroll-margin-top: calc(var(--header-band) + 1rem); }
+}
+
+/* The nav strip never silently clips a link: below 430px the labels tighten so
+   all of them — CV last, the recruiter's destination — stay inside the mask. */
+@media (max-width: 430px) {
+    .site-nav { gap: 0; }
+    .site-nav a {
+        padding: 0 .5rem;
+        font-size: .64rem;
+        letter-spacing: .06em;
+    }
+}
+
+/* ==========================================================================
+   Reduced motion — every hidden state restored, everything static
+   ========================================================================== */
 
 @media (prefers-reduced-motion: reduce) {
-
-    html {
-        scroll-behavior: auto;
+    html { scroll-behavior: auto; }
+    .js-motion .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
     }
-
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
+    /* The dock never hides from a reduced-motion visitor. */
+    .js-motion .contact-dock:not(.is-shown) {
+        opacity: 1;
+        transform: translateX(50%);
+        pointer-events: auto;
+    }
+    body::before { animation: none; display: none; }
+    .denomination__print { animation: none !important; }
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
         animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+        transition-duration: .01ms !important;
     }
+}
 
-    /* Zeroing the durations is not enough on its own: the reveal rules set opacity: 0
-       as a starting state, so without this the content would simply stay invisible for
-       anyone who asked for less motion. Every element that any rule above starts hidden
-       must be restored here. Hero-specific starting states live in Hero.razor.css's own
-       reduced-motion block, beside the rules that create them. */
-    .js-motion .reveal,
-    .js-motion .reveal .stagger {
+/* ==========================================================================
+   Print — chrome drops out; content prints complete
+   ========================================================================== */
+
+@media print {
+    .site-header,
+    .contact-dock,
+    .back-to-top,
+    .skip-link,
+    .cv-actions { display: none !important; }
+
+    body::before { display: none; }
+
+    .js-motion .reveal {
         opacity: 1 !important;
         transform: none !important;
-        translate: none !important;
-        scale: none !important;
-        filter: none !important;
     }
 
-    .study__link {
-        transition: none;
+    .sheet {
+        border: 1px solid #999;
+        box-shadow: none;
     }
 
-    .study__link:hover {
-        translate: none;
-    }
-
-    .btn,
-    .chip {
-        transition: none;
-    }
+    body { background: #fff; color: #111; }
+    a { color: #111; }
 }

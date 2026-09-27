@@ -1,741 +1,736 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-24T00:00:00Z",
-  "title": "Design System: Sky Aluminum",
+  "generatedAt": "2026-09-27T00:00:00Z",
+  "title": "Design System: Legal Tender",
   "world": {
-    "name": "Sky Aluminum",
-    "direction": "SKY ALUMINUM",
-    "seedKey": "d60cb62c",
-    "decidedAt": "2026-09-14",
+    "name": "Legal Tender",
+    "direction": "LEGAL TENDER",
+    "seedKey": "aaa7f143",
+    "decidedAt": "2026-09-27",
     "decision": {
       "answer": "model-pick",
       "buildPath": "code",
-      "declined": "Retrospective roll (numbered wayfinding conflicts with the no-kicker craft floor)"
+      "declined": "The Annual Report roll (Swiss annual report) - beaten on audience identification; its disciplines carried in as craft, not as its look"
     },
     "surfaceBrief": ".impeccable/surfaces/src-cv-web-pages-home-razor.md",
     "sourcesOfRecord": [
       "src/Cv.Web/wwwroot/css/app.css",
-      "src/Cv.Web/Layout/MainLayout.razor",
       "src/Cv.Web/Components/Showcase/Hero.razor",
       "src/Cv.Web/Components/Showcase/Hero.razor.css",
       "src/Cv.Web/Components/Showcase/SkillMatrix.razor.css",
       "src/Cv.Web/Components/Showcase/CareerTimeline.razor.css",
       "src/Cv.Web/Components/Showcase/CaseStudyPanel.razor.css",
       "src/Cv.Web/Components/Showcase/Credentials.razor.css",
+      "src/Cv.Web/Pages/PrintCv.razor.css",
+      "src/Cv.Web/Pages/WwbWriteup.razor.css",
+      "src/Cv.Web/Layout/MainLayout.razor",
       "src/Cv.Web/wwwroot/js/motion.js",
       "src/Cv.Web/wwwroot/index.html",
       "src/Cv.Web/wwwroot/css/print.css",
       "_tools/prerender.py"
     ],
     "dosageRules": [
-      "backdrop-filter (saturate(180%) blur(20px)) is spent ONLY on the header capsule; content sheets are translucent-without-blur at .88-.9 alpha (sub-second first paint + GPU budget)",
-      "Glass is chrome, sheets are solid: pills and chips sitting ON a sheet use --pill-line/--pill-bg (ghost treatment), never --glass-* tokens or blur",
-      "Gold (--gold/--gold-wash) is spent on exactly one subject: the award metric (hero award fact, metric-chips, award tiles, return badge)",
-      "Alarm (--alarm) is spent only on the diagram's blocker node",
-      "One blue accent owns action, links, focus, and the timeline spine; stage hues (--stage-accent/--stage-lead) live only inside the hero diagram stage",
-      "The still-ground rule: nothing behind the content is animated or tinted - one flat neutral ground on html (graphite revision, 2026-09-13, replaced the aurora field)",
-      "Dark tokens are written twice in app.css: the prefers-color-scheme block guarded by :not([data-theme=\"light\"]) AND :root[data-theme=\"dark\"] - change both",
-      "One shared ease-out clock cubic-bezier(.16,1,.3,1) for reveals and hover lifts; reveals animate translate/scale, never transform (reserved for hover lifts)"
+      "No backdrop-filter anywhere: intaglio is flat ink. The inherited --glass-* tokens resolve flat (--glass-bg -> --sheet-solid, --glass-line -> --edge-silver, --glass-highlight: none, --glass-blur: 0px); header band and contact dock are opaque paper",
+      "Bronze (--gold/--gold-wash) is spent on exactly one subject: recognition - award medallions, the award metric chip, the hero award figure. Trajectory badges (Now/Returned) take the accent, never bronze",
+      "One green accent owns action, links, focus, the timeline spine, the engraving fill, and the security-thread progress bar",
+      "The still-ground rule: nothing behind the content is animated or tinted - one flat rag-paper ground on html (dark: the green-black intaglio plate #0d1712, not gray)",
+      "Dark tokens are written twice in app.css: the prefers-color-scheme block guarded by :not([data-theme=\"light\"]) AND :root[data-theme=\"dark\"] - the two blocks must stay byte-identical; change both",
+      "Tokens keep the NAMES of the previous world so scoped component stylesheets resolve unchanged - only values moved (--gold is bronze now; --glass-* are flat); never re-point a glass token at a blur",
+      "Every content plate carries the banknote frame: 1px --sheet-line edge, inner rule inset 7px at 5px radius, and a 2.4px --ink-faint quarter-dot seated on each corner of the inner rule",
+      "Guilloche discipline: engine-turned fills are authored SVG line geometry (counterphased curved interlace over a fine diagonal hatch) with a faint solid underlay so hairline strokes stay inked - lines as structure, never loose ornament",
+      "The No-Kicker Rule stands: nothing above a heading; plate legends and bylines go below the title, in tracked mono",
+      "Motion is additive-only: motion.js adds .js-motion and gates every hidden state; the print-in plays once under .js-motion .hero.is-playing on a proved first look (sessionStorage heroPlayed, scroll threshold, boot deadline); reduced motion restores everything"
     ],
     "bannedPatterns": [
-      "Kickers/eyebrows above headings (craft-floor ban)",
+      "Kickers/eyebrows above headings (craft-floor ban; the No-Kicker Rule stands)",
       "Border-left accent stripes (craft-floor ban)",
-      "Numbered section wayfinding (declined at direction time)",
-      "Stat-card bands (facts are one woven mono line)",
-      "backdrop-filter on any content surface",
-      "Gold outside award content",
+      "backdrop-filter, frosted fills, or any blur on any surface (The No-Blur Rule)",
+      "Bronze on navigation, action, links, badges, or decoration - bronze is recognition-only",
+      "color-mix()-dependent tints without a solid fallback (the user's review browser is an old Edge WebView)",
+      "Invented figures anywhere on the note - serials, counts, and quotes are real and derived only (The Serials Rule)",
       "Unconditional opacity: 0 or any hiding rule not gated behind .js-motion from motion.js",
-      "IntersectionObserver thresholds > 0 (blanks tall sections on phones)",
-      "Visual design on the printed CV - it stays ATS-plain by product rule",
-      "Contact dock or reading-progress bar reaching paper (both hidden in @media print)",
-      "Animated or tinted backdrop layers behind the content (the aurora field was removed 2026-09-13 for reading as generated decor)",
-      "Coloured hover glows - hover response is the neutral --shadow-lift",
+      "Animated or tinted backdrop layers behind the content (the still-ground rule)",
+      "The before/after hero diagram - deleted at the user's word; the payment argument lives in the flagship case study",
+      "Numbered section wayfinding",
+      "Visual design on the printed CV - it stays ATS-plain by product rule; only its on-page chrome wears the world",
+      "Contact dock, header band, back-to-top, or progress bar reaching paper (all dropped in @media print)",
       "The phone number printed as visible text on the showcase - it travels in the contact dock's tel: href only"
     ]
   },
   "extensions": {
     "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Rag Ground / Intaglio Plate",
+        "canonical": "#f3eede",
+        "darkCanonical": "#0d1712",
+        "tonalRamp": [
+          "oklch(15% .012 130)",
+          "oklch(27% .014 120)",
+          "oklch(39% .016 115)",
+          "oklch(51% .018 108)",
+          "oklch(63% .02 100)",
+          "oklch(75% .022 96)",
+          "oklch(85% .022 94)",
+          "oklch(95% .018 92)"
+        ]
+      },
       "ink": {
         "role": "neutral",
-        "displayName": "Ink",
-        "canonical": "#16222e",
-        "darkCanonical": "#eef4fa",
+        "displayName": "Intaglio Ink / Aged Cream",
+        "canonical": "#14261e",
+        "darkCanonical": "#e6dcc2",
         "tonalRamp": [
-          "oklch(15% .006 260)",
-          "oklch(27% .006 260)",
-          "oklch(39% .006 260)",
-          "oklch(51% .006 260)",
-          "oklch(63% .005 260)",
-          "oklch(75% .004 260)",
-          "oklch(85% .003 260)",
-          "oklch(95% .003 260)"
+          "oklch(15% .012 165)",
+          "oklch(27% .012 165)",
+          "oklch(39% .011 165)",
+          "oklch(51% .01 160)",
+          "oklch(63% .01 105)",
+          "oklch(75% .012 100)",
+          "oklch(85% .014 98)",
+          "oklch(93% .016 95)"
         ]
       },
       "ink-soft": {
         "role": "neutral",
         "displayName": "Ink Soft",
-        "canonical": "#44586b",
-        "darkCanonical": "#c2d0de",
+        "canonical": "#3d5347",
+        "darkCanonical": "#c0bda3",
         "tonalRamp": [
-          "oklch(15% .006 260)",
-          "oklch(27% .006 260)",
-          "oklch(39% .006 260)",
-          "oklch(51% .006 260)",
-          "oklch(63% .005 260)",
-          "oklch(75% .004 260)",
-          "oklch(85% .003 260)",
-          "oklch(95% .003 260)"
+          "oklch(15% .012 165)",
+          "oklch(27% .013 165)",
+          "oklch(39% .013 163)",
+          "oklch(51% .012 160)",
+          "oklch(63% .011 110)",
+          "oklch(75% .011 103)",
+          "oklch(85% .012 100)",
+          "oklch(93% .012 97)"
         ]
       },
       "ink-faint": {
         "role": "neutral",
-        "displayName": "Ink Faint",
-        "canonical": "#5c7086",
-        "darkCanonical": "#92a4b6",
+        "displayName": "Ink Faint (also the frame's quarter-dots)",
+        "canonical": "#5d7263",
+        "darkCanonical": "#9a9574",
         "tonalRamp": [
-          "oklch(15% .007 260)",
-          "oklch(27% .007 260)",
-          "oklch(39% .007 260)",
-          "oklch(51% .007 260)",
-          "oklch(63% .006 260)",
-          "oklch(75% .005 260)",
-          "oklch(85% .004 260)",
-          "oklch(95% .004 260)"
+          "oklch(15% .012 165)",
+          "oklch(27% .013 164)",
+          "oklch(39% .014 162)",
+          "oklch(51% .014 158)",
+          "oklch(63% .013 118)",
+          "oklch(75% .012 105)",
+          "oklch(85% .01 100)",
+          "oklch(93% .008 97)"
         ]
       },
-      "paper": {
+      "sheet-solid": {
         "role": "neutral",
-        "displayName": "Glacier Ground / Blue-Slate Ground",
-        "canonical": "#e8f2ff",
-        "darkCanonical": "#0d141d",
+        "displayName": "Plate Face (opaque)",
+        "canonical": "#faf6ea",
+        "darkCanonical": "#122019",
         "tonalRamp": [
-          "oklch(15% .01 260)",
-          "oklch(27% .01 260)",
-          "oklch(39% .009 260)",
-          "oklch(51% .008 260)",
-          "oklch(63% .007 260)",
-          "oklch(75% .006 260)",
-          "oklch(85% .005 260)",
-          "oklch(95% .004 260)"
-        ],
-        "provenance": "exact --finish-iphone18pro glacier token from apple.com/iphone-18-pro CSS, cross-checked against Apple swatch PNG"
+          "oklch(15% .012 165)",
+          "oklch(27% .013 160)",
+          "oklch(39% .014 150)",
+          "oklch(51% .014 130)",
+          "oklch(63% .016 110)",
+          "oklch(75% .018 100)",
+          "oklch(85% .018 96)",
+          "oklch(95% .015 94)"
+        ]
       },
       "sheet-bg": {
         "role": "neutral",
-        "displayName": "Sheet face (composite)",
-        "canonical": "#fdfeff",
-        "darkCanonical": "#192431",
+        "displayName": "Plate Wash (translucent chip fill, no blur)",
+        "canonical": "rgba(255, 252, 242, .92)",
+        "darkCanonical": "rgba(19, 33, 26, .92)",
         "tonalRamp": [
-          "oklch(15% .008 255)",
-          "oklch(27% .008 255)",
-          "oklch(39% .007 255)",
-          "oklch(51% .006 255)",
-          "oklch(63% .005 255)",
-          "oklch(75% .004 255)",
-          "oklch(85% .003 255)",
-          "oklch(95% .002 255)"
+          "oklch(15% .012 165)",
+          "oklch(27% .013 160)",
+          "oklch(39% .014 150)",
+          "oklch(51% .014 130)",
+          "oklch(63% .016 110)",
+          "oklch(75% .018 100)",
+          "oklch(85% .018 96)",
+          "oklch(96% .015 94)"
         ]
       },
       "sheet-line": {
         "role": "neutral",
         "displayName": "Sheet Hairline",
-        "canonical": "rgba(22, 34, 46, .1)",
-        "darkCanonical": "rgba(205, 226, 245, .09)",
+        "canonical": "rgba(20, 38, 30, .2)",
+        "darkCanonical": "rgba(230, 220, 194, .18)",
         "tonalRamp": [
-          "oklch(15% .006 260)",
-          "oklch(27% .006 260)",
-          "oklch(39% .006 260)",
-          "oklch(51% .006 260)",
-          "oklch(63% .005 260)",
-          "oklch(75% .004 260)",
-          "oklch(85% .003 260)",
-          "oklch(95% .003 260)"
+          "oklch(15% .012 165)",
+          "oklch(27% .012 165)",
+          "oklch(39% .011 165)",
+          "oklch(51% .01 160)",
+          "oklch(63% .01 105)",
+          "oklch(75% .012 100)",
+          "oklch(85% .014 98)",
+          "oklch(93% .016 95)"
         ]
       },
       "accent": {
         "role": "primary",
-        "displayName": "Action Blue (link/text)",
-        "canonical": "#0e6398",
-        "darkCanonical": "#8ec7f2",
+        "displayName": "Banknote Green (links, engraving, spine)",
+        "canonical": "#0c5a45",
+        "darkCanonical": "#4ba583",
         "tonalRamp": [
-          "oklch(15% .05 253)",
-          "oklch(27% .08 253)",
-          "oklch(39% .11 253)",
-          "oklch(51% .14 253)",
-          "oklch(63% .15 253)",
-          "oklch(75% .12 253)",
-          "oklch(85% .08 253)",
-          "oklch(95% .04 253)"
+          "oklch(15% .03 168)",
+          "oklch(27% .05 168)",
+          "oklch(39% .07 168)",
+          "oklch(51% .08 168)",
+          "oklch(63% .09 168)",
+          "oklch(75% .08 168)",
+          "oklch(85% .05 168)",
+          "oklch(95% .025 168)"
         ]
       },
       "accent-bright": {
         "role": "primary",
-        "displayName": "Accent Bright - Apple blue (focus ring, spine)",
-        "canonical": "#0071e3",
-        "darkCanonical": "#b0d8f7",
+        "displayName": "Accent Bright (focus ring, hover, spine nodes)",
+        "canonical": "#0a6b52",
+        "darkCanonical": "#63bd97",
         "tonalRamp": [
-          "oklch(15% .05 255)",
-          "oklch(27% .08 255)",
-          "oklch(39% .11 255)",
-          "oklch(51% .14 255)",
-          "oklch(63% .16 255)",
-          "oklch(75% .13 255)",
-          "oklch(85% .08 255)",
-          "oklch(95% .04 255)"
+          "oklch(15% .03 168)",
+          "oklch(27% .05 168)",
+          "oklch(39% .07 168)",
+          "oklch(51% .09 168)",
+          "oklch(63% .1 168)",
+          "oklch(75% .09 168)",
+          "oklch(85% .06 168)",
+          "oklch(95% .03 168)"
         ]
       },
       "accent-wash": {
         "role": "primary",
-        "displayName": "Accent Wash (Apple Sky Blue token)",
-        "canonical": "#e3f1fa",
-        "darkCanonical": "#1d2c3b",
+        "displayName": "Accent Wash (evidenced chips, outcome blocks, plate wash)",
+        "canonical": "#e4e9d6",
+        "darkCanonical": "#182b22",
         "tonalRamp": [
-          "oklch(15% .05 253)",
-          "oklch(27% .08 253)",
-          "oklch(39% .11 253)",
-          "oklch(51% .14 253)",
-          "oklch(63% .15 253)",
-          "oklch(75% .12 253)",
-          "oklch(85% .08 253)",
-          "oklch(95% .04 253)"
+          "oklch(15% .025 168)",
+          "oklch(27% .035 168)",
+          "oklch(39% .045 168)",
+          "oklch(51% .05 168)",
+          "oklch(63% .05 168)",
+          "oklch(75% .045 168)",
+          "oklch(85% .03 168)",
+          "oklch(94% .015 168)"
         ]
       },
       "action-bg": {
         "role": "primary",
-        "displayName": "Action Fill",
-        "canonical": "#0066cc",
-        "darkCanonical": "#0a84ff",
+        "displayName": "Action Fill (the intaglio seal)",
+        "canonical": "#0c5a45",
+        "darkCanonical": "#2e7d5f",
         "tonalRamp": [
-          "oklch(15% .05 253)",
-          "oklch(27% .08 253)",
-          "oklch(39% .11 253)",
-          "oklch(51% .14 253)",
-          "oklch(63% .15 253)",
-          "oklch(75% .12 253)",
-          "oklch(85% .08 253)",
-          "oklch(95% .04 253)"
+          "oklch(15% .03 168)",
+          "oklch(27% .05 168)",
+          "oklch(39% .07 168)",
+          "oklch(51% .08 168)",
+          "oklch(63% .09 168)",
+          "oklch(75% .08 168)",
+          "oklch(85% .05 168)",
+          "oklch(95% .025 168)"
         ]
       },
       "action-bg-hover": {
         "role": "primary",
         "displayName": "Action Fill Hover",
-        "canonical": "#0059b3",
-        "darkCanonical": "#3d9bff",
+        "canonical": "#094a38",
+        "darkCanonical": "#276b50",
         "tonalRamp": [
-          "oklch(15% .05 253)",
-          "oklch(27% .08 253)",
-          "oklch(39% .11 253)",
-          "oklch(51% .14 253)",
-          "oklch(63% .15 253)",
-          "oklch(75% .12 253)",
-          "oklch(85% .08 253)",
-          "oklch(95% .04 253)"
+          "oklch(15% .03 168)",
+          "oklch(27% .05 168)",
+          "oklch(39% .07 168)",
+          "oklch(51% .08 168)",
+          "oklch(63% .09 168)",
+          "oklch(75% .08 168)",
+          "oklch(85% .05 168)",
+          "oklch(95% .025 168)"
         ]
       },
       "action-ink": {
         "role": "primary",
-        "displayName": "Action Ink",
-        "canonical": "#ffffff",
-        "darkCanonical": "#071018",
+        "displayName": "Action Ink (aged cream on green)",
+        "canonical": "#f6f1e2",
+        "darkCanonical": "#f2eede",
         "tonalRamp": [
-          "oklch(15% .01 255)",
-          "oklch(27% .01 255)",
-          "oklch(39% .009 255)",
-          "oklch(51% .008 255)",
-          "oklch(63% .007 255)",
-          "oklch(75% .006 255)",
-          "oklch(85% .005 255)",
-          "oklch(95% .004 255)"
+          "oklch(15% .01 100)",
+          "oklch(27% .012 98)",
+          "oklch(39% .014 96)",
+          "oklch(51% .016 95)",
+          "oklch(63% .018 94)",
+          "oklch(75% .02 93)",
+          "oklch(85% .02 92)",
+          "oklch(96% .018 92)"
         ]
       },
       "gold": {
         "role": "tertiary",
-        "displayName": "Award Gold",
-        "canonical": "#8a6116",
-        "darkCanonical": "#e0b95f",
+        "displayName": "Medal Bronze (recognition only)",
+        "canonical": "#7a4a2b",
+        "darkCanonical": "#c98a4b",
         "tonalRamp": [
-          "oklch(15% .03 80)",
-          "oklch(27% .05 80)",
-          "oklch(39% .06 80)",
-          "oklch(51% .08 80)",
-          "oklch(63% .09 80)",
-          "oklch(75% .09 80)",
-          "oklch(85% .08 80)",
-          "oklch(95% .05 80)"
+          "oklch(15% .03 55)",
+          "oklch(27% .05 55)",
+          "oklch(39% .07 55)",
+          "oklch(51% .08 55)",
+          "oklch(63% .09 55)",
+          "oklch(75% .09 55)",
+          "oklch(85% .08 55)",
+          "oklch(95% .05 55)"
         ]
       },
       "gold-wash": {
         "role": "tertiary",
-        "displayName": "Gold Wash",
-        "canonical": "#fbf3e2",
-        "darkCanonical": "#2c2413",
+        "displayName": "Bronze Wash (medallion face)",
+        "canonical": "#f0e4d2",
+        "darkCanonical": "#292117",
         "tonalRamp": [
-          "oklch(15% .03 80)",
-          "oklch(27% .05 80)",
-          "oklch(39% .06 80)",
-          "oklch(51% .08 80)",
-          "oklch(63% .09 80)",
-          "oklch(75% .09 80)",
-          "oklch(85% .08 80)",
-          "oklch(95% .05 80)"
+          "oklch(15% .03 70)",
+          "oklch(27% .04 68)",
+          "oklch(39% .05 65)",
+          "oklch(51% .055 62)",
+          "oklch(63% .055 60)",
+          "oklch(75% .05 58)",
+          "oklch(85% .04 57)",
+          "oklch(95% .025 55)"
         ]
       },
       "alarm": {
         "role": "tertiary",
-        "displayName": "Blocker Alarm",
-        "canonical": "#b0432c",
+        "displayName": "Alarm (reserved; currently unconsumed reserve)",
+        "canonical": "#a03d28",
         "darkCanonical": "#e5806a",
         "tonalRamp": [
           "oklch(15% .04 35)",
-          "oklch(27% .07 35)",
-          "oklch(39% .10 35)",
-          "oklch(51% .12 35)",
-          "oklch(63% .13 35)",
-          "oklch(75% .11 35)",
+          "oklch(27% .06 35)",
+          "oklch(39% .08 35)",
+          "oklch(51% .1 35)",
+          "oklch(63% .11 35)",
+          "oklch(75% .1 35)",
           "oklch(85% .07 35)",
           "oklch(95% .04 35)"
         ]
       },
       "alarm-wash": {
         "role": "tertiary",
-        "displayName": "Alarm Wash",
-        "canonical": "#fbeae6",
+        "displayName": "Alarm Wash (reserved)",
+        "canonical": "#f2e3dc",
         "darkCanonical": "#2c1a15",
         "tonalRamp": [
           "oklch(15% .04 35)",
-          "oklch(27% .07 35)",
-          "oklch(39% .10 35)",
-          "oklch(51% .12 35)",
-          "oklch(63% .13 35)",
-          "oklch(75% .11 35)",
+          "oklch(27% .06 35)",
+          "oklch(39% .08 35)",
+          "oklch(51% .1 35)",
+          "oklch(63% .11 35)",
+          "oklch(75% .1 35)",
           "oklch(85% .07 35)",
-          "oklch(95% .04 35)"
-        ]
-      },
-      "stage-lead": {
-        "role": "secondary",
-        "displayName": "Stage Lead (sky)",
-        "canonical": "#7fc4ff",
-        "darkCanonical": "#7fc4ff",
-        "tonalRamp": [
-          "oklch(15% .03 210)",
-          "oklch(27% .05 210)",
-          "oklch(39% .06 210)",
-          "oklch(51% .08 210)",
-          "oklch(63% .09 210)",
-          "oklch(75% .10 210)",
-          "oklch(85% .08 210)",
-          "oklch(95% .04 210)"
-        ]
-      },
-      "dock-bg": {
-        "role": "neutral",
-        "displayName": "Dock frosted fill",
-        "canonical": "rgba(255, 255, 255, .6)",
-        "darkCanonical": "rgba(20, 29, 40, .6)",
-        "tonalRamp": [
-          "oklch(15% .008 255)",
-          "oklch(27% .008 255)",
-          "oklch(39% .007 255)",
-          "oklch(51% .006 255)",
-          "oklch(63% .005 255)",
-          "oklch(75% .004 255)",
-          "oklch(85% .003 255)",
-          "oklch(95% .002 255)"
-        ]
-      },
-      "glass-bg": {
-        "role": "neutral",
-        "displayName": "Glass Fill",
-        "canonical": "rgba(255, 255, 255, .58)",
-        "darkCanonical": "rgba(17, 25, 35, .55)",
-        "tonalRamp": [
-          "oklch(15% .01 255)",
-          "oklch(27% .01 255)",
-          "oklch(39% .009 255)",
-          "oklch(51% .008 255)",
-          "oklch(63% .007 255)",
-          "oklch(75% .006 255)",
-          "oklch(85% .005 255)",
-          "oklch(95% .004 255)"
-        ]
-      },
-      "glass-line": {
-        "role": "neutral",
-        "displayName": "Glass Edge",
-        "canonical": "rgba(255, 255, 255, .75)",
-        "darkCanonical": "rgba(160, 185, 210, .3)",
-        "tonalRamp": [
-          "oklch(15% .006 255)",
-          "oklch(27% .006 255)",
-          "oklch(39% .006 255)",
-          "oklch(51% .006 255)",
-          "oklch(63% .005 255)",
-          "oklch(75% .004 255)",
-          "oklch(85% .003 255)",
-          "oklch(95% .003 255)"
-        ]
-      },
-      "pill-line": {
-        "role": "neutral",
-        "displayName": "Ghost Pill Edge",
-        "canonical": "rgba(22, 34, 46, .24)",
-        "darkCanonical": "rgba(205, 226, 245, .18)",
-        "tonalRamp": [
-          "oklch(15% .006 260)",
-          "oklch(27% .006 260)",
-          "oklch(39% .006 260)",
-          "oklch(51% .006 260)",
-          "oklch(63% .005 260)",
-          "oklch(75% .004 260)",
-          "oklch(85% .003 260)",
-          "oklch(95% .003 260)"
-        ]
-      },
-      "pill-bg": {
-        "role": "neutral",
-        "displayName": "Ghost Pill Fill",
-        "canonical": "rgba(255, 255, 255, .7)",
-        "darkCanonical": "rgba(205, 226, 245, .06)",
-        "tonalRamp": [
-          "oklch(15% .008 255)",
-          "oklch(27% .008 255)",
-          "oklch(39% .007 255)",
-          "oklch(51% .006 255)",
-          "oklch(63% .005 255)",
-          "oklch(75% .004 255)",
-          "oklch(85% .003 255)",
-          "oklch(95% .002 255)"
-        ]
-      },
-      "line": {
-        "role": "neutral",
-        "displayName": "Hairline",
-        "canonical": "rgba(22, 34, 46, .12)",
-        "darkCanonical": "rgba(205, 226, 245, .11)",
-        "tonalRamp": [
-          "oklch(15% .006 260)",
-          "oklch(27% .006 260)",
-          "oklch(39% .006 260)",
-          "oklch(51% .006 260)",
-          "oklch(63% .005 260)",
-          "oklch(75% .004 260)",
-          "oklch(85% .003 260)",
-          "oklch(95% .003 260)"
+          "oklch(95% .03 35)"
         ]
       },
       "stage-legacy": {
         "role": "secondary",
-        "displayName": "Stage Legacy (steel)",
-        "canonical": "#9aa8b6",
-        "darkCanonical": "#8496a8"
+        "displayName": "Stage Legacy (diagram-fallback reserve)",
+        "canonical": "#5d7263",
+        "darkCanonical": "#9a9574"
       },
-      "edge-metal": {
+      "stage-lead": {
+        "role": "secondary",
+        "displayName": "Stage Lead (diagram-fallback reserve)",
+        "canonical": "#0a6b52",
+        "darkCanonical": "#63bd97"
+      },
+      "line": {
         "role": "neutral",
-        "displayName": "Anodized Edge (gradient)",
-        "canonical": "linear-gradient(135deg, #ffffff, #b9c6d3 38%, #8ea1b2 52%, #c9d5e0 78%, #eef3f8)",
-        "darkCanonical": "linear-gradient(135deg, #3a4a5c, #1a2531 38%, #93a7bb 52%, #26333f 78%, #3c4d60)",
+        "displayName": "Hairline (inner rules, dashed separators)",
+        "canonical": "rgba(20, 38, 30, .16)",
+        "darkCanonical": "rgba(230, 220, 194, .15)",
         "tonalRamp": [
-          "oklch(15% .01 250)",
-          "oklch(27% .01 250)",
-          "oklch(39% .01 250)",
-          "oklch(51% .009 250)",
-          "oklch(63% .008 250)",
-          "oklch(75% .007 250)",
-          "oklch(85% .006 250)",
-          "oklch(95% .005 250)"
+          "oklch(15% .012 165)",
+          "oklch(27% .012 165)",
+          "oklch(39% .011 165)",
+          "oklch(51% .01 160)",
+          "oklch(63% .01 105)",
+          "oklch(75% .012 100)",
+          "oklch(85% .014 98)",
+          "oklch(93% .016 95)"
+        ]
+      },
+      "wash": {
+        "role": "neutral",
+        "displayName": "Wash (canvas and code-block fill)",
+        "canonical": "rgba(20, 38, 30, .05)",
+        "darkCanonical": "rgba(230, 220, 194, .06)",
+        "tonalRamp": [
+          "oklch(15% .012 165)",
+          "oklch(27% .012 165)",
+          "oklch(39% .011 165)",
+          "oklch(51% .01 160)",
+          "oklch(63% .01 105)",
+          "oklch(75% .012 100)",
+          "oklch(85% .014 98)",
+          "oklch(93% .016 95)"
         ]
       },
       "edge-silver": {
         "role": "neutral",
-        "displayName": "Edge Silver (single-tone)",
-        "canonical": "#b3c1ce",
-        "darkCanonical": "#55677a",
+        "displayName": "Aged-Brass Hairline (fixed chrome, ghosts, switch)",
+        "canonical": "#b8ab8c",
+        "darkCanonical": "#56685a",
         "tonalRamp": [
-          "oklch(15% .008 250)",
-          "oklch(27% .008 250)",
-          "oklch(39% .007 250)",
-          "oklch(51% .006 250)",
-          "oklch(63% .005 250)",
-          "oklch(75% .004 250)",
-          "oklch(85% .003 250)",
-          "oklch(95% .002 250)"
+          "oklch(15% .012 130)",
+          "oklch(27% .014 120)",
+          "oklch(39% .016 112)",
+          "oklch(51% .018 105)",
+          "oklch(63% .02 98)",
+          "oklch(75% .02 94)",
+          "oklch(85% .018 92)",
+          "oklch(93% .015 90)"
         ]
       },
-      "edge-metal-light": "linear-gradient(135deg, #ffffff, #b9c6d3 38%, #8ea1b2 52%, #c9d5e0 78%, #eef3f8)",
-      "edge-metal-dark": "linear-gradient(135deg, #3a4a5c, #1a2531 38%, #93a7bb 52%, #26333f 78%, #3c4d60)"
+      "edge-metal": {
+        "role": "neutral",
+        "displayName": "Edge Metal (collapsed to the brass hairline; no gradient metal)",
+        "canonical": "#b8ab8c",
+        "darkCanonical": "#56685a"
+      },
+      "glass-bg": {
+        "role": "neutral",
+        "displayName": "Glass Fill (resolves FLAT to --sheet-solid; no blur)",
+        "canonical": "#faf6ea",
+        "darkCanonical": "#122019",
+        "tonalRamp": [
+          "oklch(15% .012 165)",
+          "oklch(27% .013 160)",
+          "oklch(39% .014 150)",
+          "oklch(51% .014 130)",
+          "oklch(63% .016 110)",
+          "oklch(75% .018 100)",
+          "oklch(85% .018 96)",
+          "oklch(95% .015 94)"
+        ]
+      },
+      "glass-line": {
+        "role": "neutral",
+        "displayName": "Glass Edge (resolves to --edge-silver)",
+        "canonical": "#b8ab8c",
+        "darkCanonical": "#56685a",
+        "tonalRamp": [
+          "oklch(15% .012 130)",
+          "oklch(27% .014 120)",
+          "oklch(39% .016 112)",
+          "oklch(51% .018 105)",
+          "oklch(63% .02 98)",
+          "oklch(75% .02 94)",
+          "oklch(85% .018 92)",
+          "oklch(93% .015 90)"
+        ]
+      },
+      "dock-bg": {
+        "role": "neutral",
+        "displayName": "Dock Fill (opaque plate face; no blur)",
+        "canonical": "#faf6ea",
+        "darkCanonical": "#122019",
+        "tonalRamp": [
+          "oklch(15% .012 165)",
+          "oklch(27% .013 160)",
+          "oklch(39% .014 150)",
+          "oklch(51% .014 130)",
+          "oklch(63% .016 110)",
+          "oklch(75% .018 100)",
+          "oklch(85% .018 96)",
+          "oklch(95% .015 94)"
+        ]
+      }
     },
     "typographyMeta": {
       "display": {
-        "displayName": "Display",
-        "purpose": "Hero headline only; each line in its own clipping box for the one-time unmask."
+        "displayName": "Denomination Display",
+        "purpose": "Bodoni Moda hero headline only - four clipped lines, one italic green accent line."
       },
       "headline": {
-        "displayName": "Headline",
-        "purpose": "Sheet section titles."
+        "displayName": "Plate Title",
+        "purpose": "Bodoni Moda sheet titles, each under its double rule."
       },
       "title": {
-        "displayName": "Title",
-        "purpose": "Case-study page titles."
+        "displayName": "Case Title",
+        "purpose": "Spectral case-study and write-up headings."
       },
       "body": {
-        "displayName": "Body",
-        "purpose": "All prose, capped at the 68ch measure."
+        "displayName": "Document Body",
+        "purpose": "Spectral prose, capped at the 66ch measure."
+      },
+      "meta": {
+        "displayName": "Registry Mono",
+        "purpose": "Fragment Mono serials, facts, and attributions; carries all numerals with tabular-nums."
       },
       "label": {
-        "displayName": "Mono Label",
-        "purpose": "Geist Mono uppercase labels, data, and the hero facts line; carries all numerals with tabular-nums."
+        "displayName": "Tracked Caps Label",
+        "purpose": "Fragment Mono uppercase labels, nav links, and dock actions at 0.1-0.12em tracking."
       }
     },
     "shadows": [
       {
         "name": "shadow-sheet",
-        "value": "0 1px 2px rgba(30,45,65,.05), 0 12px 32px rgba(30,45,65,.08), 0 32px 80px rgba(30,45,65,.08)",
-        "darkValue": "0 1px 2px rgba(0,0,0,.5), 0 12px 32px rgba(0,0,0,.38), 0 32px 80px rgba(0,0,0,.32)",
-        "purpose": "Every content sheet: contact step, mid lift, wide blue-cast atmosphere."
+        "value": "0 1px 2px rgba(20,38,30,.05), 0 14px 36px rgba(20,38,30,.09)",
+        "darkValue": "0 1px 2px rgba(0,0,0,.3), 0 16px 40px rgba(0,0,0,.35)",
+        "purpose": "Every content plate: one crisp contact step, one wide paper lift. Two steps, never three."
       },
       {
         "name": "shadow-float",
-        "value": "0 2px 6px rgba(30,45,65,.08), 0 12px 28px rgba(30,45,65,.12)",
-        "darkValue": "0 2px 6px rgba(0,0,0,.45), 0 12px 28px rgba(0,0,0,.4)",
-        "purpose": "Header capsule, the diagram stage, and the contact dock."
-      },
-      {
-        "name": "glass-highlight",
-        "value": "inset 0 1px 0 rgba(255,255,255,.5)",
-        "darkValue": "inset 0 1px 0 rgba(214,232,247,.1)",
-        "purpose": "Inner top edge that says real glass; glass chrome only."
+        "value": "0 2px 6px rgba(20,38,30,.08), 0 12px 26px rgba(20,38,30,.13)",
+        "darkValue": "0 2px 6px rgba(0,0,0,.35), 0 12px 28px rgba(0,0,0,.4)",
+        "purpose": "Header band chrome, the contact dock, back-to-top, and the primary seal at rest."
       },
       {
         "name": "shadow-lift",
-        "value": "0 10px 24px rgba(30,45,65,.14)",
-        "darkValue": "0 10px 24px rgba(0,0,0,.55)",
-        "purpose": "The neutral hover response under buttons, chips, and study links; never coloured, never at rest."
+        "value": "0 8px 20px rgba(20,38,30,.15)",
+        "darkValue": "0 8px 20px rgba(0,0,0,.45)",
+        "purpose": "The single hover response under buttons, chips, and back-to-top; never coloured, never at rest."
+      },
+      {
+        "name": "plate-inner-ring",
+        "value": "inset 0 0 0 4px var(--sheet-solid), inset 0 0 0 5px var(--sheet-line)",
+        "purpose": "Inset double ring on the denomination plate; the medallion uses the same device in bronze (3px sheet-solid, 4px gold)."
       }
     ],
     "motion": [
       {
-        "name": "ease-clock",
-        "value": "cubic-bezier(.16, 1, .3, 1)",
-        "purpose": "The shared ease-out clock: reveals (.7s), stagger (.55s, 50ms/item), button and chip translate (.2-.22s)."
+        "name": "print-in",
+        "value": "denomination-print 1s cubic-bezier(.16, 1, .3, 1) both; from opacity 0 + clip-path inset(6% 2%)",
+        "purpose": "The plate press: the denomination prints in one damped pass, once, only under .js-motion .hero.is-playing."
       },
       {
-        "name": "hero-ease-rise",
-        "value": "cubic-bezier(.2, .7, .3, 1)",
-        "purpose": "Hero sequence rise-in beats."
+        "name": "legend-settle",
+        "value": "legend-settle .7s cubic-bezier(.22, .8, .3, 1) both; rise 8px; delays 0/.18s/.3s/.42s",
+        "purpose": "The plate legend settles a beat behind the numeral."
       },
       {
-        "name": "hero-ease-line",
-        "value": "cubic-bezier(.16, .84, .28, 1)",
-        "purpose": "Headline line unmask."
+        "name": "reveal-clock",
+        "value": ".6s cubic-bezier(.22, .8, .3, 1), rise 10px, delay calc(var(--i, 0) * 55ms)",
+        "purpose": "Sections settle in from visible; every hiding rule gated behind .js-motion from motion.js."
       },
       {
-        "name": "reveal-property-rule",
-        "value": "translate / scale, never transform",
-        "purpose": "transform is reserved for hover lifts so the individual properties compose with it."
+        "name": "draw-y",
+        "value": ".85s cubic-bezier(.3, .7, .3, 1), delay calc(var(--i, 0) * 130ms + 120ms)",
+        "purpose": "The accent spine draws down the timeline rail entry by entry; without the script it is simply already drawn."
+      },
+      {
+        "name": "pulse-node",
+        "value": "2.6s ease-in-out infinite; box-shadow ring in the accent at 40%",
+        "purpose": "Only the current role's node keeps moving - the one entry still in progress; off under reduced motion."
+      },
+      {
+        "name": "security-thread",
+        "value": "animation-timeline: scroll(); 2px solid var(--accent); scaleX 0->1",
+        "purpose": "Reading progress with no script and no markup; @supports guarded; hidden in print."
+      },
+      {
+        "name": "theme-transitions",
+        "value": "View Transitions ~250ms cross-dissolve where supported; WAAPI theme-pulse 620ms from the switch; atomic swap under reduced motion",
+        "purpose": "Theme swap never repaints per-frame; the pulse is transform + opacity on one short-lived layer outside #app."
       },
       {
         "name": "hero-guard",
-        "value": "sessionStorage heroPlayed=1; scrollY > 40; performance.now() > 1500ms boot deadline - any one skips and the hero is never armed",
-        "purpose": "Motion never replays over a reader; a skipped visitor gets the static hero, never armed-but-invisible."
-      },
-      {
-        "name": "progress-bar",
-        "value": "animation-timeline: scroll(), 2px solid accent",
-        "purpose": "Reading progress with no script and no markup; @supports guarded; hidden in print."
+        "value": "sessionStorage heroPlayed=1; scroll threshold; boot deadline - any miss means the hero is never armed",
+        "purpose": "The print never replays over a reader; a skipped visitor gets the fully printed static note, never armed-but-invisible."
       },
       {
         "name": "still-ground",
         "value": "nothing behind the content animates or is tinted",
-        "purpose": "The graphite revision's central decision: all movement lives inside the content, all depth on the slabs."
+        "purpose": "All movement lives inside the content; all depth on the plates."
       }
     ],
     "breakpoints": [
       {
+        "name": "xs",
+        "value": "430px",
+        "purpose": "Nav strip tightens (0.5rem padding, 0.64rem labels) so every link, CV last, stays inside the mask."
+      },
+      {
         "name": "sm",
-        "value": "640px",
-        "purpose": "Testimonials grid to one column."
+        "value": "720px",
+        "purpose": "Header band wraps to two rows (--header-band 3.4rem -> 6rem, scroll margin 7rem); dock centres; main grows a 7rem bottom pad; hero takes a 4.6rem dock clear zone."
       },
       {
         "name": "md",
-        "value": "720px",
-        "purpose": "Header capsule wraps to two rows (radius 24px); scroll-margin-top 92px -> 112px."
+        "value": "900px",
+        "purpose": "Hero grid stacks; denomination plate centres at 240px; headline steps down."
       },
       {
         "name": "lg",
-        "value": "900px",
-        "purpose": "Hero grid stacks; diagram body to one column, bridge rotates horizontal."
-      },
-      {
-        "name": "xl",
         "value": "940px",
-        "purpose": "Timeline gains the 10.5rem right-aligned period column."
+        "purpose": "Timeline gains the 10.5rem right-aligned period column; certifications balance into two columns."
       }
     ],
     "material": {
-      "glass-blur": "saturate(180%) blur(20px) - capsule + dock only",
-      "edge-technique": "1px transparent border + solid face in padding-box over the gradient in border-box; gradient borders keep their radius this way",
-      "stage": "linear-gradient(180deg, #101a26, #0a0f16) plus one quiet sky wash; dark blue-charcoal in both themes; --stage-legacy silver-steel marks the legacy estate, --stage-lead sky marks what replaced it",
-      "iconStroke": "1.6"
+      "glass-tokens": "resolve FLAT: --glass-bg -> var(--sheet-solid), --glass-line -> var(--edge-silver), --glass-highlight: none, --glass-blur: 0px, --dock-bg -> var(--sheet-solid) - kept as names so scoped stylesheets resolve; never re-point at a blur",
+      "frame-technique": "sheet::before draws the inner rule (inset 7px, radius 5px); sheet::after seats four 2.4px --ink-faint quarter-dots on its corners via radial-gradients; plate titles and the header band close with double rules (1px border + 1px inset 3px away)",
+      "guilloche": "authored SVG patterns: engine-turn 12x7 tile of two counterphased sine waves (stroke 1, opacity .9/.55) + engine-turn-fine 3x3 tile rotated -45deg (stroke .7, opacity .45), over a solid accent underlay at 17% opacity; strokes use var(--accent) so the engraving re-inks with the theme",
+      "iconStroke": "1.6",
+      "knob-metal": "aged brass light #f8f3e6->#d9cdb0; green-black dark #35473b->#1b2a21; travel by transform (old-WebView review browser)"
     }
   },
   "components": [
     {
-      "name": "Primary Button",
+      "name": "Primary Seal Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Blue capsule action; hover lifts 1px and takes the neutral shadow lift.",
+      "description": "The intaglio seal: green capsule with an inset cream ring; hover deepens and lifts 1px.",
       "html": "<a class=\"ds-btn-primary\" href=\"#\">Read the CV</a>",
-      "css": ".ds-btn-primary { display:inline-flex; align-items:center; justify-content:center; gap:.45rem; min-height:44px; padding:.6rem 1.35rem; border-radius:999px; border:1px solid transparent; font:inherit; font-size:.95rem; font-weight:600; text-decoration:none; cursor:pointer; background:var(--action-bg,#0066cc); color:var(--action-ink,#ffffff); transition: translate .22s cubic-bezier(.16,1,.3,1), box-shadow .22s ease, background-color .22s ease; } .ds-btn-primary:hover { background:var(--action-bg-hover,#0059b3); translate:0 -1px; box-shadow:var(--shadow-lift,0 10px 24px rgba(16,24,40,.14)); } .ds-btn-primary:active { translate:0 0; } .ds-btn-primary:focus-visible { outline:2px solid var(--accent-bright,#0071e3); outline-offset:3px; border-radius:4px; }"
+      "css": ".ds-btn-primary { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; min-height:2.75rem; padding:.55rem 1.3rem; border-radius:999px; border:1px solid var(--action-bg,#0c5a45); font-family:var(--font-mono,'Fragment Mono',ui-monospace,monospace); font-size:.78rem; letter-spacing:.07em; text-transform:uppercase; text-decoration:none; cursor:pointer; background:var(--action-bg,#0c5a45); color:var(--action-ink,#f6f1e2); box-shadow: inset 0 0 0 1px rgba(246,241,226,.32), 0 2px 6px rgba(20,38,30,.08), 0 12px 26px rgba(20,38,30,.13); transition: transform .18s ease, box-shadow .18s ease, background .18s ease; } .ds-btn-primary:hover { background:var(--action-bg-hover,#094a38); transform:translateY(-1px); box-shadow: inset 0 0 0 1px rgba(246,241,226,.32), 0 8px 20px rgba(20,38,30,.15); } .ds-btn-primary:active { transform:none; } .ds-btn-primary:focus-visible { outline:2px solid var(--accent-bright,#0a6b52); outline-offset:3px; border-radius:2px; }"
     },
     {
-      "name": "Ghost Pill Button",
+      "name": "Ruled Ghost Button",
       "kind": "button",
       "refersTo": "button-ghost",
-      "description": "On-sheet ghost capsule: pill tokens, no blur; hover takes the accent.",
-      "html": "<a class=\"ds-btn-ghost\" href=\"#\">Selected work</a>",
-      "css": ".ds-btn-ghost { display:inline-flex; align-items:center; justify-content:center; gap:.45rem; min-height:44px; padding:.6rem 1.35rem; border-radius:999px; font:inherit; font-size:.95rem; font-weight:600; text-decoration:none; cursor:pointer; border:1px solid var(--pill-line,rgba(0,0,0,.24)); background:var(--pill-bg,rgba(255,255,255,.7)); color:var(--ink,#1d1d1f); transition: translate .22s cubic-bezier(.16,1,.3,1), border-color .22s ease, color .22s ease; } .ds-btn-ghost:hover { border-color:var(--accent,#0066cc); color:var(--accent,#0066cc); } .ds-btn-ghost:focus-visible { outline:2px solid var(--accent-bright,#0071e3); outline-offset:3px; border-radius:4px; }"
+      "description": "Paper capsule with the aged-brass rule; hover takes the accent border and text.",
+      "html": "<a class=\"ds-btn-ghost\" href=\"#\">Download CV (PDF)</a>",
+      "css": ".ds-btn-ghost { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; min-height:2.75rem; padding:.55rem 1.3rem; border-radius:999px; border:1px solid var(--edge-silver,#b8ab8c); font-family:var(--font-mono,'Fragment Mono',ui-monospace,monospace); font-size:.78rem; letter-spacing:.07em; text-transform:uppercase; text-decoration:none; cursor:pointer; background:var(--sheet-solid,#faf6ea); color:var(--ink,#14261e); transition: transform .18s ease, box-shadow .18s ease, color .18s ease, border-color .18s ease; } .ds-btn-ghost:hover { color:var(--accent,#0c5a45); border-color:var(--accent,#0c5a45); transform:translateY(-1px); box-shadow:0 8px 20px rgba(20,38,30,.15); } .ds-btn-ghost:active { transform:none; } .ds-btn-ghost:focus-visible { outline:2px solid var(--accent-bright,#0a6b52); outline-offset:3px; border-radius:2px; }"
     },
     {
-      "name": "Glass Header Capsule",
+      "name": "Header Band",
       "kind": "nav",
       "refersTo": "header-capsule",
-      "description": "The one true glass: floating capsule with backdrop-filter, deepening when content scrolls beneath (add the is-scrolled class).",
-      "html": "<div class=\"ds-capsule\"><a class=\"ds-capsule__name\" href=\"#\">Bahaa Aldeen Mohamed</a><nav class=\"ds-capsule__nav\"><a href=\"#\">Skills</a><a href=\"#\">Experience</a><a href=\"#\">Work</a><a href=\"#\">CV</a></nav></div>",
-      "css": ".ds-capsule { display:flex; align-items:center; justify-content:flex-start; gap:.75rem; min-height:56px; padding:.35rem .4rem .35rem 1.1rem; border-radius:999px; background:var(--glass-bg,rgba(255,255,255,.58)); border:1px solid var(--glass-line,rgba(255,255,255,.65)); box-shadow:var(--shadow-float,0 2px 6px rgba(16,24,40,.08),0 12px 28px rgba(16,24,40,.12)), var(--glass-highlight,inset 0 1px 0 rgba(255,255,255,.45)); backdrop-filter:var(--glass-blur,saturate(180%) blur(20px)); -webkit-backdrop-filter:var(--glass-blur,saturate(180%) blur(20px)); transition: background-color .35s ease, box-shadow .35s ease; } .ds-capsule.is-scrolled { background:color-mix(in srgb, var(--glass-bg,rgba(255,255,255,.58)) 72%, var(--paper,#f5f5f7)); } .ds-capsule__name { font-weight:600; font-size:.98rem; letter-spacing:-.01em; color:var(--ink,#1d1d1f); text-decoration:none; white-space:nowrap; } .ds-capsule__nav { display:flex; gap:.15rem; align-items:center; flex-wrap:wrap; margin-inline-start:auto; } .ds-capsule__nav a { display:inline-flex; align-items:center; min-height:44px; padding:0 .85rem; border-radius:999px; color:var(--ink-soft,#424245); text-decoration:none; font-size:.92rem; transition: color .2s ease, background-color .2s ease; } .ds-capsule__nav a:hover { color:var(--ink,#1d1d1f); background:color-mix(in srgb, var(--ink,#1d1d1f) 7%, transparent); }"
+      "description": "Opaque paper band under a double rule: Bodoni wordmark, tracked-mono-caps nav, current section as the green seal. Mirrored byte-for-byte by prerender.py's static_shell_header.",
+      "html": "<header class=\"ds-band\"><div class=\"ds-band__in\"><a class=\"ds-band__name\" href=\"#\">Bahaa Aldeen Mohamed</a><nav class=\"ds-band__nav\"><a href=\"#\">Skills</a><a href=\"#\">Experience</a><a href=\"#\">Work</a><a class=\"ds-band__current\" href=\"#\">CV</a></nav></div></header>",
+      "css": ".ds-band { position:sticky; top:0; background:var(--paper,#f3eede); border-bottom:1px solid var(--line,rgba(20,38,30,.16)); box-shadow: inset 0 -4px 0 -3px var(--line,rgba(20,38,30,.16)); } .ds-band__in { display:flex; flex-wrap:nowrap; align-items:center; gap:.3rem .9rem; min-height:3.4rem; padding-block:.3rem; max-width:1120px; margin-inline:auto; } .ds-band__name { font-family:var(--font-display,'Bodoni Moda',Didot,serif); font-weight:600; font-size:1.08rem; letter-spacing:.015em; color:var(--ink,#14261e); text-decoration:none; margin-right:auto; white-space:nowrap; } .ds-band__nav { display:flex; gap:.1rem; } .ds-band__nav a { display:inline-flex; align-items:center; min-height:2.25rem; padding:0 .8rem; border-radius:999px; color:var(--ink-soft,#3d5347); font-family:var(--font-mono,'Fragment Mono',ui-monospace,monospace); font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; text-decoration:none; white-space:nowrap; } .ds-band__nav a:hover { color:var(--ink,#14261e); background:rgba(20,38,30,.08); } .ds-band__nav a.ds-band__current { color:var(--action-ink,#f6f1e2); background:var(--action-bg,#0c5a45); }"
     },
     {
-      "name": "Theme Toggle",
+      "name": "Medallion Theme Switch",
       "kind": "custom",
       "refersTo": "theme-toggle",
-      "description": "iOS-style theme switch: 46x26 track in a 44px hit area, polished-aluminum knob (transform-based travel for old-WebView support) carrying the sun/moon glyph in pure CSS state. Tap toggles; drag past midpoint switches via el.click() so Blazor aria stays in sync; a WAAPI ripple (.theme-pulse) previews the other theme's ground inside-out with the drag, pulses out on commit, retreats on spring-back; View Transitions cross-dissolve where supported. Reduced motion: instant swap, no pulse.",
-      "html": "<button type=\"button\" class=\"ds-theme-toggle\" role=\"switch\" aria-checked=\"false\" aria-label=\"Switch theme\"><span class=\"ds-theme-toggle__track\"><span class=\"ds-theme-toggle__knob\"><svg class=\"ds-icon-sun\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"4\"></circle><path d=\"M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41\"></path></svg><svg class=\"ds-icon-moon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z\"></path></svg></span></span></button>",
-      "css": ".ds-theme-toggle { display:inline-flex; align-items:center; justify-content:center; min-width:44px; min-height:44px; padding:0; background:transparent; border:none; cursor:pointer; touch-action:none; } .ds-theme-toggle__track { position:relative; display:block; width:46px; height:26px; border-radius:999px; background:color-mix(in srgb, var(--ink,#16222e) 12%, transparent); border:1px solid var(--line,rgba(22,34,46,.12)); box-shadow:inset 0 1px 3px rgba(10,18,28,.16); transition:background-color .25s ease; } .ds-theme-toggle:hover .ds-theme-toggle__track { background:color-mix(in srgb, var(--ink,#16222e) 20%, transparent); } .ds-theme-toggle__knob { position:absolute; top:2px; left:2px; display:grid; place-items:center; width:20px; height:20px; border-radius:50%; background:linear-gradient(145deg, #ffffff, #d9e3ec); border:1px solid rgba(255,255,255,.65); box-shadow:0 1px 3px rgba(15,28,42,.35); color:var(--ink-soft,#44586b); translate:0 0; transition:translate .18s cubic-bezier(.3,.7,.4,1), background .25s ease; } .ds-theme-toggle.is-dragging .ds-theme-toggle__knob { transition:none; } .ds-theme-toggle__knob svg { width:12px; height:12px; } .ds-theme-toggle .ds-icon-sun { display:block; } .ds-theme-toggle .ds-icon-moon { display:none; } .ds-theme-toggle.ds-dark .ds-theme-toggle__knob { translate:22px 0; background:linear-gradient(145deg, #c7d5e2, #8fa3b5); } .ds-theme-toggle.ds-dark .ds-icon-sun { display:none; } .ds-theme-toggle.ds-dark .ds-icon-moon { display:block; }"
+      "description": "46x26 track in a 44px hit area; aged-brass knob travelling by transform (old-WebView safe), sun/moon glyph as pure CSS state. Tap toggles; drag past midpoint commits; reduced motion swaps instantly.",
+      "html": "<button type=\"button\" class=\"ds-switch\" role=\"switch\" aria-checked=\"false\" aria-label=\"Switch theme\"><span class=\"ds-switch__track\"><span class=\"ds-switch__knob\"><svg class=\"ds-sun\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"4\"></circle><path d=\"M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41\"></path></svg><svg class=\"ds-moon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z\"></path></svg></span></span></button>",
+      "css": ".ds-switch { display:inline-flex; align-items:center; justify-content:center; width:2.75rem; height:2.75rem; padding:0; background:transparent; border:0; border-radius:999px; cursor:pointer; } .ds-switch__track { position:relative; display:block; width:46px; height:26px; border-radius:999px; background:rgba(20,38,30,.14); border:1px solid var(--edge-silver,#b8ab8c); box-shadow:inset 0 1px 3px rgba(20,38,30,.12); transition:background .22s ease; } .ds-switch__knob { position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:999px; background:linear-gradient(160deg,#f8f3e6,#d9cdb0); border:1px solid var(--edge-silver,#b8ab8c); transform:translateX(0); transition:transform .22s cubic-bezier(.3,.9,.3,1); display:flex; align-items:center; justify-content:center; color:#5d5236; } .ds-switch__knob svg { width:12px; height:12px; } .ds-switch .ds-moon { display:none; } .ds-switch.ds-dark .ds-switch__track { background:rgba(230,220,194,.16); } .ds-switch.ds-dark .ds-switch__knob { transform:translateX(20px); background:linear-gradient(160deg,#35473b,#1b2a21); } .ds-switch.ds-dark .ds-sun { display:none; } .ds-switch.ds-dark .ds-moon { display:block; color:var(--accent-bright,#63bd97); }"
     },
     {
       "name": "Skill Chip",
       "kind": "chip",
       "refersTo": "chip",
-      "description": "Scannable skill pill; the employer backing it sits in mono. Hover lifts and takes the accent border.",
+      "description": "Cited seal pill; the employer backing sits in mono. Hover lifts and takes the accent border.",
       "html": "<span class=\"ds-chip\">ASP.NET Core <span class=\"ds-chip__where\">PS Digital</span></span>",
-      "css": ".ds-chip { display:inline-flex; align-items:baseline; gap:.4rem; max-width:100%; min-height:32px; padding:.3rem .85rem; border:1px solid var(--sheet-line,rgba(0,0,0,.08)); border-radius:999px; background:color-mix(in srgb, var(--sheet-bg,rgba(255,255,255,.9)) 80%, transparent); color:var(--ink-soft,#424245); font-size:.88rem; transition: translate .2s cubic-bezier(.16,1,.3,1), border-color .2s ease, box-shadow .2s ease, color .2s ease; } .ds-chip:hover { translate:0 -1px; border-color:var(--accent,#0066cc); box-shadow:var(--shadow-lift,0 10px 24px rgba(16,24,40,.14)); color:var(--ink,#1d1d1f); } .ds-chip__where { font-family:var(--font-mono,\"Geist Mono\",ui-monospace,monospace); font-size:.72rem; font-weight:400; color:var(--ink-faint,#56575b); }"
+      "css": ".ds-chip { display:inline-flex; align-items:baseline; gap:.45rem; max-width:100%; padding:.28rem .8rem; border:1px solid var(--sheet-line,rgba(20,38,30,.2)); border-radius:999px; background:var(--sheet-bg,rgba(255,252,242,.92)); color:var(--ink-soft,#3d5347); font-size:.88rem; transition: transform .16s ease, border-color .16s ease, color .16s ease, box-shadow .16s ease; } .ds-chip:hover { transform:translateY(-1px); border-color:var(--accent,#0c5a45); color:var(--ink,#14261e); box-shadow:0 8px 20px rgba(20,38,30,.15); } .ds-chip__where { font-family:var(--font-mono,'Fragment Mono',ui-monospace,monospace); font-size:.62rem; letter-spacing:.04em; color:var(--ink-faint,#5d7263); }"
     },
     {
       "name": "Evidenced Chip",
       "kind": "chip",
       "refersTo": "chip-evidenced",
-      "description": "An evidenced skill outranks an unevidenced one: ink weight, accent wash, accent-mixed border.",
+      "description": "An evidenced skill outranks an unevidenced one: ink weight 600, accent wash, accent border.",
       "html": "<span class=\"ds-chip-evidenced\">Clean Architecture <span class=\"ds-chip-evidenced__where\">Andalusia</span></span>",
-      "css": ".ds-chip-evidenced { display:inline-flex; align-items:baseline; gap:.4rem; min-height:32px; padding:.3rem .85rem; border-radius:999px; font-size:.88rem; color:var(--ink,#1d1d1f); font-weight:600; border:1px solid color-mix(in srgb, var(--accent,#0066cc) 38%, var(--sheet-line,rgba(0,0,0,.08))); background:var(--accent-wash,#e8f1fb); } .ds-chip-evidenced__where { font-family:var(--font-mono,\"Geist Mono\",ui-monospace,monospace); font-size:.72rem; font-weight:400; color:var(--ink-faint,#56575b); }"
+      "css": ".ds-chip-evidenced { display:inline-flex; align-items:baseline; gap:.45rem; padding:.28rem .8rem; border-radius:999px; border:1px solid var(--accent,#0c5a45); background:var(--accent-wash,#e4e9d6); color:var(--ink,#14261e); font-weight:600; font-size:.88rem; } .ds-chip-evidenced__where { font-family:var(--font-mono,'Fragment Mono',ui-monospace,monospace); font-size:.62rem; letter-spacing:.04em; font-weight:400; color:var(--ink-faint,#5d7263); }"
     },
     {
-      "name": "Award Metric Chip",
+      "name": "Bronze Metric Chip",
       "kind": "chip",
       "refersTo": "metric-chip",
-      "description": "The page's only gold: the squared 8px chip marking an award-earning metric.",
+      "description": "The page's only warm mark: the squared 3px registry stamp carrying an award-earning metric.",
       "html": "<span class=\"ds-metric-chip\">Company award &times;2</span>",
-      "css": ".ds-metric-chip { display:inline-block; padding:.12rem .55rem; border-radius:8px; background:var(--gold-wash,#fbf3e2); color:var(--gold,#8a6116); font-weight:700; font-size:.85rem; }"
+      "css": ".ds-metric-chip { display:inline-block; margin-left:.4rem; padding:.08rem .5rem; border-radius:3px; background:var(--gold-wash,#f0e4d2); color:var(--gold,#7a4a2b); border:1px solid var(--gold,#7a4a2b); font-family:var(--font-mono,'Fragment Mono',ui-monospace,monospace); font-size:.7rem; font-variant-numeric:tabular-nums; white-space:nowrap; }"
     },
     {
-      "name": "Content Sheet",
+      "name": "Content Plate",
       "kind": "card",
       "refersTo": null,
-      "description": "The content slab: translucent without blur, 16px radius, three-stage shadow. All dense text lives on one of these.",
-      "html": "<div class=\"ds-sheet\"><h2 class=\"ds-sheet__title\">Sheet title</h2><p class=\"ds-sheet__lede\">Dense content floats as one rounded slab over the aurora field.</p></div>",
-      "css": ".ds-sheet { padding:clamp(2rem, 1.2rem + 3vw, 3.75rem) clamp(1.25rem, 3.5vw, 3.25rem); background:var(--sheet-bg,rgba(255,255,255,.9)); border:1px solid var(--sheet-line,rgba(0,0,0,.08)); border-radius:16px; box-shadow:var(--shadow-sheet,0 1px 2px rgba(16,24,40,.05),0 12px 32px rgba(16,24,40,.08),0 32px 80px rgba(10,80,160,.07)); } .ds-sheet__title { margin:0 0 .6rem; font-weight:600; font-size:clamp(1.85rem,1.15rem + 2.6vw,2.9rem); letter-spacing:-.028em; line-height:1.18; color:var(--ink,#1d1d1f); } .ds-sheet__lede { margin:0; max-width:68ch; font-size:1.05rem; line-height:1.6; color:var(--ink-soft,#424245); }"
+      "description": "The content slab: solid plate face, banknote frame (inner rule inset 7px + four corner quarter-dots), two-step paper-lift shadow. All dense text lives on one of these.",
+      "html": "<section class=\"ds-plate\"><h2 class=\"ds-plate__title\">Plate title</h2><p class=\"ds-plate__lede\">Solid paper face, double-rule title, corner quarter-dots.</p></section>",
+      "css": ".ds-plate { position:relative; max-width:1120px; margin:1.6rem auto 0; padding:clamp(1.8rem,1.2rem + 3vw,3.4rem) clamp(1.3rem,3.5vw,3rem); background:var(--sheet-solid,#faf6ea); border:1px solid var(--sheet-line,rgba(20,38,30,.2)); border-radius:10px; box-shadow:0 1px 2px rgba(20,38,30,.05), 0 14px 36px rgba(20,38,30,.09); } .ds-plate::before { content:\"\"; position:absolute; inset:7px; border:1px solid var(--line,rgba(20,38,30,.16)); border-radius:5px; pointer-events:none; } .ds-plate::after { content:\"\"; position:absolute; inset:7px; border-radius:5px; pointer-events:none; background-image: radial-gradient(circle at 0 0, var(--ink-faint,#5d7263) 0 2.4px, transparent 3px), radial-gradient(circle at 100% 0, var(--ink-faint,#5d7263) 0 2.4px, transparent 3px), radial-gradient(circle at 0 100%, var(--ink-faint,#5d7263) 0 2.4px, transparent 3px), radial-gradient(circle at 100% 100%, var(--ink-faint,#5d7263) 0 2.4px, transparent 3px); } .ds-plate__title { margin:0; padding-top:1.1rem; border-top:1px solid var(--line,rgba(20,38,30,.16)); position:relative; font-family:var(--font-display,'Bodoni Moda',Didot,serif); font-size:clamp(1.65rem,1.1rem + 2.3vw,2.55rem); font-weight:600; letter-spacing:-.01em; line-height:1.08; color:var(--ink,#14261e); } .ds-plate__title::before { content:\"\"; position:absolute; top:3px; left:0; right:0; border-top:1px solid var(--line,rgba(20,38,30,.16)); } .ds-plate__lede { margin:.85rem 0 0; max-width:66ch; color:var(--ink-soft,#3d5347); font-size:1.02rem; line-height:1.62; }"
     },
     {
-      "name": "Testimonial Tile",
-      "kind": "card",
-      "refersTo": "testimonial-tile",
-      "description": "Solid quote tile - content, not chrome, so no blur rides under it. The quote mark is tall quiet punctuation in accent.",
-      "html": "<figure class=\"ds-testimonial\"><blockquote class=\"ds-testimonial__quote\"><p>Quote text.</p></blockquote><figcaption class=\"ds-testimonial__by\"><span class=\"ds-testimonial__avatar\" aria-hidden=\"true\">BM</span><span class=\"ds-testimonial__who\"><span class=\"ds-testimonial__name\">Name</span><span class=\"ds-testimonial__meta\">Colleague</span></span></figcaption></figure>",
-      "css": ".ds-testimonial { margin:0; padding:1.5rem 1.5rem 1.25rem; background:color-mix(in srgb, var(--sheet-bg,rgba(255,255,255,.9)) 70%, var(--paper,#f5f5f7)); border:1px solid var(--sheet-line,rgba(0,0,0,.08)); border-radius:12px; } .ds-testimonial__quote { margin:0 0 1.1rem; } .ds-testimonial__quote p { margin:0; color:var(--ink,#1d1d1f); line-height:1.65; font-size:.98rem; } .ds-testimonial__quote p::before { content:\"\\201C\"; display:block; font-family:var(--font-display,\"Geist\",sans-serif); font-size:2rem; line-height:.6; color:var(--accent,#0066cc); margin:.4rem 0 .7rem; } .ds-testimonial__by { display:flex; align-items:center; gap:.75rem; } .ds-testimonial__avatar { flex:none; display:grid; place-items:center; width:2.6rem; height:2.6rem; border-radius:50%; background:var(--accent-wash,#e8f1fb); color:var(--accent,#0066cc); font-weight:600; font-size:.9rem; letter-spacing:.04em; } .ds-testimonial__who { display:grid; gap:.1rem; } .ds-testimonial__name { font-weight:600; color:var(--ink,#1d1d1f); } .ds-testimonial__meta { color:var(--ink-faint,#56575b); font-size:.86rem; }"
-    },
-    {
-      "name": "Diagram Stage",
+      "name": "The Denomination",
       "kind": "custom",
       "refersTo": null,
-      "description": "The signature recessed keynote stage: dark in both themes, one quiet teal wash, colours local to the stage (--stage-accent, --stage-lead). Before panel borders alarm, after panel and lead node border stage teal; the bridge line performs the transformation.",
-      "html": "<div class=\"ds-stage\"><p class=\"ds-stage__label\">The decision, in one diagram</p><div class=\"ds-stage__body\"><div class=\"ds-stage__panel ds-stage__panel--before\"><span class=\"ds-node\">Service</span><span class=\"ds-node ds-node--blocker\">Distributed Transaction Coordinator</span></div><span class=\"ds-bridge\" aria-hidden=\"true\"></span><div class=\"ds-stage__panel ds-stage__panel--after\"><span class=\"ds-node ds-node--lead\">Orchestrator</span><span class=\"ds-node\">Service &middot; modernized</span></div></div></div>",
-      "css": ".ds-stage { padding:1.4rem 1.5rem 1.6rem; border:1px solid color-mix(in srgb, var(--stage-accent,#0a84ff) 26%, rgba(255,255,255,.1)); border-radius:14px; background:radial-gradient(120% 90% at 80% -10%, rgba(90,200,216,.10), transparent 60%), linear-gradient(180deg, #131a26, #0d1016); box-shadow:inset 0 1px 0 rgba(255,255,255,.07), var(--shadow-float,0 2px 6px rgba(16,24,40,.08),0 12px 28px rgba(16,24,40,.12)); } .ds-stage__label { margin:0 0 1.1rem; font-family:var(--font-mono,\"Geist Mono\",ui-monospace,monospace); font-size:.78rem; color:rgba(226,234,244,.6); } .ds-stage__body { display:grid; grid-template-columns:1fr 2.25rem 1fr; gap:.85rem; align-items:stretch; } .ds-stage__panel { display:flex; flex-direction:column; gap:.4rem; padding:.9rem .8rem; border:1px solid rgba(255,255,255,.12); border-radius:10px; background:rgba(255,255,255,.045); } .ds-stage__panel--before { border-color:color-mix(in srgb, var(--alarm,#b0432c) 42%, rgba(255,255,255,.12)); } .ds-stage__panel--after { border-color:color-mix(in srgb, var(--stage-lead,#5ac8d8) 46%, rgba(255,255,255,.12)); } .ds-node { padding:.42rem .55rem; border:1px solid rgba(255,255,255,.14); border-radius:6px; font-size:.72rem; color:rgba(226,234,244,.82); text-align:center; } .ds-node--blocker { border-style:dashed; border-color:color-mix(in srgb, var(--alarm,#b0432c) 65%, rgba(255,255,255,.12)); color:#f4a08d; background:color-mix(in srgb, var(--alarm,#b0432c) 16%, transparent); } .ds-node--lead { border-color:var(--stage-lead,#5ac8d8); color:var(--stage-lead,#5ac8d8); font-weight:600; } .ds-bridge { width:2px; justify-self:center; align-self:stretch; background:linear-gradient(180deg, var(--stage-accent,#0a84ff), var(--stage-lead,#5ac8d8)); border-radius:999px; }"
+      "description": "The signature: a Bodoni \"9\" at banknote scale, engine-turned with counterphased curved interlace over a fine hatch and a solid underlay, serialled with real figures. The print-in plays once, guarded.",
+      "html": "<figure class=\"ds-denomination\" role=\"img\" aria-label=\"The numeral 9, engraved at banknote scale\"><svg class=\"ds-denomination__print\" viewBox=\"0 0 220 260\" aria-hidden=\"true\"><defs><pattern id=\"ds-engine-turn\" width=\"12\" height=\"7\" patternUnits=\"userSpaceOnUse\"><path d=\"M0 3.5 C 2 0.5, 4 0.5, 6 3.5 S 10 6.5, 12 3.5\" fill=\"none\" stroke=\"#0c5a45\" stroke-width=\"1\" opacity=\"0.9\"></path><path d=\"M0 3.5 C 2 6.5, 4 6.5, 6 3.5 S 10 0.5, 12 3.5\" fill=\"none\" stroke=\"#0c5a45\" stroke-width=\"1\" opacity=\"0.55\"></path></pattern><pattern id=\"ds-engine-turn-fine\" width=\"3\" height=\"3\" patternUnits=\"userSpaceOnUse\" patternTransform=\"rotate(-45)\"><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"3\" stroke=\"#0c5a45\" stroke-width=\"0.7\" opacity=\"0.45\"></line></pattern></defs><text x=\"110\" y=\"212\" text-anchor=\"middle\" font-family=\"Bodoni Moda, Didot, serif\" font-size=\"250\" font-weight=\"600\" fill=\"#0c5a45\" opacity=\"0.17\">9</text><text x=\"110\" y=\"212\" text-anchor=\"middle\" font-family=\"Bodoni Moda, Didot, serif\" font-size=\"250\" font-weight=\"600\" fill=\"url(#ds-engine-turn)\">9</text><text x=\"110\" y=\"212\" text-anchor=\"middle\" font-family=\"Bodoni Moda, Didot, serif\" font-size=\"250\" font-weight=\"600\" fill=\"url(#ds-engine-turn-fine)\">9</text></svg><figcaption class=\"ds-denomination__serials\"><span>PLATE NO. 9 &middot; 7 &middot; 491</span><span>9 MARKETS &middot; 7 GATEWAYS &middot; 491 TESTS</span><span>ALEXANDRIA &middot; EET &middot; BUILT ALONE</span></figcaption></figure>",
+      "css": ".ds-denomination { margin:0; padding:clamp(.9rem,2vw,1.4rem); border:1px solid var(--sheet-line,rgba(20,38,30,.2)); border-radius:8px; box-shadow: inset 0 0 0 4px var(--sheet-solid,#faf6ea), inset 0 0 0 5px var(--sheet-line,rgba(20,38,30,.2)); background: radial-gradient(120% 90% at 30% 15%, var(--accent-wash,#e4e9d6), transparent 60%), var(--sheet-solid,#faf6ea); max-width:260px; } .ds-denomination__print { width:100%; height:auto; display:block; } .ds-denomination__serials { display:flex; flex-direction:column; gap:.18rem; margin-top:.7rem; padding-top:.6rem; border-top:1px solid var(--line,rgba(20,38,30,.16)); font-family:var(--font-mono,'Fragment Mono',ui-monospace,monospace); font-size:.56rem; letter-spacing:.14em; color:var(--ink-faint,#5d7263); text-align:center; font-variant-numeric:tabular-nums; }"
+    },
+    {
+      "name": "Award Medallion",
+      "kind": "card",
+      "refersTo": "award-tile",
+      "description": "Bronze struck as a medallion: wash face, bronze border, inner ring in plate face; Bodoni bronze title.",
+      "html": "<div class=\"ds-medallion\"><h3 class=\"ds-medallion__title\">Employee of the Year</h3><p class=\"ds-medallion__issuer\">AWARDED 2024</p><p class=\"ds-medallion__detail\">For the payment middleware built end to end.</p></div>",
+      "css": ".ds-medallion { padding:1.1rem 1.2rem; background:var(--gold-wash,#f0e4d2); border:1px solid var(--gold,#7a4a2b); box-shadow: inset 0 0 0 3px var(--sheet-solid,#faf6ea), inset 0 0 0 4px var(--gold,#7a4a2b); border-radius:8px; } .ds-medallion__title { margin:0; font-family:var(--font-display,'Bodoni Moda',Didot,serif); font-size:1.08rem; color:var(--gold,#7a4a2b); } .ds-medallion__issuer { margin:.25rem 0 0; font-family:var(--font-mono,'Fragment Mono',ui-monospace,monospace); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint,#5d7263); } .ds-medallion__detail { margin:.5rem 0 0; color:var(--ink-soft,#3d5347); font-size:.92rem; line-height:1.55; }"
     },
     {
       "name": "Contact Dock",
       "kind": "nav",
       "refersTo": "contact-dock",
-      "description": "One frosted capsule fixed to the viewport's foot: Call and Email as plain anchors (tel:/mailto:), no script, present in the prerendered shell and the Blazor render. True glass (dock-bg + blur) with a single-tone silver rim; the page's second and last blur; hidden in print.",
-      "html": "<nav class=\"ds-dock\" aria-label=\"Contact\"><a class=\"ds-dock__action\" href=\"tel:+201055553796\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z\"></path></svg><span>Call</span></a><a class=\"ds-dock__action\" href=\"mailto:BahaaMohamed37@gmail.com\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\"></rect><path d=\"m22 6-10 7L2 6\"></path></svg><span>Email</span></a></nav>",
-      "css": ".ds-dock { position:fixed; bottom:calc(.9rem + env(safe-area-inset-bottom,0px)); right:.9rem; z-index:40; display:flex; gap:.3rem; margin:0; padding:.3rem; background:var(--dock-bg,rgba(255,255,255,.6)); border:1px solid var(--edge-silver,#b3c1ce); border-radius:999px; box-shadow:var(--shadow-float,0 2px 6px rgba(30,45,65,.08),0 12px 28px rgba(30,45,65,.12)), var(--glass-highlight,inset 0 1px 0 rgba(255,255,255,.5)); backdrop-filter:var(--glass-blur,saturate(180%) blur(20px)); -webkit-backdrop-filter:var(--glass-blur,saturate(180%) blur(20px)); } @media (max-width:720px){ .ds-dock { left:.9rem; right:.9rem; justify-content:center; } } .ds-dock__action { display:inline-flex; align-items:center; gap:.4rem; min-height:44px; padding:0 1rem; border-radius:999px; color:var(--ink-soft,#424245); text-decoration:none; font-size:.92rem; font-weight:600; transition:color .2s ease, background-color .2s ease; } .ds-dock__action svg { width:17px; height:17px; } .ds-dock__action:hover { color:var(--accent,#0066cc); background:color-mix(in srgb, var(--ink,#1d1d1f) 7%, transparent); }"
+      "description": "The seal strip: one opaque capsule fixed to the viewport's foot - Call and Email as plain anchors (tel:/mailto:), mono caps, brass rim, no blur. Mirrored by prerender.py's static_contact_dock; hidden in print.",
+      "html": "<nav class=\"ds-dock\" aria-label=\"Contact\"><a class=\"ds-dock__action\" href=\"tel:+201055553796\"><span>Call</span></a><a class=\"ds-dock__action\" href=\"mailto:BahaaMohamed37@gmail.com\"><span>Email</span></a></nav>",
+      "css": ".ds-dock { position:fixed; right:max(1rem, env(safe-area-inset-right)); bottom:calc(.9rem + env(safe-area-inset-bottom)); z-index:40; display:flex; gap:.3rem; padding:.3rem; background:var(--sheet-solid,#faf6ea); border:1px solid var(--edge-silver,#b8ab8c); border-radius:999px; box-shadow:0 2px 6px rgba(20,38,30,.08), 0 12px 26px rgba(20,38,30,.13); } @media (max-width:720px){ .ds-dock { right:50%; transform:translateX(50%); } } .ds-dock__action { display:inline-flex; align-items:center; justify-content:center; gap:.4rem; min-height:2.75rem; min-width:2.75rem; padding:0 .9rem; border-radius:999px; color:var(--ink-soft,#3d5347); text-decoration:none; font-family:var(--font-mono,'Fragment Mono',ui-monospace,monospace); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; transition:color .18s ease, background .18s ease; } .ds-dock__action:hover { color:var(--accent,#0c5a45); background:rgba(20,38,30,.08); }"
     }
   ],
   "narrative": {
-    "northStar": "Sky Aluminum",
-    "overview": "The site behaves like a native Apple app: frosted glass chrome and anodized-silver metal edges over solid content sheets on one still Sky Aluminum ground (silvery blue-paper light, blue-slate night, Apple's action blue - the user's own proposal after three re-tints, 2026-09-13). The dosage law: glass is chrome - exactly two fixed blurs, capsule and dock; sheets are solid. First paint stays under a second - a product rule, not a preference. Motion is one orchestrated system on a shared ease-out clock: sections settle in as sheets, items stagger at 50ms per index, and the hero plays a single sequence - only for qualifying visits. Hiding is additive-only, gated behind .js-motion added by motion.js and nowhere else.",
+    "northStar": "Legal Tender",
+    "overview": "The portfolio as an engraved banknote - the solo-built payment gateway earns the denomination. The hero is a note face: a Bodoni 9 at banknote scale filled with engine-turned line geometry, serialled with real figures (9 markets, 7 gateways, 491 tests), beside the legend lettering and the plate legend BUILT ALONE - END TO END. Content floats as a plate series on rag paper: every sheet carries the banknote border - an outer edge, an inner rule inset 7px, a machined quarter-dot on each corner. The dosage law: intaglio is flat ink - no backdrop-filter anywhere; the inherited --glass-* tokens resolve to flat paper, a hairline, 0px, and none. One accent (banknote green) owns action, links, focus, and the engraving; bronze marks recognition only. Direction chosen on the impeccable decision page 2026-09-27 (answer: model-pick, seed key aaa7f143), replacing the Sky Aluminum world; the hero before/after diagram was deleted at the user's word and its argument lives in the flagship case study.",
     "keyCharacteristics": [
-      "Still ground: one flat surface on html (silvery blue-paper light, blue-slate night) - nothing layered, nothing animated behind the content.",
-      "Anodized-silver gradient edges frame every sheet; the header capsule and contact dock are the only true glass (two fixed matchbox blurs); gold metal is awards-only.",
-      "One blue accent for action, links, and focus; gold spent on exactly one subject (awards); alarm red only for the diagram's blocker; stage hues only inside the stage.",
-      "Geist + Geist Mono; negative tracking on every heading; mono carries all data and labels.",
-      "Capsule radii (999px) for all interactive chrome; hairlines, not boxes, separate content inside a sheet.",
-      "Reduced motion restores every hidden state; the printed CV sits outside this system entirely (ATS-plain by product rule)."
+      "Still rag-paper ground (dark: the green-black intaglio plate, not gray) - nothing layered, nothing animated behind the content.",
+      "Plate frames everywhere: double-rule title beats, inner rules inset 7px, corner quarter-dots; the header is an opaque paper band under a double rule, not a floating capsule.",
+      "One green accent for action, links, focus, the spine, and the engraving; bronze spent on recognition only (medallions, award chips, the award figure); no blur anywhere.",
+      "Bodoni Moda for the engraved didone voice, Spectral for document prose, Fragment Mono for serials and every figure in tabular numerals.",
+      "Squared 3px registry stamps (badges, metric chips, stack tags) against full pills on all interactive chrome.",
+      "Motion is the plate press: the denomination prints once on a proved first look; sections settle from visible; hiding is additive-only behind .js-motion; the printed CV stays ATS-plain outside the system."
     ],
     "rules": [
       {
-        "name": "The Gold Is Singular Rule",
-        "body": "Gold is spent on exactly one subject — the award metric — and nowhere else. Its rarity is what makes the award land.",
+        "name": "The Twice-Written Rule",
+        "body": "Dark tokens are written twice in app.css — the guarded prefers-color-scheme block and the [data-theme=\"dark\"] rule, byte-identical. Any token change is made in both places, always.",
         "section": "colors"
       },
       {
-        "name": "The Twice-Written Rule",
-        "body": "Dark tokens are written twice in app.css — the guarded prefers-color-scheme block and the [data-theme=\"dark\"] rule. Any token change is made in both places, always.",
+        "name": "The Bronze Is Recognition-Only Rule",
+        "body": "Bronze (--gold) is spent on exactly one subject — recognition: medallions, award metric chips, the award figure. Its rarity is what makes the medal land. Trajectory markers (\"Now\", \"Returned\") take the accent, never bronze.",
         "section": "colors"
       },
       {
         "name": "The No-Kicker Rule",
-        "body": "Nothing sits above a heading — no kickers, no eyebrows, no numbered wayfinding. A section opens with its heading; attribution goes below it, in mono, in Ink Faint.",
+        "body": "Nothing sits above a heading — no kickers, no eyebrows, no numbered wayfinding. A plate opens with its title; the plate legend and bylines go below it, in tracked mono.",
         "section": "typography"
       },
       {
-        "name": "The Two-Row Capsule Rule",
-        "body": "At 720px the capsule wraps to two rows inside one capsule (~98px tall, compacted 2026-09-13 from ~118px); the mobile scroll-margin-top is 112px because of it. If the capsule is ever compacted or expanded, that 112px must move with it — the two are one decision.",
+        "name": "The Serials Rule",
+        "body": "Every figure on the note is real and derived, never typed. A banknote with a made-up serial is counterfeit.",
+        "section": "typography"
+      },
+      {
+        "name": "The Dock Clear-Zone Rule",
+        "body": "On a phone the note face's first viewport is never masked by the seal strip: the hero carries 4.6rem of bottom clear zone, main carries 7rem, and the dock stays hidden behind .js-motion until first movement; no-JS and reduced-motion visitors always have the dock.",
         "section": "layout"
       },
       {
-        "name": "The Chrome-Only Blur Rule",
-        "body": "backdrop-filter (saturate(180%) blur(20px)) is spent exclusively on the header capsule. Content sheets are translucent without blur — render cost for nothing behind a .9-alpha sheet.",
-        "section": "elevation"
-      },
-      {
-        "name": "The Scrolled-Depth Rule",
-        "body": "The capsule's glass deepens once content passes underneath (.is-scrolled at scrollY > 8) — state, not motion, so it runs regardless of reduced-motion.",
+        "name": "The No-Blur Rule",
+        "body": "No backdrop-filter on any surface, ever — intaglio is flat ink on paper. The inherited --glass-* tokens resolve flat (--glass-bg to --sheet-solid, --glass-line to --edge-silver, --glass-highlight none, --glass-blur 0px). Any new surface asking for glass gets paper instead.",
         "section": "elevation"
       },
       {
         "name": "The Still-Ground Rule",
-        "body": "Nothing behind the content animates or carries tint — one flat neutral ground on html. All movement lives inside the content; all depth lives on the slabs.",
+        "body": "Nothing behind the content animates or carries tint — one flat rag-paper ground on html. All movement lives inside the content; all depth lives on the plates.",
         "section": "elevation"
       }
     ],
     "dos": [
-      "Do write any dark token change in both places — the guarded prefers-color-scheme block and the [data-theme=\"dark\"] rule (The Twice-Written Rule).",
-      "Do gate every hiding rule behind .js-motion from motion.js, and restore every hidden state in the reduced-motion blocks.",
-      "Do keep backdrop-filter on chrome only; sheets stay translucent-without-blur at .88–.9 alpha.",
-      "Do keep gold on awards only, and the alarm on the diagram's blocker only.",
-      "Do keep 44px tap targets, the 68ch measure, and the 112px mobile scroll-margin in step with the two-row capsule.",
-      "Do keep the prerendered <div class=\"prerendered\"> a direct child of #app, and mirror any header or contact-dock change in prerender.py (static_shell_header / static_contact_dock) byte-for-byte.",
-      "Do carry final values in markup for anything a script counts or reveals — the static layer is the contract.",
+      "Do write any dark token change in both places — the guarded prefers-color-scheme block and the [data-theme=\"dark\"] rule, byte-identical (The Twice-Written Rule).",
+      "Do keep bronze on recognition only — medallions, award metric chips, the award figure; \"Now\"/\"Returned\" badges take the accent (The Bronze Is Recognition-Only Rule).",
+      "Do keep every surface opaque: fixed chrome is paper under a brass hairline; --glass-* stays resolved flat; if a style asks for blur, it is a bug (The No-Blur Rule).",
+      "Do frame new content plates with the banknote border — inner rule inset 7px plus the corner quarter-dots — and put plate titles under a double rule.",
+      "Do gate every hiding rule behind .js-motion from motion.js, restore every hidden state in the reduced-motion and print blocks, and arm the print-in only through the proved first-look guard.",
+      "Do keep the prerendered <div class=\"prerendered\"> a direct child of #app, mirror header/dock changes in prerender.py (static_shell_header / static_contact_dock), and carry final values in markup for anything a script counts.",
+      "Do keep 44px tap floors on buttons, dock actions, and the toggle; keep figures in Fragment Mono with tabular-nums, real and derived only.",
       "Do verify both themes at 390×844 and desktop width before calling anything done."
     ],
     "donts": [
-      "Don't put kickers or eyebrows above headings, and don't add border-left accent stripes — both are below the craft floor (The No-Kicker Rule).",
-      "Don't build a stat-card band; the facts are one mono line woven into the hero.",
-      "Don't blur content, and don't put anything animated or tinted behind the content - the ground is one flat, still surface (the still-ground rule; the aurora field was removed 2026-09-13 for reading as generated decor).",
-      "Don't give the hero sequence to a visitor who scrolled, has seen it this session, or waited past the 1500ms boot deadline — and never arm without a proved restore path.",
-      "Don't raise the reveal IntersectionObserver threshold above 0 — a height-ratio threshold blanks tall sections on phones.",
-      "Don't print the design: the contact dock and progress bar are hidden in print, below-fold reveals are force-restored, and the printed CV (/cv document, print.css, EmptyLayout) stays deliberately ATS-plain outside this system by product rule.",
-      "Don't adopt numbered section wayfinding — the \"Retrospective\" discipline was declined at direction time; section numbers conflict with the No-Kicker Rule.",
-      "Don't print the phone number as visible text on the showcase - it travels in the contact dock's tel: href only (anti-scrape posture, 2026-09-13)."
+      "Don't put kickers or eyebrows above headings, and don't add border-left accent stripes — both stay below the craft floor (The No-Kicker Rule stands in this world).",
+      "Don't use backdrop-filter, frosted fills, or color-mix()-dependent tints without a solid fallback — the review browser is an old Edge WebView, and this world is flat ink by doctrine.",
+      "Don't put anything animated or tinted behind the content — the ground is one flat, still surface (the still-ground rule).",
+      "Don't spend bronze on navigation, action, links, badges, or decoration — and don't spend the accent's green on recognition; each metal has one subject.",
+      "Don't invent a figure: no fabricated serials, no invented quotes (testimonials render only from real, attributed submissions), no un-derived numbers on the note.",
+      "Don't rebuild the before/after diagram — it was deleted at the user's word; the payment argument lives in the flagship case study.",
+      "Don't print the design: header band, dock, back-to-top, and cv-actions drop out in print, below-fold reveals force-restore, and the printed CV stays deliberately ATS-plain outside this system — only its on-page chrome wears the world.",
+      "Don't print the phone number as visible text on the showcase — it travels in the dock's tel: href only."
     ]
   }
 }

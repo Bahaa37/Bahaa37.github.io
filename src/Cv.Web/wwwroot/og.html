@@ -20,37 +20,50 @@
             flex-direction: column;
             justify-content: center;
             padding: 0 76px;
-            font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
-            color: #16222e;
-            /* The site's anodized-aluminum day ground, composed once for the 1200x630
-               frame: silvery blue with one soft sky light. A light card among dark
-               ones is what stands out in a feed. */
+            font-family: "Spectral", Georgia, serif;
+            color: #14261e;
+            /* The Legal Tender note face: rag paper with one soft vignette, and
+               the engine-turned line field ghosting under the name. */
             background:
-                radial-gradient(64% 74% at 8% -12%, #edf8ff 0%, transparent 62%),
-                linear-gradient(135deg, #f2f8fe 0%, #e8f2ff 55%, #dbf1ff 100%);
+                radial-gradient(90% 120% at 20% 0%, #faf6ea 0%, transparent 55%),
+                #f3eede;
             overflow: hidden;
+            position: relative;
+        }
+
+        /* The engine-turned border of the note — fine diagonal engraving. */
+        body::before {
+            content: "";
+            position: absolute;
+            inset: 18px;
+            border: 2px solid #b8ab8c;
+            outline: 1px solid #b8ab8c;
+            outline-offset: 5px;
+            pointer-events: none;
         }
 
         .location {
             font-size: 19px;
-            font-weight: 700;
+            font-weight: 600;
             letter-spacing: .18em;
             text-transform: uppercase;
-            color: #5c7086;
+            color: #5d7263;
+            font-family: "Fragment Mono", Consolas, monospace;
         }
 
         h1 {
             margin-top: 16px;
+            font-family: "Bodoni Moda", Didot, serif;
             font-size: 78px;
             line-height: 1.02;
-            letter-spacing: -.03em;
+            letter-spacing: -.01em;
         }
 
         .role {
             margin-top: 16px;
-            font-size: 28px;
+            font-size: 27px;
             font-weight: 600;
-            color: #0e6398;
+            color: #0c5a45;
         }
 
         .rule {
@@ -58,7 +71,7 @@
             height: 4px;
             margin: 30px 0;
             border-radius: 2px;
-            background: linear-gradient(90deg, #8ea1b2, #c9d5e0 55%, #8ea1b2);
+            background: #0c5a45;
         }
 
         .facts {
@@ -68,26 +81,22 @@
 
         .fact__label {
             font-size: 14px;
-            font-weight: 700;
+            font-weight: 600;
             letter-spacing: .14em;
             text-transform: uppercase;
-            /* Held past 4.5:1 against the darkest patch AND the worst case of a glow
-               centre composited over the ground — the previous value failed AA and the
-               design detector kept catching it. */
-            color: #44586b;
+            color: #5d7263;
+            font-family: "Fragment Mono", Consolas, monospace;
         }
 
         .fact__value {
             margin-top: 6px;
             font-size: 27px;
-            font-weight: 700;
+            font-weight: 600;
             letter-spacing: -.01em;
         }
 
-        /* The LIGHT-theme award gold (#8a6116, canonical from design.json). The dark
-           variant #e0b95f sits here at 1.6:1 against the sky ground — a detector
-           finding that was real inside this card. */
-        .fact--gold .fact__value { color: #8a6116; }
+        /* The bronze medallion metal — recognition only. */
+        .fact--gold .fact__value { color: #7a4a2b; }
     </style>
 </head>
 

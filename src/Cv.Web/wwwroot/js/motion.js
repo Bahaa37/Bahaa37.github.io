@@ -82,6 +82,11 @@ export function start() {
     // it runs regardless of reduced motion, exactly like the header's is-scrolled.
     startScrollSpy();
 
+    // The dock reveal is additive chrome discipline (mobile-only via CSS): the class
+    // toggles always, the hiding lives behind .js-motion in the stylesheet, and
+    // reduced motion restores the always-on dock.
+    initDockReveal();
+
     // Counters carry their final value in the markup, so under reduced motion the
     // figures are simply present and nothing else needs doing.
     if (prefersReducedMotion() || !('IntersectionObserver' in window)) {
@@ -193,6 +198,41 @@ function startScrollSpy() {
 const BACK_TO_TOP_VIEWPORTS = 1; // viewports of scroll before the control earns its place
 
 let backToTopTick = false;
+
+/*
+    The mobile dock sits inside the thumb zone, so at rest on a phone its opaque
+    seal covered the note face's first lines of type. Motion.js owns the one
+    visibility class (the additive-only rule): below the breakpoint the dock
+    stays unprinted until the visitor has moved, then takes its strip. Desktop
+    keeps it always on; without the script, or under reduced motion, the dock
+    is simply always there — an enhancement absent, never content hidden.
+*/
+let dockTick = false;
+
+function initDockReveal() {
+    const dock = document.querySelector('.contact-dock');
+
+    if (!dock || dock.dataset.dockRevealBound) {
+        return;
+    }
+
+    dock.dataset.dockRevealBound = '1';
+
+    const update = () => {
+        dockTick = false;
+        const y = window.scrollY || window.pageYOffset || 0;
+        dock.classList.toggle('is-shown', y > 160);
+    };
+
+    window.addEventListener('scroll', () => {
+        if (!dockTick) {
+            dockTick = true;
+            requestAnimationFrame(update);
+        }
+    }, { passive: true });
+
+    update();
+}
 
 export function initBackToTop() {
     const button = document.querySelector('.back-to-top');

@@ -63,60 +63,8 @@
     opacity: 0.92;
 }
 
-/* The case index: hairline rows, not cards — a menu of the remaining work, each row
-   one skim (title, org, line, headline outcome) opening a page with the real depth.
-   Two columns when the sheet is wide; single column reads as a list either way. */
-.case-index {
-    list-style: none;
-    margin: 2rem 0 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
-    column-gap: 2.5rem;
-}
-
-.case-index li {
-    border-top: 1px solid var(--line);
-}
-
-.case-index__item {
-    display: grid;
-    gap: 0.3rem;
-    padding: 1.1rem 0.15rem 1.25rem;
-    text-decoration: none;
-}
-
-.case-index__title {
-    font-weight: 600;
-    color: var(--ink);
-    font-size: 1rem;
-    transition: color .2s ease;
-}
-
-.case-index__item:hover .case-index__title,
-.case-index__item:focus-visible .case-index__title {
-    color: var(--accent);
-}
-
-.case-index__org {
-    font-size: 0.72rem;
-    color: var(--ink-faint);
-}
-
-.case-index__summary {
-    font-size: 0.92rem;
-    color: var(--ink-soft);
-    line-height: 1.5;
-}
-
-/* The outcome chip borrows the panels' tint family (accent wash, never gold — gold is
-   the award metric's alone). */
-.case-index__outcome {
-    justify-self: start;
-    margin-top: 0.25rem;
-    font-size: 0.74rem;
-    color: var(--accent);
-    background: var(--accent-wash);
-    padding: 0.18rem 0.6rem;
-    border-radius: 999px;
-}
+/*
+    The case index rows are owned by app.css (Legal Tender plate-series rows).
+    Nothing scoped here — the previous scoped grid fought the row layout at
+    narrow widths and collapsed the text column to a few words per line.
+*/

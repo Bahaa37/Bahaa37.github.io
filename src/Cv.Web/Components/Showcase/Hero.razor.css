@@ -1,387 +1,239 @@
 /*
-    The hero sheet. .sheet in app.css supplies the slab; everything here is the
-    composition inside it and the choreography that plays once, for the visitor who
-    arrived fast enough to not yet have started reading.
+    The note face — hero composition for the Legal Tender world.
+
+    .sheet in app.css supplies the plate (solid face, double-rule frame);
+    everything here is the composition inside it: the engine-turned
+    denomination on the left, the plate legend on the right, and the one
+    authored motion — the print-in — which plays once and never again.
+
+    motion.js's existing hero guard is reused unchanged: .is-armed means the
+    visitor proved they are on their first look (not scrolled, not replaying
+    this session, booted within the deadline); .is-playing fires the print.
+    Without .js-motion, under reduced motion, or on any guard miss, the note
+    simply sits there fully printed. Content is never hidden by default.
 */
 
 .hero {
-    /* The opening sheet runs a little wider than the rest so the diagram and the
-       headline share one viewport at 1280–1536px without either feeling cropped. */
-    width: min(100% - 1.5rem, calc(var(--page) + 6rem));
-    margin-block-start: 0.9rem;
-    padding-block: clamp(2.5rem, 1.5rem + 4vw, 4.75rem);
-    overflow: hidden;
+    /* The hero plate runs wider than the column plates, as before. */
+    width: min(100% - 2.5rem, calc(var(--page) + 5rem));
 }
 
 .hero__grid {
     display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    gap: clamp(1.75rem, 1rem + 3vw, 3.5rem);
+    grid-template-columns: minmax(180px, 260px) 1fr;
+    gap: clamp(1.6rem, 4vw, 3.5rem);
     align-items: center;
 }
 
+/* ------------------------------------------------------------------ */
+/* The denomination — the engraved numeral and its plate serials       */
+/* ------------------------------------------------------------------ */
+
+.denomination {
+    margin: 0;
+    padding: clamp(.9rem, 2vw, 1.4rem);
+    border: 1px solid var(--sheet-line);
+    border-radius: var(--radius);
+    /* The denomination plate sits inset on the note face. */
+    box-shadow: inset 0 0 0 4px var(--sheet-solid), inset 0 0 0 5px var(--sheet-line);
+    background:
+        radial-gradient(120% 90% at 30% 15%, var(--accent-wash), transparent 60%),
+        var(--sheet-solid);
+}
+
+.denomination__print {
+    width: 100%;
+    height: auto;
+}
+
+.denomination__serials {
+    display: flex;
+    flex-direction: column;
+    gap: .18rem;
+    margin-top: .7rem;
+    padding-top: .6rem;
+    border-top: 1px solid var(--line);
+    font-size: .56rem;
+    letter-spacing: .14em;
+    color: var(--ink-faint);
+    text-align: center;
+}
+
+/* ------------------------------------------------------------------ */
+/* The plate legend — headline, pitch, facts, actions                  */
+/* ------------------------------------------------------------------ */
+
 .hero__headline {
-    font-size: clamp(2.4rem, 1.1rem + 5.2vw, 4.6rem);
-    line-height: 1.02;
-    letter-spacing: -0.04em;
-    font-weight: 700;
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 1.4rem + 4.6vw, 4.3rem);
+    font-weight: 600;
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    color: var(--ink);
 }
 
-/* Each line clips its own content so the text can rise from behind the mask. The
-   padding keeps descenders from being shaved off by that same clip. */
-.line {
-    display: block;
-    overflow: hidden;
-    padding-bottom: 0.06em;
-}
+.hero__headline .line { display: block; }
 
-.line > span {
-    display: block;
-}
-
-/* "constraint" takes the action blue — the one colour word in the headline. */
 .hero__accent {
+    font-style: italic;
+    color: var(--accent);
+}
+
+.hero__legend {
+    margin-top: .8rem;
+    font-size: .68rem;
+    letter-spacing: .22em;
+    text-transform: uppercase;
     color: var(--accent);
 }
 
 .hero__pitch {
-    margin: 1.4rem 0 0;
-    max-width: 46ch;
-    font-size: clamp(1rem, 0.96rem + 0.28vw, 1.09rem);
-    line-height: 1.62;
-    color: var(--ink-soft);
-    text-wrap: pretty;
-}
-
-/* The track record as one quiet mono line. Tabular figures stop the count-up
-   twitching; the gold fact is the page's only warm note. */
-.hero__facts {
-    display: block;
-    margin: 1.15rem 0 0;
-    font-family: var(--font-mono);
-    font-size: 0.86rem;
-    line-height: 1.9;
-    color: var(--ink-faint);
+    margin-top: 1rem;
     max-width: 52ch;
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    line-height: 1.6;
 }
 
-/*
-    The separator rides at the END of the fact it follows, so a line break between
-    facts lands cleanly before the next one — a leading middot stranded on a wrapped
-    line was the one broken edge in the page's first fixation. Each fact is
-    inline-block, so a fact never splits internally either ("9 / payment markets" was
-    the visible casualty).
-*/
-.hero__fact {
-    display: inline-block;
+.hero__facts {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .45rem 0;
+    margin-top: 1.4rem;
+    padding-top: .9rem;
+    border-top: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-family: var(--font-mono);
+    font-size: .8rem;
+    letter-spacing: .02em;
 }
 
+/* The separator rides at the END of each fact but the last, so a wrap between
+   facts never strands a leading middot at the start of the next line. */
 .hero__fact:not(:last-child)::after {
     content: "·";
-    padding: 0 0.45em;
+    margin: 0 .6rem;
+    color: var(--ink-faint);
 }
 
 .hero__fact strong {
-    font-weight: 600;
-    font-size: 1.06em;
+    font-weight: 400;
     color: var(--ink);
-    font-variant-numeric: tabular-nums;
+    font-size: .95em;
 }
 
-.hero__fact--gold,
-.hero__fact--gold strong {
+.hero__fact--gold {
     color: var(--gold);
 }
+.hero__fact--gold strong { color: var(--gold); }
 
 .hero__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.6rem;
-    margin-top: 1.9rem;
+    gap: .7rem;
+    margin-top: 1.5rem;
 }
 
-/* ---------- the before/after diagram ----------
-
-   A recessed keynote stage: dark in both themes, so the opening screen holds one
-   deliberate contrast moment — the argument performed on a lit stage. Every colour
-   inside is local to the stage; tokens stay for everything on the sheet proper. */
-
-.diagram {
-    margin: 0;
-    padding: 1.4rem 1.5rem 1.6rem;
-    border: 1px solid color-mix(in srgb, var(--stage-lead) 24%, rgba(255, 255, 255, .1));
-    border-radius: 14px;
-    background:
-        radial-gradient(120% 90% at 80% -10%, rgba(127, 196, 255, .1), transparent 60%),
-        linear-gradient(180deg, #101a26, #0a0f16);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), var(--shadow-float);
-}
-
-.diagram__label {
-    font-size: 0.78rem;
-    letter-spacing: 0.02em;
-    color: rgba(222, 234, 246, .6);
-    margin-bottom: 1.1rem;
-}
-
-.diagram__body {
-    display: grid;
-    grid-template-columns: 1fr 2.25rem 1fr;
-    gap: 0.85rem;
-    /* Stretch, not center: the two panels hold different numbers of nodes, and centring
-       them leaves the Before and After headings on different baselines. */
-    align-items: stretch;
-}
-
-.panel {
-    padding: 0.9rem 0.8rem;
-    border: 1px solid rgba(255, 255, 255, .12);
-    border-radius: 10px;
-    background: rgba(255, 255, 255, .045);
-}
-
-.panel--before {
-    border-color: color-mix(in srgb, var(--alarm) 42%, rgba(255, 255, 255, .12));
-}
-
-.panel--after {
-    border-color: color-mix(in srgb, var(--stage-lead) 46%, rgba(255, 255, 255, .12));
-}
-
-.panel__label {
-    margin: 0 0 0.7rem;
-    font-size: 0.68rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(222, 234, 246, .55);
-}
-
-.panel__stack {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-}
-
-.node {
-    padding: 0.42rem 0.55rem;
-    border: 1px solid rgba(255, 255, 255, .14);
-    border-radius: 6px;
-    font-size: 0.72rem;
-    color: rgba(222, 234, 246, .82);
-    text-align: center;
-}
-
-.node--blocker {
-    border-style: dashed;
-    border-color: color-mix(in srgb, var(--alarm) 65%, rgba(255, 255, 255, .12));
-    color: #f4a08d;
-    background: color-mix(in srgb, var(--alarm) 16%, transparent);
-}
-
-.node--lead {
-    border-color: var(--stage-lead);
-    color: var(--stage-lead);
-    font-weight: 600;
-}
-
-.arrow {
-    text-align: center;
-    font-size: 0.8rem;
-    color: rgba(222, 234, 246, .45);
-    line-height: 1;
-}
-
-.bridge {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.3rem;
-}
+/* ------------------------------------------------------------------ */
+/* The print-in — the one authored motion                              */
+/* ------------------------------------------------------------------ */
 
 /*
-    The bridge is the one piece of motion that carries meaning rather than decorating:
-    the line grows left-to-right, so the diagram performs the transformation the whole
-    page is about instead of just depicting it. It is one beat of the hero sequence
-    below rather than an animation that fires on its own timer.
+    Static by default: fully printed, fully visible. The animation only ever
+    runs under .js-motion .hero.is-playing — the arm/discharge pair that
+    motion.js already guards (first look, once per session, boot deadline).
+    The numeral prints via a soft clip wipe with a damped ease; the legend
+    settles a beat later. Nothing here hides content without the class pair,
+    and reduced motion restores the static state unconditionally.
 */
-.bridge__line {
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, var(--stage-legacy), var(--stage-lead));
-    transform-origin: left center;
+
+.js-motion .hero.is-playing .denomination__print {
+    animation: denomination-print 1s cubic-bezier(.16, 1, .3, 1) both;
 }
 
-.bridge__arrow {
-    font-size: 1.05rem;
-    color: var(--stage-lead);
+.js-motion .hero.is-playing .hero__lede > * {
+    animation: legend-settle .7s cubic-bezier(.22, .8, .3, 1) both;
 }
 
-/* =========================================================================
-   THE HERO SEQUENCE
+.js-motion .hero.is-playing .hero__lede > :nth-child(2) { animation-delay: .18s; }
+.js-motion .hero.is-playing .hero__lede > :nth-child(3) { animation-delay: .3s; }
+.js-motion .hero.is-playing .hero__lede > :nth-child(4) { animation-delay: .42s; }
 
-   One orchestrated moment: the headline unmasks, the legacy estate builds, the
-   blocker is flagged, the bridge draws, the modernized services arrive, and only
-   then does the facts line settle. The motion states the argument before any prose
-   is read.
-
-   Every rule is gated on .js-motion (set by motion.js), .is-armed, and .is-playing.
-   motion.js only arms the hero — applies the hidden starting states — when it has
-   decided this visit gets the sequence; a skipped visitor is never armed and the hero
-   renders as plain static content. Arming without playing would leave the hero at
-   opacity:0 forever: content present, selectable, invisible. That failure class is
-   the reason the hiding class lives in exactly one place and every restore path is
-   proved against it.
-   ========================================================================= */
-
-.js-motion .hero.is-armed .line > span,
-.js-motion .hero.is-armed .hero__pitch,
-.js-motion .hero.is-armed .hero__actions,
-.js-motion .hero.is-armed .hero__facts,
-.js-motion .hero.is-armed .diagram,
-.js-motion .hero.is-armed .node,
-.js-motion .hero.is-armed .arrow,
-.js-motion .hero.is-armed .bridge__arrow {
-    opacity: 0;
-}
-
-.js-motion .hero.is-armed .bridge__line {
-    transform: scaleX(0);
-}
-
-.js-motion .hero.is-playing .line > span {
-    opacity: 1;
-    animation: line-rise .8s cubic-bezier(.16, .84, .28, 1) both;
-}
-
-.js-motion .hero.is-playing .line:nth-of-type(1) > span { animation-delay: 120ms; }
-.js-motion .hero.is-playing .line:nth-of-type(2) > span { animation-delay: 220ms; }
-.js-motion .hero.is-playing .line:nth-of-type(3) > span { animation-delay: 320ms; }
-.js-motion .hero.is-playing .line:nth-of-type(4) > span { animation-delay: 420ms; }
-
-.js-motion .hero.is-playing .hero__pitch   { animation: rise-in .6s cubic-bezier(.2, .7, .3, 1) both 480ms; }
-.js-motion .hero.is-playing .hero__actions { animation: rise-in .6s cubic-bezier(.2, .7, .3, 1) both 580ms; }
-.js-motion .hero.is-playing .diagram       { animation: rise-in .7s cubic-bezier(.2, .7, .3, 1) both 400ms; }
-.js-motion .hero.is-playing .hero__facts   { animation: rise-in .6s cubic-bezier(.2, .7, .3, 1) both 2150ms; }
-
-/*
-    nth-child counts every sibling in .panel__stack, and the arrow spans sit in that
-    count. These are DOM positions, not node ordinals:
-        BEFORE  node, node, node, arrow, blocker
-        AFTER   lead, arrow, node, node, node
-    Getting this off by one leaves a node stranded at opacity:0 permanently.
-*/
-.js-motion .hero.is-playing .panel--before .node:nth-child(1) { animation: node-in .45s ease both 720ms; }
-.js-motion .hero.is-playing .panel--before .node:nth-child(2) { animation: node-in .45s ease both 810ms; }
-.js-motion .hero.is-playing .panel--before .node:nth-child(3) { animation: node-in .45s ease both 900ms; }
-.js-motion .hero.is-playing .panel--before .arrow             { animation: fade-in .35s ease both 1020ms; }
-
-/* dissolve fills FORWARDS, not both: a backwards fill would paint the blocker fully
-   opaque across the whole delay and mask its own entrance. */
-.js-motion .hero.is-playing .panel--before .node--blocker {
-    animation:
-        node-in .45s ease both 1140ms,
-        flag 1s ease 1600ms 1,
-        dissolve .7s ease forwards 2350ms;
-}
-
-.js-motion .hero.is-playing .bridge__line  { animation: draw-x .5s cubic-bezier(.6, 0, .3, 1) both 1620ms; }
-.js-motion .hero.is-playing .bridge__arrow { animation: fade-in .35s ease both 2050ms; }
-
-.js-motion .hero.is-playing .panel--after .node:nth-child(1) { animation: node-in .5s ease both 1800ms; }
-.js-motion .hero.is-playing .panel--after .arrow             { animation: fade-in .35s ease both 1900ms; }
-.js-motion .hero.is-playing .panel--after .node:nth-child(3) { animation: node-in .5s ease both 1980ms; }
-.js-motion .hero.is-playing .panel--after .node:nth-child(4) { animation: node-in .5s ease both 2070ms; }
-.js-motion .hero.is-playing .panel--after .node:nth-child(5) { animation: node-in .5s ease both 2160ms; }
-
-@keyframes line-rise {
-    from { transform: translateY(105%); }
-    to   { transform: none; }
-}
-
-@keyframes rise-in {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: none; }
-}
-
-@keyframes fade-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-
-@keyframes node-in {
-    from { opacity: 0; transform: translateY(8px) scale(.97); }
-    to   { opacity: 1; transform: none; }
-}
-
-@keyframes draw-x {
-    from { transform: scaleX(0); }
-    to   { transform: scaleX(1); }
-}
-
-@keyframes draw-y {
-    from { transform: scaleY(0); }
-    to   { transform: scaleY(1); }
-}
-
-/* The blocker is flagged before it is removed, so the eye is on it when it goes. */
-@keyframes flag {
-    0%, 100% { box-shadow: 0 0 0 0 transparent; }
-    40%      { box-shadow: 0 0 0 5px color-mix(in srgb, var(--alarm) 30%, transparent); }
-}
-
-@keyframes dissolve {
-    from { opacity: 1; }
-    to   { opacity: .26; filter: grayscale(1); }
-}
-
-/* Mirror of the hidden-start list above: under reduced motion nothing may stay
-   invisible, whatever happened with the script. */
-@media (prefers-reduced-motion: reduce) {
-    .js-motion .hero.is-armed .line > span,
-    .js-motion .hero.is-armed .hero__pitch,
-    .js-motion .hero.is-armed .hero__actions,
-    .js-motion .hero.is-armed .hero__facts,
-    .js-motion .hero.is-armed .diagram,
-    .js-motion .hero.is-armed .node,
-    .js-motion .hero.is-armed .arrow,
-    .js-motion .hero.is-armed .bridge__arrow {
-        opacity: 1 !important;
-        transform: none !important;
-        translate: none !important;
-        scale: none !important;
-        filter: none !important;
-        animation: none !important;
+@keyframes denomination-print {
+    from {
+        opacity: 0;
+        clip-path: inset(6% 2% 6% 2%);
     }
-
-    .js-motion .hero.is-armed .bridge__line {
-        transform: scaleX(1) !important;
-        animation: none !important;
+    to {
+        opacity: 1;
+        clip-path: inset(0 0 0 0);
     }
 }
+
+@keyframes legend-settle {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* Narrow plates                                                       */
+/* ------------------------------------------------------------------ */
 
 @media (max-width: 900px) {
     .hero__grid {
         grid-template-columns: 1fr;
     }
 
-    /* Stacked, the diagram's three columns become unreadably narrow. */
-    .diagram__body {
-        grid-template-columns: 1fr;
-        gap: 0.6rem;
+    .denomination {
+        max-width: 240px;
+        margin-inline: auto;
     }
 
-    .bridge {
-        flex-direction: row;
-        gap: 0.5rem;
+    .hero__headline {
+        font-size: clamp(2.3rem, 1.2rem + 5vw, 3.4rem);
+    }
+}
+
+@media (max-width: 720px) {
+    .hero {
+        width: min(100% - 2.5rem, var(--page));
+        /* Clear zone for the fixed seal strip: at rest on a phone the note face
+           never sets type inside the dock's band. */
+        padding-bottom: 4.6rem;
+    }
+
+    .hero__actions .btn {
+        flex: 1 1 auto;
         justify-content: center;
     }
+}
 
-    .bridge__line {
-        width: 40%;
-    }
+/* ------------------------------------------------------------------ */
+/* Reduced motion — the note is always simply printed                  */
+/* ------------------------------------------------------------------ */
 
-    .bridge__arrow {
-        transform: rotate(90deg);
+@media (prefers-reduced-motion: reduce) {
+    .js-motion .hero.is-playing .denomination__print,
+    .js-motion .hero.is-playing .hero__lede > * {
+        animation: none;
+        opacity: 1;
+        clip-path: none;
+        transform: none;
     }
+}
+
+/* ------------------------------------------------------------------ */
+/* Print — the note prints as ink, complete                            */
+/* ------------------------------------------------------------------ */
+
+@media print {
+    .hero { width: 100%; box-shadow: none; }
+    .hero__actions { display: none; }
 }

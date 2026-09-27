@@ -47,10 +47,10 @@
          in the URL makes each face appear the moment it lands. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;600&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;600&display=swap" media="print" onload="this.media='all'" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..800&family=Fragment+Mono&family=Spectral:wght@400;500;600&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..800&family=Fragment+Mono&family=Spectral:wght@400;500;600&display=swap" media="print" onload="this.media='all'" />
     <noscript>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;600&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..800&family=Fragment+Mono&family=Spectral:wght@400;500;600&display=swap" />
     </noscript>
 
     <!--
@@ -201,7 +201,7 @@
                 only (one short-lived composited layer), never under reduced motion.
                 The colours must stay in step with --paper in app.css.
             */
-            var PULSE_GROUNDS = { light: "#e8f2ff", dark: "#0d141d" };
+            var PULSE_GROUNDS = { light: "#f3eede", dark: "#0d1712" };
 
             function prefersReducedMotion() {
                 try { return window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
@@ -413,8 +413,8 @@
     <!-- display: "browser" — this is a document, not an app, and a standalone window
          would only take the back button away from someone reading a CV. -->
     <link rel="manifest" href="manifest.webmanifest" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#e8f2ff" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d141d" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f3eede" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d1712" />
     <link href="Cv.Web.styles.css" rel="stylesheet" />
     <script type="importmap"></script>
 </head>
