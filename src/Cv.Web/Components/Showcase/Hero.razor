@@ -19,16 +19,17 @@
                 "constraint" on its own line at every width.
             *@
             <h1 class="hero__headline">
-                <span class="line"><span>I remove the</span></span>
-                <span class="line"><span class="hero__accent">constraint</span></span>
-                <span class="line"><span>that froze</span></span>
-                <span class="line"><span>the estate.</span></span>
+                <span class="line"><span>Nine countries.</span></span>
+                <span class="line"><span class="hero__accent">One gateway.</span></span>
+                <span class="line"><span>Built</span></span>
+                <span class="line"><span>alone.</span></span>
             </h1>
 
             <p class="hero__pitch">
-                Senior .NET engineer for the systems everyone else stopped touching. I make
-                the architectural call, rebuild what's frozen, and leave behind the template
-                and rules that let the next team repeat it.
+                Senior .NET engineer. I designed and built the payment middleware serving
+                9 countries entirely on my own — seven gateways behind one stateless API —
+                and I take the same end-to-end ownership of the systems everyone else
+                stopped touching.
             </p>
 
             @*
@@ -47,8 +48,8 @@
                 is mid-flight.
             *@
             <div class="hero__facts" role="group" aria-label="Track record at a glance">
-                <span class="hero__fact">upgrade cycle <strong class="mono"><span data-count-to="@UpgradeCycleDays" aria-hidden="true">@UpgradeCycleDays</span><span class="visually-hidden">@UpgradeCycleDays</span></strong> days max, from 5–7</span>
                 <span class="hero__fact"><strong class="mono"><span data-count-to="@PaymentMarkets" aria-hidden="true">@PaymentMarkets</span><span class="visually-hidden">@PaymentMarkets</span></strong> payment markets</span>
+                <span class="hero__fact">upgrade cycle <strong class="mono"><span data-count-to="@UpgradeCycleDays" aria-hidden="true">@UpgradeCycleDays</span><span class="visually-hidden">@UpgradeCycleDays</span></strong> days max, from 5–7</span>
                 <span class="hero__fact">@ExperiencePhrase</span>
                 <span class="hero__fact">@Profile.Location — @Profile.Timezone</span>
                 <span class="hero__fact hero__fact--gold"><strong class="mono"><span data-count-to="@AwardCount" aria-hidden="true">@AwardCount</span><span class="visually-hidden">@AwardCount</span></strong> company awards</span>
@@ -82,23 +83,22 @@
                 and to any visitor the animation never reaches.
             *@
             <p class="visually-hidden">
-                Before: three legacy services — .NET Framework 4.5, .NET Core 2.2, and one
-                unversioned service — all depend on a Distributed Transaction Coordinator,
-                the component pinning them to runtimes that stopped receiving support.
-                After: an explicit orchestrator coordinates the same services, modernized,
-                with the coordinator removed entirely. The transformation is repeatable:
-                a template, rules, and an AI-guided workflow let other teams run it too.
+                Before: nine country markets where every product integrates payment
+                gateways directly, duplicating the same logic per gateway. After: one
+                stateless payment middleware — seven gateways behind a single API, each
+                behind its own adapter, webhooks validated and forwarded, and no database
+                to operate. Designed and built by one engineer, end to end.
             </p>
 
             <div class="diagram__body">
                 <div class="panel panel--before">
                     <p class="mono panel__label">Before</p>
                     <div class="panel__stack">
-                        <span class="node">Service · .NET FW 4.5</span>
-                        <span class="node">Service · Core 2.2</span>
-                        <span class="node">Service</span>
+                        <span class="node">Product · direct integrations</span>
+                        <span class="node">Product · direct integrations</span>
+                        <span class="node">Product</span>
                         <span class="arrow" aria-hidden="true">↓</span>
-                        <span class="node node--blocker">Distributed Transaction Coordinator</span>
+                        <span class="node node--blocker">7× duplicated payment logic</span>
                     </div>
                 </div>
 
@@ -110,11 +110,11 @@
                 <div class="panel panel--after">
                     <p class="mono panel__label">After</p>
                     <div class="panel__stack">
-                        <span class="node node--lead">Orchestrator</span>
+                        <span class="node node--lead">Payment middleware</span>
                         <span class="arrow" aria-hidden="true">↓</span>
-                        <span class="node">Service · modernized</span>
-                        <span class="node">Service · modernized</span>
-                        <span class="node">Service</span>
+                        <span class="node">One integration surface</span>
+                        <span class="node">Webhooks validated · forwarded</span>
+                        <span class="node">Stateless · no database</span>
                     </div>
                 </div>
             </div>

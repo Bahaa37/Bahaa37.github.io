@@ -17,7 +17,7 @@
     "gitHub": "https://github.com/Bahaa37",
     "website": "https://bahaa37.github.io"
   },
-  "summary": "I led the re-architecture that removed a distributed transaction coordinator from the platform's Temporal.io orchestrator — the constraint that had frozen an entire service estate on unsupported runtimes. Then I authored the template, the rules and the AI-guided workflow that let other teams repeat it: an upgrade cycle that took 5-7 working days now takes 3 at most, and the result won a company award. Targeting senior .NET engineering roles where the architectural decisions are part of the job.",
+  "summary": "I designed and built the payment middleware behind 9 countries entirely on my own — seven gateways, one stateless API. Then I removed the distributed transaction coordinator that had frozen a service estate on unsupported runtimes, and wrote the template, rules and AI-guided workflow that let other teams repeat it: an upgrade cycle of 5-7 working days now takes 3 at most, and the result won a company award. Targeting senior .NET engineering roles where the architectural decisions are part of the job.",
   "skillGroups": [
     {
       "category": "Architecture & Patterns",
@@ -223,7 +223,7 @@
       },
       "highlights": [
         {
-          "text": "Architected and built the payment-middleware reverse proxy that serves 9 countries through one integration surface — provider behaviour behind the Strategy pattern, cross-cutting concerns in a Pipeline, Clean Architecture with CQRS underneath.",
+          "text": "Sole engineer, end to end: designed and built the payment-middleware proxy serving 9 countries — seven gateways behind one stateless API, an adapter per gateway, Clean Architecture with CQRS.",
           "tags": [
             "Architecture",
             "Payments",
@@ -493,7 +493,7 @@
       "shortTitle": "Removing DTC from an orchestrator",
       "summary": "Re-architected a Temporal.io orchestrator to drop its distributed transaction coordinator dependency, unblocking a service estate frozen on legacy .NET runtimes and cutting the upgrade cycle from 5-7 days to 3.",
       "organisation": "Andalusia Business Solutions",
-      "displayOrder": 1,
+      "displayOrder": 2,
       "problem": "The platform's orchestration layer depended on a distributed transaction coordinator to keep multi-service operations consistent. That dependency pinned services to old runtimes — .NET Core 2.2 and .NET Framework 4.5 — because the coordinator's behaviour could not be carried forward cleanly. Every attempted upgrade risked correctness, so the estate stayed frozen and the cost of change kept rising. Understanding and upgrading a single system cycle took 5 to 7 working days.",
       "approach": "I led the re-architecture of the platform's Temporal.io orchestrator so that consistency no longer relied on a distributed transaction coordinator, replacing ambient transactional guarantees with explicit orchestration on its durable-execution model. Rather than treat each service as a one-off, I authored a transformation project template and the rules governing it, so every later module started from a known-good shape instead of a blank page. I then built a set of AI skills and a workflow over them that guided engineers through the transformation — encoding the decisions that were otherwise re-derived by hand on every module. I led the rollout inside my own team and ran sessions with other teams migrating the same way.",
       "outcomes": [
@@ -517,7 +517,7 @@
       "shortTitle": "Making AI usable across a company",
       "summary": "Took AI from ad-hoc use to production: trained non-technical departments (SME recognition), shipped an autonomous Copilot Studio agent, and built the AI-guided workflow that cut upgrade cycles from 5-7 days to 3.",
       "organisation": "Andalusia Business Solutions",
-      "displayOrder": 2,
+      "displayOrder": 3,
       "problem": "AI tooling was available but unevenly used. Engineers applied it ad hoc with inconsistent results, and non-technical departments such as HR had no route into it at all — the tools assumed a technical vocabulary their work never required.",
       "approach": "I treated this as two different problems rather than one. For non-technical staff I designed and delivered a course pitched at their actual workflows instead of at the tooling, which is what earned the subject matter expert recognition. For engineering I went further than training: I built AI skills and an orchestrating workflow that encoded the modernization decisions directly, so the guidance lived in the process rather than in someone's memory. Alongside this I shipped an autonomous agent on Microsoft Copilot Studio, now in production use.",
       "outcomes": [
@@ -539,7 +539,7 @@
       "shortTitle": "Windoor Wizard Builder",
       "summary": "A multi-tenant SaaS for Egyptian UPVC window and door workshops, merging a commercial quoting and production platform with a cutting-optimisation engine verified against a real shop floor.",
       "organisation": "Personal project",
-      "displayOrder": 3,
+      "displayOrder": 4,
       "problem": "Egyptian UPVC workshops run on WhatsApp, Excel, and paper. Quotes are priced by hand, cut lists are worked out per job, and the profile offcuts that decide whether a job is profitable are estimated rather than calculated. Generic ERP does not help because it does not model the domain — it has no concept of a frame deduction registry, bar nesting, or the glass area and steel reinforcement that drive real cost. A workshop running generic software still does the hard part on paper.",
       "approach": "Three decisions carry this system. First, lengths are stored as exact integer tenths of a millimetre rather than as decimals: the shop cuts half-millimetres — 44 of 195 verified rows — and a rounded cut list produces a window that does not fit. The value type deliberately exposes no decimal factory, so rounding cannot enter the model at all; the wrong thing is unrepresentable rather than merely discouraged. Second, bar nesting is one-dimensional bin packing, so it uses First-Fit-Decreasing, with the three details that separate a real implementation from the textbook one: saw kerf charged per cut, loud failure on a piece longer than a bar rather than a best-effort list that cannot be executed, and a stable sort so two runs over one order produce identical cut lists. Every constant — bar length, end trim, kerf, minimum reusable offcut — is supplied by the caller, so a different workshop is configuration rather than code. Third, the engine became a bounded context inside the SaaS rather than a service beside it, because its calculations always run inside a tenant's quote and share that transaction; a network boundary would have bought overhead and returned nothing. Tenant isolation is enforced by EF Core global query filters, not by a WHERE clause every query is trusted to remember.",
       "outcomes": [
@@ -567,28 +567,32 @@
     },
     {
       "slug": "payment-gateway-middleware",
-      "title": "Payment middleware across 9 countries",
-      "shortTitle": "Payment middleware across 9 countries",
-      "summary": "A middleware reverse proxy unifying payment gateway integration across 9 countries, built on Clean Architecture with Strategy and Pipeline patterns.",
+      "title": "One gateway, nine countries",
+      "shortTitle": "One gateway, nine countries",
+      "summary": "Designed, built, and delivered end to end by one engineer: a stateless payment middleware unifying seven gateways across 9 countries behind a single API — an adapter per gateway, webhooks validated and forwarded, no database.",
       "organisation": "PS Digital",
-      "displayOrder": 4,
-      "problem": "Payment integration had to work across nine countries, each with its own providers, rules, and failure modes. Integrating each market directly into the products would have multiplied the same logic nine times over and made every provider change a cross-cutting edit.",
-      "approach": "I architected a middleware reverse proxy that gave the products one payment interface regardless of market. Provider-specific behaviour sits behind the Strategy pattern, so adding a country means adding a strategy rather than editing shared code. Cross-cutting concerns — validation, logging, error translation — run through a Pipeline. The whole thing follows Clean Architecture with CQRS, keeping the payment domain independent of both transport and provider SDKs.",
+      "displayOrder": 1,
+      "problem": "Payment integration had to work across nine country markets, each with its own providers, rules, and failure modes. Integrating every market directly into the products would have multiplied the same logic seven times over — seven gateway APIs, seven webhook formats, seven credential schemes — and made every provider change a cross-cutting edit. And it had to be carried by one engineer, so every abstraction had to pay for itself.",
+      "approach": "I designed and built the middleware alone, end to end. One integration surface speaks to the products; behind it, each gateway lives in its own adapter — Checkout.com, Benefit (Bahrain), Sadad (Qatar), PayMarkClick, MasterCard, and Google Pay and Apple Pay tokenized through MasterCard — resolved by a factory, so adding a gateway means adding an adapter rather than editing shared code. Requests run through MediatR CQRS with validation and logging pipeline behaviors. The decisive choice was statelessness: no database at all. Client applications keep their own payment state; the middleware generates hosted payment URLs, validates each gateway's webhook signature — SHA-256 and AES for Sadad, SDK-encrypted responses for Benefit, five-layer fraud validation for PayMarkClick — and forwards what is genuine to the client's callback URL. A background worker handles the retries that statelessness still needs. No data stored means nothing to leak, nothing to retain, and horizontal scale by default.",
       "outcomes": [
-        "One integration surface serving 9 countries.",
-        "New providers onboarded by adding a strategy, without touching shared logic.",
-        "Cross-cutting concerns handled once in the pipeline rather than per provider."
+        "Delivered end to end by a single engineer — architecture, all seven gateway adapters, webhooks, and rollout.",
+        "Seven payment gateways across 9 countries behind one API.",
+        "Stateless by design: zero database, nothing to retain, horizontal scale by default.",
+        "Gateway-specific security carried per adapter — encrypted responses, SHA-256 + AES, fraud-validation layers — instead of in shared code.",
+        "New gateways onboarded by adding an adapter, without touching shared logic."
       ],
       "stack": [
         "C#",
+        ".NET 9",
         "ASP.NET Core",
         "Clean Architecture",
         "CQRS",
-        "Strategy pattern",
-        "Pipeline pattern",
+        "MediatR",
+        "Adapter pattern",
+        "Webhook validation",
         "Reverse proxy"
       ],
-      "mermaidDiagram": "flowchart TD\n  C[Client applications] --> MW[Payment middleware<br/>reverse proxy]\n  MW --> P[Pipeline<br/>validation · logging · error translation]\n  P --> S{Provider strategy<br/>resolved per country}\n  S --> G1[Gateway · Country 1]\n  S --> G2[Gateway · Country 2]\n  S --> G3[... 9 markets]"
+      "mermaidDiagram": "flowchart TD\n  C[Client products<br/>9 countries] --> MW[Payment middleware<br/>stateless · no database]\n  MW --> P[Pipeline<br/>validation · logging]\n  P --> F{Gateway factory}\n  F --> A1[Checkout.com]\n  F --> A2[Benefit · Bahrain]\n  F --> A3[Sadad · Qatar]\n  F --> A4[MasterCard<br/>+ GooglePay · ApplePay]\n  F --> A5[PayMarkClick]\n  G[Gateway webhooks] --> V[Signature validation] --> MW"
     },
     {
       "slug": "mvc-to-webapi-rebuild",
@@ -615,5 +619,5 @@
       ]
     }
   ],
-  "summaryExtended": "Senior .NET engineer specializing in legacy modernization — taking on the systems considered too risky to change. Led the re-architecture that removed the distributed transaction coordinator (DTC) dependency from a platform's Temporal.io orchestrator, unblocking a service estate frozen on .NET Core 2.2 and .NET Framework 4.5; a single upgrade cycle fell from 5-7 working days to a maximum of 3, recognised with a company award. Authored the transformation template, its governing rules, and an AI-guided workflow that let other teams repeat the migration; 5 platform modules modernized so far. Architected a payment-middleware reverse proxy serving 9 countries, built on Clean Architecture with CQRS. Designs as well as builds: solution architecture documents, SRS and low-level design, Mermaid workflow models. AI that ships: an autonomous Copilot Studio agent in production use, an AI-guided modernization workflow other teams now run, and company-wide AI training (subject-matter-expert recognition). Targeting senior .NET engineering roles with architectural scope; currently completing diplomas in microservices architecture and Azure."
+  "summaryExtended": "Senior .NET engineer specializing in legacy modernization — taking on the systems considered too risky to change. Designed and built single-handed, end to end: a stateless payment-middleware proxy serving 9 countries, seven gateways behind one API, an adapter per gateway, on Clean Architecture with CQRS. Led the re-architecture that removed the distributed transaction coordinator (DTC) dependency from a platform's Temporal.io orchestrator, unblocking a service estate frozen on .NET Core 2.2 and .NET Framework 4.5; a single upgrade cycle fell from 5-7 working days to a maximum of 3, recognised with a company award. Authored the transformation template, its governing rules, and an AI-guided workflow that let other teams repeat the migration; 5 platform modules modernized so far. Designs as well as builds: solution architecture documents, SRS and low-level design, Mermaid workflow models. AI that ships: an autonomous Copilot Studio agent in production use, an AI-guided modernization workflow other teams now run, and company-wide AI training (subject-matter-expert recognition). Targeting senior .NET engineering roles with architectural scope; currently completing diplomas in microservices architecture and Azure."
 }
