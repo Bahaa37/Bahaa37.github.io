@@ -1,236 +1,173 @@
 /*
-    The note face — hero composition for the Legal Tender world.
+    The report masthead — hero composition for the Annual Report world.
 
-    .sheet in app.css supplies the plate (solid face, double-rule frame);
-    everything here is the composition inside it: the engine-turned
-    denomination on the left, the plate legend on the right, and the one
-    authored motion — the print-in — which plays once and never again.
-
-    motion.js's existing hero guard is reused unchanged: .is-armed means the
-    visitor proved they are on their first look (not scrolled, not replaying
-    this session, booted within the deadline); .is-playing fires the print.
-    Without .js-motion, under reduced motion, or on any guard miss, the note
-    simply sits there fully printed. Content is never hidden by default.
+    .sheet in app.css supplies the paper and its top ink bar; everything here
+    is the composition: the masthead statement at report scale, the deck line,
+    the ruled key-figures strip, and the folio actions. The one authored motion
+    is the masthead's settle — plays once under motion.js's existing
+    never-replay guard (.is-armed/.is-playing), static by default, static under
+    reduced motion. Content is never hidden without those classes.
 */
 
 .hero {
-    /* The hero plate runs wider than the column plates, as before. */
+    /* The masthead sheet runs wider than the column plates. */
     width: min(100% - 2.5rem, calc(var(--page) + 5rem));
-}
-
-.hero__grid {
-    display: grid;
-    grid-template-columns: minmax(180px, 260px) 1fr;
-    gap: clamp(1.6rem, 4vw, 3.5rem);
-    align-items: center;
+    padding-top: clamp(2.2rem, 1.4rem + 4vw, 4rem);
 }
 
 /* ------------------------------------------------------------------ */
-/* The denomination — the engraved numeral and its plate serials       */
-/* ------------------------------------------------------------------ */
-
-.denomination {
-    margin: 0;
-    padding: clamp(.9rem, 2vw, 1.4rem);
-    border: 1px solid var(--sheet-line);
-    border-radius: var(--radius);
-    /* The denomination plate sits inset on the note face. */
-    box-shadow: inset 0 0 0 4px var(--sheet-solid), inset 0 0 0 5px var(--sheet-line);
-    background:
-        radial-gradient(120% 90% at 30% 15%, var(--accent-wash), transparent 60%),
-        var(--sheet-solid);
-}
-
-.denomination__print {
-    width: 100%;
-    height: auto;
-}
-
-.denomination__serials {
-    display: flex;
-    flex-direction: column;
-    gap: .18rem;
-    margin-top: .7rem;
-    padding-top: .6rem;
-    border-top: 1px solid var(--line);
-    font-size: .56rem;
-    letter-spacing: .14em;
-    color: var(--ink-faint);
-    text-align: center;
-}
-
-/* ------------------------------------------------------------------ */
-/* The plate legend — headline, pitch, facts, actions                  */
+/* The masthead                                                        */
 /* ------------------------------------------------------------------ */
 
 .hero__headline {
     font-family: var(--font-display);
-    font-size: clamp(2.5rem, 1.4rem + 4.6vw, 4.3rem);
-    font-weight: 600;
-    line-height: 1.04;
-    letter-spacing: -0.02em;
+    font-weight: 860;
+    font-stretch: 116%;
+    font-size: clamp(2.7rem, 1.4rem + 6vw, 6rem);
+    line-height: .98;
+    letter-spacing: -0.035em;
     color: var(--ink);
+    text-wrap: balance;
 }
 
 .hero__headline .line { display: block; }
 
-.hero__accent {
-    font-style: italic;
-    color: var(--accent);
-}
+.hero__accent { color: var(--accent); }
 
-.hero__legend {
-    margin-top: .8rem;
-    font-size: .68rem;
-    letter-spacing: .22em;
+.hero__deck {
+    margin-top: 1.1rem;
+    font-size: .72rem;
+    letter-spacing: .24em;
     text-transform: uppercase;
     color: var(--accent);
 }
 
 .hero__pitch {
-    margin-top: 1rem;
-    max-width: 52ch;
+    margin-top: 1.2rem;
+    max-width: 62ch;
     color: var(--ink-soft);
-    font-size: 1.05rem;
-    line-height: 1.6;
+    font-size: 1.07rem;
+    line-height: 1.62;
 }
 
-.hero__facts {
+/* ------------------------------------------------------------------ */
+/* The key-figures strip — a ruled tabular row, the report's table     */
+/* ------------------------------------------------------------------ */
+
+.hero__figures {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+    margin-top: 2rem;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--line);
+}
+
+.hero__fact {
     display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: .45rem 0;
-    margin-top: 1.4rem;
-    padding-top: .9rem;
-    border-top: 1px solid var(--line);
-    color: var(--ink-soft);
-    font-family: var(--font-mono);
-    font-size: .8rem;
-    letter-spacing: .02em;
+    flex-direction: column;
+    gap: .25rem;
+    padding: .85rem 1rem .85rem 0;
+    border-right: 1px solid var(--line);
 }
 
-/* The separator rides at the END of each fact but the last, so a wrap between
-   facts never strands a leading middot at the start of the next line. */
-.hero__fact:not(:last-child)::after {
-    content: "·";
-    margin: 0 .6rem;
-    color: var(--ink-faint);
-}
+.hero__fact:last-child { border-right: 0; padding-right: 0; }
 
 .hero__fact strong {
+    font-family: var(--font-mono);
     font-weight: 400;
+    font-size: 1.35rem;
     color: var(--ink);
-    font-size: .95em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
 }
 
-.hero__fact--gold {
-    color: var(--gold);
+.hero__fact-label,
+.hero__fact-text {
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    letter-spacing: .05em;
+    color: var(--ink-faint);
+    line-height: 1.4;
 }
-.hero__fact--gold strong { color: var(--gold); }
+
+.hero__fact--gold strong,
+.hero__fact--gold .hero__fact-label { color: var(--gold); }
+
+/* ------------------------------------------------------------------ */
+/* The folio actions                                                   */
+/* ------------------------------------------------------------------ */
 
 .hero__actions {
     display: flex;
     flex-wrap: wrap;
     gap: .7rem;
-    margin-top: 1.5rem;
+    margin-top: 1.7rem;
 }
 
 /* ------------------------------------------------------------------ */
-/* The print-in — the one authored motion                              */
+/* The settle — the one authored motion                                */
 /* ------------------------------------------------------------------ */
 
-/*
-    Static by default: fully printed, fully visible. The animation only ever
-    runs under .js-motion .hero.is-playing — the arm/discharge pair that
-    motion.js already guards (first look, once per session, boot deadline).
-    The numeral prints via a soft clip wipe with a damped ease; the legend
-    settles a beat later. Nothing here hides content without the class pair,
-    and reduced motion restores the static state unconditionally.
-*/
-
-.js-motion .hero.is-playing .denomination__print {
-    animation: denomination-print 1s cubic-bezier(.16, 1, .3, 1) both;
+.js-motion .hero.is-playing .hero__headline .line {
+    animation: masthead-settle .6s cubic-bezier(.22, .8, .3, 1) both;
 }
 
-.js-motion .hero.is-playing .hero__lede > * {
-    animation: legend-settle .7s cubic-bezier(.22, .8, .3, 1) both;
+.js-motion .hero.is-playing .hero__headline .line:nth-child(2) { animation-delay: .1s; }
+.js-motion .hero.is-playing .hero__headline .line:nth-child(3) { animation-delay: .2s; }
+.js-motion .hero.is-playing .hero__headline .line:nth-child(4) { animation-delay: .3s; }
+
+.js-motion .hero.is-playing .hero__deck,
+.js-motion .hero.is-playing .hero__pitch { animation: masthead-settle .6s cubic-bezier(.22, .8, .3, 1) both .4s; }
+
+.js-motion .hero.is-playing .hero__figures { animation: figures-rule .7s cubic-bezier(.22, .8, .3, 1) both .5s; }
+
+@keyframes masthead-settle {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
 }
 
-.js-motion .hero.is-playing .hero__lede > :nth-child(2) { animation-delay: .18s; }
-.js-motion .hero.is-playing .hero__lede > :nth-child(3) { animation-delay: .3s; }
-.js-motion .hero.is-playing .hero__lede > :nth-child(4) { animation-delay: .42s; }
-
-@keyframes denomination-print {
-    from {
-        opacity: 0;
-        clip-path: inset(6% 2% 6% 2%);
-    }
-    to {
-        opacity: 1;
-        clip-path: inset(0 0 0 0);
-    }
-}
-
-@keyframes legend-settle {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: none;
-    }
+@keyframes figures-rule {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
 }
 
 /* ------------------------------------------------------------------ */
-/* Narrow plates                                                       */
+/* Narrow                                                              */
 /* ------------------------------------------------------------------ */
-
-@media (max-width: 900px) {
-    .hero__grid {
-        grid-template-columns: 1fr;
-    }
-
-    .denomination {
-        max-width: 240px;
-        margin-inline: auto;
-    }
-
-    .hero__headline {
-        font-size: clamp(2.3rem, 1.2rem + 5vw, 3.4rem);
-    }
-}
 
 @media (max-width: 720px) {
     .hero {
         width: min(100% - 2.5rem, var(--page));
-        /* Clear zone for the fixed seal strip: at rest on a phone the note face
-           never sets type inside the dock's band. */
+        /* Clear zone for the fixed seal strip at rest on a phone. */
         padding-bottom: 4.6rem;
     }
 
-    .hero__actions .btn {
-        flex: 1 1 auto;
-        justify-content: center;
-    }
+    .hero__figures { grid-template-columns: 1fr 1fr; }
+    .hero__fact:nth-child(2n) { border-right: 0; }
+    .hero__fact { border-bottom: 1px dashed var(--line); }
+    .hero__fact:nth-last-child(-n + 2) { border-bottom: 0; }
+    .hero__fact { padding: .7rem .6rem .7rem 0; }
+
+    .hero__actions .btn { flex: 1 1 auto; justify-content: center; }
 }
 
 /* ------------------------------------------------------------------ */
-/* Reduced motion — the note is always simply printed                  */
+/* Reduced motion — everything simply settled                          */
 /* ------------------------------------------------------------------ */
 
 @media (prefers-reduced-motion: reduce) {
-    .js-motion .hero.is-playing .denomination__print,
-    .js-motion .hero.is-playing .hero__lede > * {
+    .js-motion .hero.is-playing .hero__headline .line,
+    .js-motion .hero.is-playing .hero__deck,
+    .js-motion .hero.is-playing .hero__pitch,
+    .js-motion .hero.is-playing .hero__figures {
         animation: none;
         opacity: 1;
-        clip-path: none;
         transform: none;
     }
 }
 
 /* ------------------------------------------------------------------ */
-/* Print — the note prints as ink, complete                            */
+/* Print — the report prints as ink, complete                          */
 /* ------------------------------------------------------------------ */
 
 @media print {

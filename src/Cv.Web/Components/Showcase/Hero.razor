@@ -1,103 +1,54 @@
 @*
-    The note face — the portfolio's opening plate in the Legal Tender world.
+    The report masthead — the portfolio's opening statement in the Annual
+    Report world (the user's pinned rebuild after recruiter feedback on the
+    banknote world).
 
-    The visual anchor is the denomination: a "9" at banknote scale, filled with
-    engine-turned line geometry, serialled with real figures (9 markets, 7
-    gateways, 491 tests — nothing invented). The headline, pitch, facts and
-    actions sit beside it as the plate legend. The old before/after diagram
-    lived here and is gone at the user's word; its argument is told in full by
-    the flagship case study.
+    The masthead claims the viewport: the statement in Archivo Expanded Black,
+    the deck line beneath it in tracked mono, then the key-figures strip as a
+    ruled tabular row — every figure derived from the case-study record, never
+    typed into markup — and the actions as report folios.
 *@
 
 <section class="sheet hero" aria-label="Introduction">
-    <div class="hero__grid">
+    <div class="hero__masthead">
+        <h1 class="hero__headline">
+            <span class="line"><span>Nine countries.</span></span>
+            <span class="line"><span class="hero__accent">One gateway.</span></span>
+            <span class="line"><span>Built</span></span>
+            <span class="line"><span>alone.</span></span>
+        </h1>
 
-        <figure class="denomination" role="img" aria-label="The numeral 9, engraved at banknote scale — nine payment markets, seven gateways, 491 unit tests">
-            @*
-                SVG text with a pattern fill: the engine-turned line field of the
-                note. Patterns resolve through CSS custom properties, so the
-                engraving re-inks with the theme; SVG text renders in the same
-                Bodoni the page loads. The damped print-in is CSS only (see the
-                scoped sheet) and runs once, armed by motion.js's existing
-                never-replay hero guard.
-            *@
-            <svg class="denomination__print" viewBox="0 0 220 260" aria-hidden="true">
-                <defs>
-                    @* Engine-turned interlace: two counterphased waves in one tile so
-                       the field reads as woven curves, not a straight hatch. Under it,
-                       a faint solid impression keeps the digit's hairline strokes
-                       inked where the curve spacing misses them. *@
-                    <pattern id="engine-turn" width="12" height="7" patternUnits="userSpaceOnUse">
-                        <path d="M0 3.5 C 2 0.5, 4 0.5, 6 3.5 S 10 6.5, 12 3.5"
-                              fill="none" stroke="var(--accent)" stroke-width="1" opacity="0.9" />
-                        <path d="M0 3.5 C 2 6.5, 4 6.5, 6 3.5 S 10 0.5, 12 3.5"
-                              fill="none" stroke="var(--accent)" stroke-width="1" opacity="0.55" />
-                    </pattern>
-                    <pattern id="engine-turn-fine" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
-                        <line x1="0" y1="0" x2="0" y2="3" stroke="var(--accent)" stroke-width="0.7" opacity="0.45" />
-                    </pattern>
-                </defs>
-                <text x="110" y="212" text-anchor="middle"
-                      font-family="Bodoni Moda, Didot, 'Times New Roman', serif"
-                      font-size="250" font-weight="600"
-                      fill="var(--accent)" opacity="0.17">9</text>
-                <text x="110" y="212" text-anchor="middle"
-                      font-family="Bodoni Moda, Didot, 'Times New Roman', serif"
-                      font-size="250" font-weight="600"
-                      fill="url(#engine-turn)">9</text>
-                <text x="110" y="212" text-anchor="middle"
-                      font-family="Bodoni Moda, Didot, 'Times New Roman', serif"
-                      font-size="250" font-weight="600"
-                      fill="url(#engine-turn-fine)">9</text>
-            </svg>
-            <figcaption class="denomination__serials mono">
-                <span>PLATE NO. 9 · 7 · 491</span>
-                <span>9 MARKETS · 7 GATEWAYS · 491 TESTS</span>
-                <span>ALEXANDRIA · EET · BUILT ALONE</span>
-            </figcaption>
-        </figure>
+        <p class="hero__deck mono">Built alone · End to end</p>
 
-        <div class="hero__lede">
-            <h1 class="hero__headline">
-                <span class="line"><span>Nine countries.</span></span>
-                <span class="line"><span class="hero__accent">One gateway.</span></span>
-                <span class="line"><span>Built</span></span>
-                <span class="line"><span>alone.</span></span>
-            </h1>
+        <p class="hero__pitch">
+            Senior .NET engineer. I designed and built the payment middleware serving
+            9 countries entirely on my own — seven gateways behind one stateless API —
+            and I take the same end-to-end ownership of the systems everyone else
+            stopped touching.
+        </p>
+    </div>
 
-            @* The plate legend — a byline under the title, never a kicker above it. *@
-            <p class="hero__legend mono">Built alone · End to end</p>
+    <div class="hero__figures" role="group" aria-label="Key figures">
+        <div class="hero__fact"><strong class="mono"><span data-count-to="@PaymentMarkets" aria-hidden="true">@PaymentMarkets</span><span class="visually-hidden">@PaymentMarkets</span></strong><span class="hero__fact-label">payment markets</span></div>
+        <div class="hero__fact"><strong class="mono"><span data-count-to="@UpgradeCycleDays" aria-hidden="true">@UpgradeCycleDays</span><span class="visually-hidden">@UpgradeCycleDays</span></strong><span class="hero__fact-label">days max upgrade cycle, from 5–7</span></div>
+        <div class="hero__fact"><span class="hero__fact-text">@ExperiencePhrase</span></div>
+        <div class="hero__fact"><span class="hero__fact-text">@Profile.Location — @Profile.Timezone</span></div>
+        <div class="hero__fact hero__fact--gold"><strong class="mono"><span data-count-to="@AwardCount" aria-hidden="true">@AwardCount</span><span class="visually-hidden">@AwardCount</span></strong><span class="hero__fact-label">company awards</span></div>
+    </div>
 
-            <p class="hero__pitch">
-                Senior .NET engineer. I designed and built the payment middleware serving
-                9 countries entirely on my own — seven gateways behind one stateless API —
-                and I take the same end-to-end ownership of the systems everyone else
-                stopped touching.
-            </p>
-
-            <div class="hero__facts" role="group" aria-label="Track record at a glance">
-                <span class="hero__fact"><strong class="mono"><span data-count-to="@PaymentMarkets" aria-hidden="true">@PaymentMarkets</span><span class="visually-hidden">@PaymentMarkets</span></strong> payment markets</span>
-                <span class="hero__fact">upgrade cycle <strong class="mono"><span data-count-to="@UpgradeCycleDays" aria-hidden="true">@UpgradeCycleDays</span><span class="visually-hidden">@UpgradeCycleDays</span></strong> days max, from 5–7</span>
-                <span class="hero__fact">@ExperiencePhrase</span>
-                <span class="hero__fact">@Profile.Location — @Profile.Timezone</span>
-                <span class="hero__fact hero__fact--gold"><strong class="mono"><span data-count-to="@AwardCount" aria-hidden="true">@AwardCount</span><span class="visually-hidden">@AwardCount</span></strong> company awards</span>
-            </div>
-
-            <div class="hero__actions">
-                <a class="btn btn--primary" href="/cv">Read the CV</a>
-                @*
-                    The PDF, one tap from the hero. target is load-bearing: an
-                    anchor carrying target is left to the browser instead of
-                    Blazor's router, which matches no PDF route.
-                *@
-                <a class="btn btn--ghost" href="/Bahaa-Aldeen-Mohamed-CV.pdf"
-                   target="_blank" rel="noopener" download>Download CV (PDF)</a>
-                @if (!string.IsNullOrWhiteSpace(Profile.GitHub))
-                {
-                    <a class="btn btn--ghost" href="@Profile.GitHub">GitHub</a>
-                }
-            </div>
-        </div>
+    <div class="hero__actions">
+        <a class="btn btn--primary" href="/cv">Read the CV</a>
+        @*
+            The PDF, one tap from the masthead. target is load-bearing: an anchor
+            carrying target is left to the browser instead of Blazor's router,
+            which matches no PDF route.
+        *@
+        <a class="btn btn--ghost" href="/Bahaa-Aldeen-Mohamed-CV.pdf"
+           target="_blank" rel="noopener" download>Download CV (PDF)</a>
+        @if (!string.IsNullOrWhiteSpace(Profile.GitHub))
+        {
+            <a class="btn btn--ghost" href="@Profile.GitHub">GitHub</a>
+        }
     </div>
 </section>
 

@@ -69,9 +69,9 @@
     --glass-blur: 0px;
     --dock-bg: var(--sheet-solid);
 
-    /* Type — the engraved didone for display, the document serif for body,
-       the registry mono for serials and data. */
-    --font-display: "Bodoni Moda", "Didot", "Bodoni MT", "Times New Roman", serif;
+    /* Type — the annual report: one grotesk with real width and weight range for
+       the masthead, the document serif for body, the registry mono for figures. */
+    --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
     --font-body: "Spectral", Georgia, "Times New Roman", serif;
     --font-mono: "Fragment Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
 
@@ -283,48 +283,31 @@ main { display: block; padding-bottom: 5rem; }
     padding: clamp(1.8rem, 1.2rem + 3vw, 3.4rem) clamp(1.3rem, 3.5vw, 3rem);
 }
 
-/* The plate frame: the inner rule of a banknote border, inset off the edge. */
+/* Report pagination corner: a small folio tick, not decoration. */
 .sheet::before {
     content: "";
     position: absolute;
-    inset: 7px;
-    border: 1px solid var(--line);
-    border-radius: calc(var(--radius-sheet) - 5px);
-    pointer-events: none;
-}
-.sheet::after {
-    content: "";
-    position: absolute;
-    inset: 7px;
-    border-radius: calc(var(--radius-sheet) - 5px);
-    pointer-events: none;
-    /* Machined quarter-dots seated just INSIDE each corner of the inner rule —
-       centers at 6px,6px so the box's own 5px corner radius never clips them. */
-    background-image:
-        radial-gradient(circle at 6px 6px, var(--ink-faint) 0 2.2px, transparent 2.8px),
-        radial-gradient(circle at calc(100% - 6px) 6px, var(--ink-faint) 0 2.2px, transparent 2.8px),
-        radial-gradient(circle at 6px calc(100% - 6px), var(--ink-faint) 0 2.2px, transparent 2.8px),
-        radial-gradient(circle at calc(100% - 6px) calc(100% - 6px), var(--ink-faint) 0 2.2px, transparent 2.8px);
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--ink);
+    border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
+    opacity: .85;
 }
 
 .sheet--slim { padding-block: 1.5rem; }
 
 .sheet__title {
     font-family: var(--font-display);
-    font-size: clamp(1.65rem, 1.1rem + 2.3vw, 2.55rem);
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    line-height: 1.08;
-    /* The double rule above a plate title — banknote border language. */
-    padding-top: 1.1rem;
-    border-top: 1px solid var(--line);
-    position: relative;
-}
-.sheet__title::before {
-    content: "";
-    position: absolute;
-    top: 3px; left: 0; right: 0;
-    border-top: 1px solid var(--line);
+    font-size: clamp(1.55rem, 1.1rem + 2.1vw, 2.35rem);
+    font-weight: 750;
+    font-stretch: 110%;
+    letter-spacing: -0.025em;
+    line-height: 1.06;
+    /* The report's section rule: one heavy ink bar, the grid's authority. */
+    padding-top: 1rem;
+    border-top: 3px solid var(--ink);
 }
 
 .sheet__lede {
@@ -377,9 +360,10 @@ main { display: block; padding-bottom: 5rem; }
 
 .site-header__name {
     font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 1.08rem;
-    letter-spacing: .015em;
+    font-weight: 800;
+    font-size: 1.02rem;
+    letter-spacing: .02em;
+    text-transform: uppercase;
     color: var(--ink);
     text-decoration: none;
     margin-right: auto;
@@ -695,8 +679,9 @@ main { display: block; padding-bottom: 5rem; }
 
 .case-index__title {
     font-family: var(--font-display);
-    font-size: 1.16rem;
-    font-weight: 600;
+    font-size: 1.12rem;
+    font-weight: 750;
+    letter-spacing: -0.015em;
     color: var(--ink);
 }
 
@@ -775,7 +760,9 @@ main { display: block; padding-bottom: 5rem; }
 
 .award__title {
     font-family: var(--font-display);
-    font-size: 1.08rem;
+    font-size: 1.05rem;
+    font-weight: 750;
+    letter-spacing: -0.01em;
     color: var(--gold);
 }
 
