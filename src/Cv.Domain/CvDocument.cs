@@ -78,7 +78,7 @@ public sealed record Profile
     public string? Relocation { get; init; }
 
     /// <summary>
-    /// Stored in international format ("+20 128 458 6608") so that click-to-call works.
+    /// Stored in international format ("+20 1XX XXX XXXX") so that click-to-call works.
     /// A leading trunk zero after the country code breaks the tel: link.
     /// </summary>
     public required string Phone { get; init; }
