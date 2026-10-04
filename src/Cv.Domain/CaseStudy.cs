@@ -47,6 +47,17 @@ public sealed record CaseStudy
     public IReadOnlyList<string> Stack { get; init; } = [];
 
     /// <summary>
+    /// Public, third-party pages a reader can open to check the work exists — a live
+    /// product, the agency's own case study. Never the source code, and never a page
+    /// this site controls: evidence that the author wrote cannot verify the author.
+    /// </summary>
+    /// <remarks>
+    /// A link proves the system is real and who delivered it; it does not prove which
+    /// part was mine. The study's own prose has to carry that claim, precisely.
+    /// </remarks>
+    public IReadOnlyList<EvidenceLink> Evidence { get; init; } = [];
+
+    /// <summary>
     /// Optional Mermaid diagram source describing the architecture.
     /// Mermaid is already used for documentation at work, so this is consistent
     /// with existing practice rather than decoration.
@@ -66,4 +77,13 @@ public sealed record CaseStudy
     public bool HasWriteup => !string.IsNullOrWhiteSpace(WriteupUrl);
 
     public bool HasDiagram => !string.IsNullOrWhiteSpace(MermaidDiagram);
+}
+
+/// <summary>One public page that corroborates a case study.</summary>
+public sealed record EvidenceLink
+{
+    public required string Label { get; init; }
+
+    /// <summary>An absolute https URL to a page outside this site.</summary>
+    public required string Url { get; init; }
 }

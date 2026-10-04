@@ -1,54 +1,73 @@
 @*
-    The report masthead — the portfolio's opening statement in the Annual
-    Report world (the user's pinned rebuild after recruiter feedback on the
-    banknote world).
+    The opening statement, in the Spec Sheet world.
 
-    The masthead claims the viewport: the statement in Archivo Expanded Black,
-    the deck line beneath it in tracked mono, then the key-figures strip as a
-    ruled tabular row — every figure derived from the case-study record, never
-    typed into markup — and the actions as report folios.
+    Two columns on a wide screen: the claim and its proof on the left, the key figures
+    as a ruled panel on the right — the old masthead left the right 40% of the card
+    empty. On a phone the figures drop below the actions, so the first screen always
+    holds the headline, the pitch and a way to act.
+
+    The headline is about how I work, not about working alone. "Built alone" led the
+    previous version three times over; to an architect-track reader it signals a solo
+    hero rather than leverage, and the payment middleware was in fact reviewed and
+    merged by a team lead. The proof stays — in the pitch and in the figures — without
+    the framing.
+
+    Every figure is read out of the case-study record (see the code below), never typed
+    into this markup: an audited figure that can drift from its source is not one.
 *@
 
 <section class="sheet hero" aria-label="Introduction">
-    <div class="hero__masthead">
-        <h1 class="hero__headline">
-            <span class="line"><span>Nine countries.</span></span>
-            <span class="line"><span class="hero__accent">One gateway.</span></span>
-            <span class="line"><span>Built</span></span>
-            <span class="line"><span>alone.</span></span>
-        </h1>
+    <div class="hero__grid">
+        <div class="hero__main">
+            <p class="hero__who">
+                <span class="hero__name">@Profile.Name</span>
+                <span class="hero__role">Senior .NET Engineer · @Profile.Location (@TimezoneShort)</span>
+            </p>
 
-        <p class="hero__deck mono">Built alone · End to end</p>
+            <h1 class="hero__headline">
+                <span class="line">I make the architecture decisions,</span>
+                <span class="line hero__accent">then I write the code.</span>
+            </h1>
 
-        <p class="hero__pitch">
-            Senior .NET engineer. I designed and built the payment middleware serving
-            9 countries entirely on my own — seven gateways behind one stateless API —
-            and I take the same end-to-end ownership of the systems everyone else
-            stopped touching.
-        </p>
-    </div>
+            <p class="hero__pitch">
+                I designed and wrote the payment middleware behind Texas Chicken in
+                @PaymentMarkets countries, led the re-architecture that unfroze a legacy .NET
+                estate — with an AI-guided workflow that cut its upgrade cycle from 5–7 days
+                to @UpgradeCycleDays — and I am building a multi-tenant SaaS whose every
+                structural decision is written down first.
+            </p>
 
-    <div class="hero__figures" role="group" aria-label="Key figures">
-        <div class="hero__fact"><strong class="mono"><span data-count-to="@PaymentMarkets" aria-hidden="true">@PaymentMarkets</span><span class="visually-hidden">@PaymentMarkets</span></strong><span class="hero__fact-label">payment markets</span></div>
-        <div class="hero__fact"><strong class="mono"><span data-count-to="@UpgradeCycleDays" aria-hidden="true">@UpgradeCycleDays</span><span class="visually-hidden">@UpgradeCycleDays</span></strong><span class="hero__fact-label">days max upgrade cycle, from 5–7</span></div>
-        <div class="hero__fact"><span class="hero__fact-text">@ExperiencePhrase</span></div>
-        <div class="hero__fact"><span class="hero__fact-text">@Profile.Location — @Profile.Timezone</span></div>
-        <div class="hero__fact hero__fact--gold"><strong class="mono"><span data-count-to="@AwardCount" aria-hidden="true">@AwardCount</span><span class="visually-hidden">@AwardCount</span></strong><span class="hero__fact-label">company awards</span></div>
-    </div>
+            <div class="hero__actions">
+                <a class="btn btn--primary" href="/cv">Read the CV</a>
+                @*
+                    The PDF, one tap from the first screen. target is load-bearing: an
+                    anchor carrying target is left to the browser instead of Blazor's
+                    router, which matches no PDF route.
+                *@
+                <a class="btn btn--ghost" href="/Bahaa-Aldeen-Mohamed-CV.pdf"
+                   target="_blank" rel="noopener" download>Download PDF</a>
+                <a class="btn btn--link" href="/#work">See the work <span aria-hidden="true">→</span></a>
+            </div>
+        </div>
 
-    <div class="hero__actions">
-        <a class="btn btn--primary" href="/cv">Read the CV</a>
-        @*
-            The PDF, one tap from the masthead. target is load-bearing: an anchor
-            carrying target is left to the browser instead of Blazor's router,
-            which matches no PDF route.
-        *@
-        <a class="btn btn--ghost" href="/Bahaa-Aldeen-Mohamed-CV.pdf"
-           target="_blank" rel="noopener" download>Download CV (PDF)</a>
-        @if (!string.IsNullOrWhiteSpace(Profile.GitHub))
-        {
-            <a class="btn btn--ghost" href="@Profile.GitHub">GitHub</a>
-        }
+        <dl class="hero__figures" aria-label="Key figures">
+            <div class="hero__fact">
+                <dt class="hero__fact-label">countries on one payment API, @GatewayCount gateways behind it</dt>
+                <dd class="hero__fact-value"><span data-count-to="@PaymentMarkets" aria-hidden="true">@PaymentMarkets</span><span class="visually-hidden">@PaymentMarkets</span></dd>
+            </div>
+            <div class="hero__fact">
+                <dt class="hero__fact-label">days per upgrade cycle, down from 5–7, after the AI-guided workflow</dt>
+                <dd class="hero__fact-value"><span data-count-to="@UpgradeCycleDays" aria-hidden="true">@UpgradeCycleDays</span><span class="visually-hidden">@UpgradeCycleDays</span></dd>
+            </div>
+            <div class="hero__fact">
+                <dt class="hero__fact-label">architecture decision records behind my multi-tenant SaaS</dt>
+                <dd class="hero__fact-value"><span data-count-to="@DecisionRecords" aria-hidden="true">@DecisionRecords</span><span class="visually-hidden">@DecisionRecords</span></dd>
+            </div>
+            <div class="hero__fact">
+                <dt class="hero__fact-label">company awards, for that workflow and for AI training</dt>
+                <dd class="hero__fact-value"><span data-count-to="@AwardCount" aria-hidden="true">@AwardCount</span><span class="visually-hidden">@AwardCount</span></dd>
+            </div>
+        </dl>
     </div>
 </section>
 
@@ -56,24 +75,37 @@
     [Parameter, EditorRequired]
     public required Profile Profile { get; set; }
 
-    [Parameter, EditorRequired]
-    public required string ExperiencePhrase { get; set; }
-
     [Parameter]
     public int AwardCount { get; set; }
 
     [Parameter, EditorRequired]
     public required IReadOnlyList<CaseStudy> CaseStudies { get; set; }
 
-    /// <summary>
-    /// The two hero figures are read out of the case-study record, not written
-    /// into this markup — they can never drift from the studies they come from.
-    /// The featured outcome carries the cycle time ("…to a maximum of 3"); the
-    /// payment study's summary names its markets ("…across 9 countries").
-    /// </summary>
-    private int UpgradeCycleDays => ExtractNumber(FindOutcome("5-7 working days"), "maximum of");
+    /// <summary>"EET (UTC+2)" reads as "EET" inside the role line's own parentheses.</summary>
+    private string TimezoneShort
+    {
+        get
+        {
+            var timezone = Profile.Timezone ?? string.Empty;
+            var open = timezone.IndexOf('(');
 
-    private int PaymentMarkets => ExtractNumber(FindSummary("9 countries"), "across");
+            return open > 0 ? timezone[..open].Trim() : timezone;
+        }
+    }
+
+    /// <summary>
+    /// The figures are read out of the case-study record, not written into this
+    /// markup — they can never drift from the studies they come from. The anchors
+    /// are pinned by RealCvDocumentTests.TheHeroFiguresStillHaveASourceInTheRecord,
+    /// so a copy edit that drops one fails the build instead of rendering a zero.
+    /// </summary>
+    private int UpgradeCycleDays => NumberAfter(FindOutcome("5-7 working days"), "maximum of");
+
+    private int PaymentMarkets => NumberAfter(FindSummary("9 countries"), "across");
+
+    private int GatewayCount => NumberBefore(FindOutcome("payment gateways"), "payment gateways");
+
+    private int DecisionRecords => NumberBefore(FindOutcome("architecture decision records"), "architecture decision records");
 
     private string? FindOutcome(string contains) => CaseStudies
         .SelectMany(s => s.Outcomes)
@@ -84,11 +116,10 @@
         ?.Summary;
 
     /// <summary>
-    /// The number that follows the given anchor phrase — "a maximum of 3",
-    /// "across 9 countries" — not the leading digits, which these sentences
-    /// do not start with.
+    /// The number that follows the given anchor phrase — "a maximum of 3", "across 9
+    /// countries" — not the leading digits, which these sentences do not start with.
     /// </summary>
-    private static int ExtractNumber(string? text, string anchor)
+    private static int NumberAfter(string? text, string anchor)
     {
         if (string.IsNullOrEmpty(text))
         {
@@ -108,5 +139,41 @@
             .Trim();
 
         return int.TryParse(digits, out var value) ? value : 0;
+    }
+
+    /// <summary>
+    /// The number immediately before the anchor phrase — "7 payment gateways",
+    /// "14 architecture decision records".
+    /// </summary>
+    private static int NumberBefore(string? text, string anchor)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return 0;
+        }
+
+        var anchorIndex = text.IndexOf(anchor, StringComparison.OrdinalIgnoreCase);
+
+        if (anchorIndex <= 0)
+        {
+            return 0;
+        }
+
+        // Walked by index rather than with Reverse(): under C# 14's first-class spans an
+        // extension Reverse() call can bind to MemoryExtensions.Reverse, which mutates
+        // in place and returns nothing.
+        var end = anchorIndex;
+        while (end > 0 && char.IsWhiteSpace(text[end - 1]))
+        {
+            end--;
+        }
+
+        var start = end;
+        while (start > 0 && char.IsDigit(text[start - 1]))
+        {
+            start--;
+        }
+
+        return int.TryParse(text[start..end], out var value) ? value : 0;
     }
 }

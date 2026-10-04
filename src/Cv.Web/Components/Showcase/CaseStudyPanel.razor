@@ -35,6 +35,21 @@
         </div>
     }
 
+    @if (Study.Evidence.Count > 0)
+    {
+        <p class="evidence-line">
+            <span class="evidence-line__label mono">Verify</span>
+            @foreach (var (link, i) in Study.Evidence.Select((link, i) => (link, i)))
+            {
+                if (i > 0)
+                {
+                    <span aria-hidden="true"> · </span>
+                }
+                <a href="@link.Url" target="_blank" rel="noopener">@link.Label</a>
+            }
+        </p>
+    }
+
     @if (Study.Stack.Count > 0)
     {
         <ul class="stack">

@@ -67,12 +67,18 @@ else
 
             <section class="study__block">
                 <h2>The problem</h2>
-                <p>@study.Problem</p>
+                @foreach (var paragraph in Paragraphs(study.Problem))
+                {
+                    <p>@paragraph</p>
+                }
             </section>
 
             <section class="study__block">
                 <h2>What I did</h2>
-                <p>@study.Approach</p>
+                @foreach (var paragraph in Paragraphs(study.Approach))
+                {
+                    <p>@paragraph</p>
+                }
             </section>
 
             @if (study.Outcomes.Count > 0)
@@ -83,6 +89,28 @@ else
                         @foreach (var outcome in study.Outcomes)
                         {
                             <li>@outcome</li>
+                        }
+                    </ul>
+                </section>
+            }
+
+            @*
+                Third-party pages a reader can open to check the work is real. They prove
+                the system is live and who delivered it — not which part was mine, which
+                is why the note says so plainly instead of letting the links imply more.
+            *@
+            @if (study.Evidence.Count > 0)
+            {
+                <section class="study__block">
+                    <h2>Check it yourself</h2>
+                    <p class="evidence__note">
+                        Public pages this site does not control. They show the system is live
+                        and who delivered it; the account above is what I did inside it.
+                    </p>
+                    <ul class="evidence">
+                        @foreach (var link in study.Evidence)
+                        {
+                            <li><a href="@link.Url" target="_blank" rel="noopener">@link.Label</a></li>
                         }
                     </ul>
                 </section>
@@ -147,6 +175,13 @@ else
     // than creating a new one, so the parameter change has to be picked up here as well
     // — otherwise the previous/next links would render the study you just left.
     protected override void OnParametersSet() => Select();
+
+    /// <summary>
+    /// Long prose in cv.json marks its paragraph breaks with a blank line; a single
+    /// 250-word block on a case page reads as a wall, not as reasoning.
+    /// </summary>
+    private static IEnumerable<string> Paragraphs(string text) => text
+        .Split("\n\n", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
     private void Select()
     {

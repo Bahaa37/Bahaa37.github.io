@@ -69,3 +69,13 @@ jobs:
           name: cv-pdf
           path: publish/wwwroot/Bahaa-Aldeen-Mohamed-CV.pdf
           if-no-files-found: ignore
+
+      # The whole prerendered site, so a branch can be looked at exactly as it would
+      # deploy — CI cannot see an unstyled button, a person can. Kept for a week.
+      - name: Upload the built site for review
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: publish/wwwroot
+          retention-days: 7

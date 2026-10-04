@@ -7,10 +7,15 @@
 
 <section class="sheet reveal" id="timeline">
     <div class="shell">
-        <h2 class="sheet__title">@ExperiencePhrase across @Employers.Count employers</h2>
+        @*
+            A plain heading: "3.5+ years" was the weakest fact on the page and it was
+            set as a section title. It stays, as context, in the lede.
+        *@
+        <h2 class="sheet__title">Experience</h2>
         <p class="sheet__lede">
-            Each role's stack line names only what that role's own record mentions —
-            and numbers appear only where they are real.
+            @ExperiencePhrase across @Employers.Count employers. Each role's stack line
+            names only what that role's own record mentions, and numbers appear only
+            where they are real.
         </p>
 
         <ol class="timeline">

@@ -6,10 +6,12 @@
     <title>Link preview source</title>
     <!--
         Source for og-preview.png, captured at exactly 1200x630 by
-        _tools/make_og_image.py. It is a plain static page rather than a screenshot of
-        the app so the composition is deliberate and does not shift when the site
-        design changes. Not routed by the app; nothing links to it.
+        _tools/make_og_image.py. A plain static page rather than a screenshot of the
+        app, so the composition is deliberate. Not routed by the app; nothing links
+        to it. Spec Sheet world (2026-10-04): the previous card said "Sole engineer,
+        end to end", which is the framing the site no longer leads with.
     -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..500&display=swap" />
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -19,106 +21,73 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 0 76px;
-            font-family: "Archivo", "Helvetica Neue", Arial, sans-serif;
-            color: #14261e;
-            /* The Legal Tender note face: rag paper with one soft vignette, and
-               the engine-turned line field ghosting under the name. */
-            background:
-                radial-gradient(90% 120% at 20% 0%, #faf6ea 0%, transparent 55%),
-                #f3eede;
+            padding: 0 80px;
+            font-family: "Geist", "Segoe UI", Arial, sans-serif;
+            color: #111827;
+            background: #f7f8fa;
             overflow: hidden;
-            position: relative;
+            border-top: 10px solid #1f4fd8;
         }
 
-        /* The engine-turned border of the note — fine diagonal engraving. */
-        body::before {
-            content: "";
-            position: absolute;
-            inset: 18px;
-            border: 2px solid #b8ab8c;
-            outline: 1px solid #b8ab8c;
-            outline-offset: 5px;
-            pointer-events: none;
-        }
-
-        .location {
-            font-size: 19px;
-            font-weight: 600;
-            letter-spacing: .18em;
-            text-transform: uppercase;
-            color: #5d7263;
-            font-family: "Fragment Mono", Consolas, monospace;
+        .who {
+            font-family: "Geist Mono", Consolas, monospace;
+            font-size: 22px;
+            color: #5b6472;
         }
 
         h1 {
-            margin-top: 16px;
-            font-family: "Archivo", "Helvetica Neue", Arial, sans-serif;
-            font-size: 78px;
-            line-height: 1.02;
-            letter-spacing: -.01em;
+            margin-top: 18px;
+            font-size: 72px;
+            font-weight: 650;
+            line-height: 1.04;
+            letter-spacing: -.045em;
         }
 
-        .role {
-            margin-top: 16px;
-            font-size: 27px;
-            font-weight: 600;
-            color: #0c5a45;
-        }
-
-        .rule {
-            width: 92px;
-            height: 4px;
-            margin: 30px 0;
-            border-radius: 2px;
-            background: #0c5a45;
-        }
+        h1 span { color: #1f4fd8; }
 
         .facts {
             display: flex;
-            gap: 52px;
+            margin-top: 48px;
+            border: 1px solid #dce0e6;
+            border-radius: 12px;
+            background: #fff;
+            width: fit-content;
+        }
+
+        .fact { padding: 22px 34px; border-right: 1px solid #dce0e6; }
+        .fact:last-child { border-right: 0; }
+
+        .fact__value {
+            font-size: 44px;
+            font-weight: 600;
+            letter-spacing: -.04em;
+            line-height: 1;
         }
 
         .fact__label {
-            font-size: 14px;
-            font-weight: 600;
-            letter-spacing: .14em;
-            text-transform: uppercase;
-            color: #5d7263;
-            font-family: "Fragment Mono", Consolas, monospace;
+            margin-top: 8px;
+            font-size: 18px;
+            color: #374151;
         }
-
-        .fact__value {
-            margin-top: 6px;
-            font-size: 27px;
-            font-weight: 600;
-            letter-spacing: -.01em;
-        }
-
-        /* The bronze medallion metal — recognition only. */
-        .fact--gold .fact__value { color: #7a4a2b; }
     </style>
 </head>
 
 <body>
-    <p class="location">Alexandria, Egypt</p>
-    <h1>Bahaa Aldeen<br />Mohamed</h1>
-    <p class="role">Senior .NET Engineer — Legacy Modernization &amp; Solution Architecture</p>
-
-    <div class="rule"></div>
+    <p class="who">Bahaa Aldeen Mohamed · Senior .NET Engineer · Alexandria, Egypt</p>
+    <h1>I make the architecture decisions,<br /><span>then I write the code.</span></h1>
 
     <div class="facts">
-        <div class="fact fact--gold">
-            <div class="fact__label">Upgrade cycle</div>
-            <div class="fact__value">5–7 days → 3</div>
+        <div class="fact">
+            <div class="fact__value">9</div>
+            <div class="fact__label">countries, one payment API</div>
         </div>
         <div class="fact">
-            <div class="fact__label">Payment markets</div>
-            <div class="fact__value">9 countries</div>
+            <div class="fact__value">5–7 → 3</div>
+            <div class="fact__label">days per upgrade cycle</div>
         </div>
         <div class="fact">
-            <div class="fact__label">Delivery</div>
-            <div class="fact__value">Sole engineer, end to end</div>
+            <div class="fact__value">14</div>
+            <div class="fact__label">ADRs behind a multi-tenant SaaS</div>
         </div>
     </div>
 </body>

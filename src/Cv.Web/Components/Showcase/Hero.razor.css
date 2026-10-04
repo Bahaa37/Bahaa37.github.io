@@ -1,31 +1,58 @@
 /*
-    The report masthead — hero composition for the Annual Report world.
+    The opening statement — Spec Sheet world.
 
-    .sheet in app.css supplies the paper and its top ink bar; everything here
-    is the composition: the masthead statement at report scale, the deck line,
-    the ruled key-figures strip, and the folio actions. The one authored motion
-    is the masthead's settle — plays once under motion.js's existing
-    never-replay guard (.is-armed/.is-playing), static by default, static under
-    reduced motion. Content is never hidden without those classes.
+    Two columns from 960px: the claim, its proof and the actions on the left; the key
+    figures as one framed panel on the right, so the first screen is full of evidence
+    instead of a wide empty card. Below 960px it is one column and the figures follow
+    the actions, so the call to action is always inside the first phone screen.
+
+    The one authored motion is a short settle, played once under motion.js's
+    never-replay guard (.is-armed/.is-playing). Content is never hidden without
+    those classes, and reduced motion gets the static hero.
 */
 
 .hero {
-    /* The masthead sheet runs wider than the column plates. */
-    width: min(100% - 2.5rem, calc(var(--page) + 5rem));
-    padding-top: clamp(2.2rem, 1.4rem + 4vw, 4rem);
+    border-top: 0;
+    padding-top: clamp(2.5rem, 1.6rem + 4vw, 5rem);
+    padding-bottom: clamp(2.5rem, 1.6rem + 4vw, 5rem);
+}
+
+.hero__grid {
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+}
+
+@media (min-width: 960px) {
+    .hero__grid { grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); gap: 3.5rem; }
 }
 
 /* ------------------------------------------------------------------ */
-/* The masthead                                                        */
+/* The claim                                                           */
 /* ------------------------------------------------------------------ */
 
+.hero__who {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .2rem .7rem;
+    font-size: .95rem;
+}
+
+.hero__name { font-weight: 600; color: var(--ink); }
+
+.hero__role {
+    font-family: var(--font-mono);
+    font-size: .8rem;
+    color: var(--ink-faint);
+}
+
 .hero__headline {
-    font-family: var(--font-display);
-    font-weight: 860;
-    font-stretch: 116%;
-    font-size: clamp(2.7rem, 1.4rem + 6vw, 6rem);
-    line-height: .98;
-    letter-spacing: -0.035em;
+    margin-top: 1.1rem;
+    font-size: clamp(2.3rem, 1.4rem + 3.2vw, 3.7rem);
+    font-weight: 650;
+    line-height: 1.04;
+    letter-spacing: -0.045em;
     color: var(--ink);
     text-wrap: balance;
 }
@@ -34,74 +61,68 @@
 
 .hero__accent { color: var(--accent); }
 
-.hero__deck {
-    margin-top: 1.1rem;
-    font-size: .72rem;
-    letter-spacing: .24em;
-    text-transform: uppercase;
-    color: var(--accent);
-}
-
 .hero__pitch {
-    margin-top: 1.2rem;
-    max-width: 62ch;
+    margin-top: 1.4rem;
+    max-width: 58ch;
     color: var(--ink-soft);
-    font-size: 1.07rem;
+    font-size: clamp(1.05rem, 1rem + .25vw, 1.18rem);
     line-height: 1.62;
 }
-
-/* ------------------------------------------------------------------ */
-/* The key-figures strip — a ruled tabular row, the report's table     */
-/* ------------------------------------------------------------------ */
-
-.hero__figures {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
-    margin-top: 2rem;
-    border-top: 1px solid var(--ink);
-    border-bottom: 1px solid var(--line);
-}
-
-.hero__fact {
-    display: flex;
-    flex-direction: column;
-    gap: .25rem;
-    padding: .85rem 1rem .85rem 0;
-    border-right: 1px solid var(--line);
-}
-
-.hero__fact:last-child { border-right: 0; padding-right: 0; }
-
-.hero__fact strong {
-    font-family: var(--font-mono);
-    font-weight: 400;
-    font-size: 1.35rem;
-    color: var(--ink);
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-}
-
-.hero__fact-label,
-.hero__fact-text {
-    font-family: var(--font-mono);
-    font-size: .68rem;
-    letter-spacing: .05em;
-    color: var(--ink-faint);
-    line-height: 1.4;
-}
-
-.hero__fact--gold strong,
-.hero__fact--gold .hero__fact-label { color: var(--gold); }
-
-/* ------------------------------------------------------------------ */
-/* The folio actions                                                   */
-/* ------------------------------------------------------------------ */
 
 .hero__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: .7rem;
-    margin-top: 1.7rem;
+    align-items: center;
+    gap: .6rem;
+    margin-top: 2rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* The figures — one framed panel, four uniform cells                  */
+/* ------------------------------------------------------------------ */
+
+.hero__figures {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: 0;
+    background: var(--sheet-solid);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sheet);
+    box-shadow: var(--shadow-sheet);
+    overflow: hidden;
+}
+
+/* The term follows the number in the markup's reading order for assistive tech
+   (dt, then dd); visually the number leads. */
+.hero__fact {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: .45rem;
+    padding: 1.4rem 1.4rem 1.5rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.hero__fact:nth-child(odd) { border-right: 1px solid var(--line); }
+.hero__fact:nth-last-child(-n + 2) { border-bottom: 0; }
+
+.hero__fact-value {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 1.8rem + 1.4vw, 2.9rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+}
+
+.hero__fact:first-child .hero__fact-value { color: var(--accent); }
+
+.hero__fact-label {
+    font-size: .88rem;
+    line-height: 1.4;
+    color: var(--ink-soft);
 }
 
 /* ------------------------------------------------------------------ */
@@ -109,25 +130,18 @@
 /* ------------------------------------------------------------------ */
 
 .js-motion .hero.is-playing .hero__headline .line {
-    animation: masthead-settle .6s cubic-bezier(.22, .8, .3, 1) both;
+    animation: hero-settle .55s cubic-bezier(.22, .8, .3, 1) both;
 }
 
-.js-motion .hero.is-playing .hero__headline .line:nth-child(2) { animation-delay: .1s; }
-.js-motion .hero.is-playing .hero__headline .line:nth-child(3) { animation-delay: .2s; }
-.js-motion .hero.is-playing .hero__headline .line:nth-child(4) { animation-delay: .3s; }
+.js-motion .hero.is-playing .hero__headline .line:nth-child(2) { animation-delay: .08s; }
 
-.js-motion .hero.is-playing .hero__deck,
-.js-motion .hero.is-playing .hero__pitch { animation: masthead-settle .6s cubic-bezier(.22, .8, .3, 1) both .4s; }
+.js-motion .hero.is-playing .hero__pitch,
+.js-motion .hero.is-playing .hero__actions { animation: hero-settle .55s cubic-bezier(.22, .8, .3, 1) both .16s; }
 
-.js-motion .hero.is-playing .hero__figures { animation: figures-rule .7s cubic-bezier(.22, .8, .3, 1) both .5s; }
+.js-motion .hero.is-playing .hero__figures { animation: hero-settle .6s cubic-bezier(.22, .8, .3, 1) both .24s; }
 
-@keyframes masthead-settle {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: none; }
-}
-
-@keyframes figures-rule {
-    from { opacity: 0; transform: translateY(6px); }
+@keyframes hero-settle {
+    from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: none; }
 }
 
@@ -136,19 +150,11 @@
 /* ------------------------------------------------------------------ */
 
 @media (max-width: 720px) {
-    .hero {
-        width: min(100% - 2.5rem, var(--page));
-        /* Clear zone for the fixed seal strip at rest on a phone. */
-        padding-bottom: 4.6rem;
-    }
-
-    .hero__figures { grid-template-columns: 1fr 1fr; }
-    .hero__fact:nth-child(2n) { border-right: 0; }
-    .hero__fact { border-bottom: 1px dashed var(--line); }
-    .hero__fact:nth-last-child(-n + 2) { border-bottom: 0; }
-    .hero__fact { padding: .7rem .6rem .7rem 0; }
-
-    .hero__actions .btn { flex: 1 1 auto; justify-content: center; }
+    .hero { padding-top: 2rem; }
+    .hero__fact { padding: 1.1rem 1rem 1.2rem; }
+    .hero__fact-label { font-size: .82rem; }
+    .hero__actions .btn--primary,
+    .hero__actions .btn--ghost { flex: 1 1 auto; }
 }
 
 /* ------------------------------------------------------------------ */
@@ -157,8 +163,8 @@
 
 @media (prefers-reduced-motion: reduce) {
     .js-motion .hero.is-playing .hero__headline .line,
-    .js-motion .hero.is-playing .hero__deck,
     .js-motion .hero.is-playing .hero__pitch,
+    .js-motion .hero.is-playing .hero__actions,
     .js-motion .hero.is-playing .hero__figures {
         animation: none;
         opacity: 1;
@@ -167,10 +173,10 @@
 }
 
 /* ------------------------------------------------------------------ */
-/* Print — the report prints as ink, complete                          */
+/* Print                                                               */
 /* ------------------------------------------------------------------ */
 
 @media print {
-    .hero { width: 100%; box-shadow: none; }
+    .hero__figures { box-shadow: none; }
     .hero__actions { display: none; }
 }

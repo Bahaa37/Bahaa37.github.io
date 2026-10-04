@@ -17,7 +17,7 @@
     "gitHub": "https://github.com/Bahaa37",
     "website": "https://bahaa37.github.io"
   },
-  "summary": "I designed and built the payment middleware behind 9 countries entirely on my own — seven gateways, one stateless API. Then I removed the distributed transaction coordinator that had frozen a service estate on unsupported runtimes, and wrote the template, rules and AI-guided workflow that let other teams repeat it: an upgrade cycle of 5-7 working days now takes 3 at most, and the result won a company award. Targeting senior .NET engineering roles where the architectural decisions are part of the job.",
+  "summary": "Senior .NET engineer on the architecture track. I designed and wrote the payment middleware behind Texas Chicken in 9 countries — seven gateways, one stateless API — with the team lead reviewing and merging. I led the removal of a distributed transaction coordinator that had frozen a .NET estate, and built the AI-guided workflow that cut its upgrade cycle from 5-7 working days to 3, recognised with a company award. I write the architecture down before I build it.",
   "skillGroups": [
     {
       "category": "Architecture & Patterns",
@@ -223,7 +223,7 @@
       },
       "highlights": [
         {
-          "text": "Sole engineer, end to end: designed and built the payment-middleware proxy serving 9 countries — seven gateways behind one stateless API, an adapter per gateway, Clean Architecture with CQRS.",
+          "text": "Designed and wrote the payment middleware behind Texas Chicken in 9 countries — seven gateways behind one stateless API, an adapter per gateway, Clean Architecture with CQRS — in about a month, with the team lead reviewing and merging.",
           "tags": [
             "Architecture",
             "Payments",
@@ -266,6 +266,16 @@
         "end": "2024-11"
       },
       "highlights": [
+        {
+          "text": "On the inception of a co-working platform for a Saudi government development bank (five cities, team of 5), wrote and reviewed the SRS, set up the project infrastructure, and helped choose a modular monolith over microservices.",
+          "tags": [
+            "Architecture",
+            "SRS",
+            "Modular Monolith",
+            "Systems Analysis"
+          ],
+          "isFeatured": true
+        },
         {
           "text": "Produced the solution architecture documentation — architecture diagrams and workflow designs — that delivery teams used as the build reference.",
           "tags": [
@@ -493,7 +503,7 @@
       "shortTitle": "Removing DTC from an orchestrator",
       "summary": "Re-architected a Temporal.io orchestrator to drop its distributed transaction coordinator dependency, unblocking a service estate frozen on legacy .NET runtimes and cutting the upgrade cycle from 5-7 days to 3.",
       "organisation": "Andalusia Business Solutions",
-      "displayOrder": 2,
+      "displayOrder": 3,
       "problem": "The platform's orchestration layer depended on a distributed transaction coordinator to keep multi-service operations consistent. That dependency pinned services to old runtimes — .NET Core 2.2 and .NET Framework 4.5 — because the coordinator's behaviour could not be carried forward cleanly. Every attempted upgrade risked correctness, so the estate stayed frozen and the cost of change kept rising. Understanding and upgrading a single system cycle took 5 to 7 working days.",
       "approach": "I led the re-architecture of the platform's Temporal.io orchestrator so that consistency no longer relied on a distributed transaction coordinator, replacing ambient transactional guarantees with explicit orchestration on its durable-execution model. Rather than treat each service as a one-off, I authored a transformation project template and the rules governing it, so every later module started from a known-good shape instead of a blank page. I then built a set of AI skills and a workflow over them that guided engineers through the transformation — encoding the decisions that were otherwise re-derived by hand on every module. I led the rollout inside my own team and ran sessions with other teams migrating the same way.",
       "outcomes": [
@@ -517,7 +527,7 @@
       "shortTitle": "Making AI usable across a company",
       "summary": "Took AI from ad-hoc use to production: trained non-technical departments (SME recognition), shipped an autonomous Copilot Studio agent, and built the AI-guided workflow that cut upgrade cycles from 5-7 days to 3.",
       "organisation": "Andalusia Business Solutions",
-      "displayOrder": 3,
+      "displayOrder": 5,
       "problem": "AI tooling was available but unevenly used. Engineers applied it ad hoc with inconsistent results, and non-technical departments such as HR had no route into it at all — the tools assumed a technical vocabulary their work never required.",
       "approach": "I treated this as two different problems rather than one. For non-technical staff I designed and delivered a course pitched at their actual workflows instead of at the tooling, which is what earned the subject matter expert recognition. For engineering I went further than training: I built AI skills and an orchestrating workflow that encoded the modernization decisions directly, so the guidance lived in the process rather than in someone's memory. Alongside this I shipped an autonomous agent on Microsoft Copilot Studio, now in production use.",
       "outcomes": [
@@ -539,7 +549,7 @@
       "shortTitle": "Windoor Wizard Builder",
       "summary": "A multi-tenant SaaS for Egyptian UPVC window and door workshops, merging a commercial quoting and production platform with a cutting-optimisation engine verified against a real shop floor.",
       "organisation": "Personal project",
-      "displayOrder": 4,
+      "displayOrder": 6,
       "problem": "Egyptian UPVC workshops run on WhatsApp, Excel, and paper. Quotes are priced by hand, cut lists are worked out per job, and the profile offcuts that decide whether a job is profitable are estimated rather than calculated. Generic ERP does not help because it does not model the domain — it has no concept of a frame deduction registry, bar nesting, or the glass area and steel reinforcement that drive real cost. A workshop running generic software still does the hard part on paper.",
       "approach": "Three decisions carry this system. First, lengths are stored as exact integer tenths of a millimetre rather than as decimals: the shop cuts half-millimetres — 44 of 195 verified rows — and a rounded cut list produces a window that does not fit. The value type deliberately exposes no decimal factory, so rounding cannot enter the model at all; the wrong thing is unrepresentable rather than merely discouraged. Second, bar nesting is one-dimensional bin packing, so it uses First-Fit-Decreasing, with the three details that separate a real implementation from the textbook one: saw kerf charged per cut, loud failure on a piece longer than a bar rather than a best-effort list that cannot be executed, and a stable sort so two runs over one order produce identical cut lists. Every constant — bar length, end trim, kerf, minimum reusable offcut — is supplied by the caller, so a different workshop is configuration rather than code. Third, the engine became a bounded context inside the SaaS rather than a service beside it, because its calculations always run inside a tenant's quote and share that transaction; a network boundary would have bought overhead and returned nothing. Tenant isolation is enforced by EF Core global query filters, not by a WHERE clause every query is trusted to remember.",
       "outcomes": [
@@ -569,14 +579,14 @@
       "slug": "payment-gateway-middleware",
       "title": "One gateway, nine countries",
       "shortTitle": "One gateway, nine countries",
-      "summary": "Designed, built, and delivered end to end by one engineer: a stateless payment middleware unifying seven gateways across 9 countries behind a single API — an adapter per gateway, webhooks validated and forwarded, no database.",
+      "summary": "The payment middleware behind Texas Chicken across 9 countries: seven gateways behind a single stateless API — an adapter per gateway, webhooks validated and forwarded, no database. I designed and wrote it; the team lead reviewed and merged.",
       "organisation": "PS Digital",
       "displayOrder": 1,
-      "problem": "Payment integration had to work across nine country markets, each with its own providers, rules, and failure modes. Integrating every market directly into the products would have multiplied the same logic seven times over — seven gateway APIs, seven webhook formats, seven credential schemes — and made every provider change a cross-cutting edit. And it had to be carried by one engineer, so every abstraction had to pay for itself.",
-      "approach": "I designed and built the middleware alone, end to end. One integration surface speaks to the products; behind it, each gateway lives in its own adapter — Checkout.com, Benefit (Bahrain), Sadad (Qatar), PayMarkClick, MasterCard, and Google Pay and Apple Pay tokenized through MasterCard — resolved by a factory, so adding a gateway means adding an adapter rather than editing shared code. Requests run through MediatR CQRS with validation and logging pipeline behaviors. The decisive choice was statelessness: no database at all. Client applications keep their own payment state; the middleware generates hosted payment URLs, validates each gateway's webhook signature — SHA-256 and AES for Sadad, SDK-encrypted responses for Benefit, five-layer fraud validation for PayMarkClick — and forwards what is genuine to the client's callback URL. A background worker handles the retries that statelessness still needs. No data stored means nothing to leak, nothing to retain, and horizontal scale by default.",
+      "problem": "Payment integration had to work across nine country markets, each with its own providers, rules, and failure modes. Integrating every market directly into the products would have multiplied the same logic seven times over — seven gateway APIs, seven webhook formats, seven credential schemes — and made every provider change a cross-cutting edit.",
+      "approach": "I designed the middleware and wrote the code; the team lead reviewed and merged each change. One integration surface speaks to the products; behind it, each gateway lives in its own adapter — Checkout.com, Benefit (Bahrain), Sadad (Qatar), PayMarkClick, MasterCard, and Google Pay and Apple Pay tokenized through MasterCard — resolved by a factory, so adding a gateway means adding an adapter rather than editing shared code. Requests run through MediatR CQRS with validation and logging pipeline behaviors.\n\nThe decisive choice was statelessness: no database at all. Client applications keep their own payment state; the middleware generates hosted payment URLs, validates each gateway's webhook signature — SHA-256 and AES for Sadad, SDK-encrypted responses for Benefit, five-layer fraud validation for PayMarkClick — and forwards what is genuine to the client's callback URL. A background worker handles the retries that statelessness still needs. No data stored means nothing to leak, nothing to retain, and horizontal scale by default.",
       "outcomes": [
-        "Delivered end to end by a single engineer — architecture, all seven gateway adapters, webhooks, and rollout.",
-        "Seven payment gateways across 9 countries behind one API.",
+        "7 payment gateways across 9 countries behind one API.",
+        "Designed and shipped in about a month. After I left, I was asked back to add one more gateway for go-live, because I held the full picture.",
         "Stateless by design: zero database, nothing to retain, horizontal scale by default.",
         "Gateway-specific security carried per adapter — encrypted responses, SHA-256 + AES, fraud-validation layers — instead of in shared code.",
         "New gateways onboarded by adding an adapter, without touching shared logic."
@@ -592,6 +602,28 @@
         "Webhook validation",
         "Reverse proxy"
       ],
+      "evidence": [
+        {
+          "label": "PS Digital's own Texas Chicken case study",
+          "url": "https://psdigital.me/CaseStudies/Texas_Chicken?id=22"
+        },
+        {
+          "label": "Texas Chicken UAE",
+          "url": "https://uae.texaschicken.com/en"
+        },
+        {
+          "label": "Texas Chicken KSA",
+          "url": "https://ksa.texaschicken.com/en"
+        },
+        {
+          "label": "Texas Chicken Bahrain",
+          "url": "https://bahrain.texaschicken.com/en"
+        },
+        {
+          "label": "Texas Chicken Qatar",
+          "url": "https://qatar.texaschicken.com/en"
+        }
+      ],
       "mermaidDiagram": "flowchart TD\n  C[Client products<br/>9 countries] --> MW[Payment middleware<br/>stateless · no database]\n  MW --> P[Pipeline<br/>validation · logging]\n  P --> F{Gateway factory}\n  F --> A1[Checkout.com]\n  F --> A2[Benefit · Bahrain]\n  F --> A3[Sadad · Qatar]\n  F --> A4[MasterCard<br/>+ GooglePay · ApplePay]\n  F --> A5[PayMarkClick]\n  G[Gateway webhooks] --> V[Signature validation] --> MW"
     },
     {
@@ -600,7 +632,7 @@
       "shortTitle": "Rebuilding legacy MVC as a Web API",
       "summary": "A full rebuild of an ageing MVC application into a modern Web API, including a data access migration from Entity Framework to Dapper and a move onto Azure.",
       "organisation": "PS Digital",
-      "displayOrder": 5,
+      "displayOrder": 7,
       "problem": "An existing MVC application had accumulated enough structural debt that routine changes were slow and risky. Its data access layer and database schema had grown organically rather than by design, and query performance had become a recurring complaint.",
       "approach": "Rather than patch around it, I led a rebuild into a .NET Web API with a redesigned database structure. I replaced Entity Framework with Dapper in the hot paths, trading ORM convenience for explicit control over the SQL where performance mattered. I then supported the migration onto Azure, moving data processing and storage onto managed services.",
       "outcomes": [
@@ -617,7 +649,58 @@
         "SQL Server",
         "Microsoft Azure"
       ]
+    },
+    {
+      "slug": "multi-tenant-isolation",
+      "title": "Four layers between one tenant and the next",
+      "shortTitle": "Multi-tenant SaaS: tenant isolation",
+      "summary": "A multi-tenant operations platform for real-estate brokerages, which I re-scoped from a single-client build. Tenant isolation is enforced in four independent layers, and every structural decision is written down as an ADR alongside the code.",
+      "organisation": "Own product · pre-launch",
+      "displayOrder": 2,
+      "problem": "It began as a build for one brokerage. That client was too small to justify a product on its own, but the problem — leads arriving from Meta, WhatsApp and property portals with no attribution and no follow-up discipline — exists across brokerages in Egypt and the Gulf. Turning it into multi-tenant software put one property above all others: with a single pilot tenant, every isolation mistake stays invisible until the second tenant arrives, and by then the data is already mixed.",
+      "approach": "I made tenant isolation an invariant enforced four times over rather than a convention every query has to remember.\n\nThe tenant comes only from the authenticated claim, never from a header or a route value. EF Core global query filters are applied by reflection to every tenant-owned entity, so a new table cannot ship without one. PostgreSQL row-level security is forced on every tenant table, driven by a session setting written on each connection open, and the application connects as a role that neither owns the tables nor can bypass the policies; migrations run under a separate owner role. Finally, a SaveChanges interceptor stamps the tenant on every insert and throws on any cross-tenant write.\n\nI rejected query filters alone (one IgnoreQueryFilters call switches them off, and raw SQL never sees them), row-level security alone (a blocked write surfaces as zero rows affected, which reads as success), and a schema per tenant (real migration and connection cost for little gain over row-level security at this stage).\n\nSign-in, which has to find a user before any tenant is known, goes through one locked-down SECURITY DEFINER lookup instead of an unrestricted connection.",
+      "outcomes": [
+        "14 architecture decision records written alongside the code, each naming the alternatives it rejected.",
+        "Isolation proven by tests, not review: row-level security still blocks access with the EF filters switched off, and the assertions were mutation-tested.",
+        "Spreadsheet and CSV imports run in two phases, all or nothing, with caps that refuse zip-bomb workbooks before parsing.",
+        "Re-scoped from one client to a product: built once, sold to many brokerages.",
+        "Shown here without its name or source code until launch."
+      ],
+      "stack": [
+        ".NET 10",
+        "ASP.NET Core",
+        "EF Core",
+        "PostgreSQL row-level security",
+        "Multi-tenancy",
+        "React",
+        "TypeScript",
+        "Docker"
+      ],
+      "mermaidDiagram": "flowchart TB\n  R[Request] --> L1[\"1 · Tenant from the auth claim only<br/>never a header or route value\"]\n  L1 --> L2[\"2 · EF Core global query filters<br/>applied by reflection to every tenant-owned entity\"]\n  L2 --> L3[(\"3 · PostgreSQL FORCE row-level security<br/>app role owns nothing, cannot bypass\")]\n  L2 --> L4[\"4 · SaveChanges interceptor<br/>stamps the tenant, throws on cross-tenant writes\"]\n  L4 --> L3\n"
+    },
+    {
+      "slug": "coworking-platform-inception",
+      "title": "Setting the architecture of a co-working platform at inception",
+      "shortTitle": "Co-working platform: inception architecture",
+      "summary": "At the inception of a co-working and entrepreneur-space platform for a Saudi government development bank, across five cities, I wrote and reviewed the SRS, set up the project infrastructure, and drew the architecture a team of five built from.",
+      "organisation": "MEEM Development",
+      "displayOrder": 4,
+      "problem": "The platform had to manage rentable offices and co-working spaces across five Saudi cities, with companion apps — 3D mapping of the spaces among them — expected later. The team was small: three backend and two frontend engineers. Before any feature work it needed a specification precise enough to build from, a project structure everyone would share, and an answer to the first structural question: microservices or a modular monolith.",
+      "approach": "I wrote and reviewed the Software Requirements Specification and the low-level design, so the business requirements became specifications the team could build from directly. I set up the project infrastructure and drew the architecture and workflow diagrams in draw.io and Mermaid.\n\nOn the structural question we chose a modular monolith: a team of five and a modest user base would have paid the operational cost of microservices without collecting the benefit, while clean module boundaries kept the door open for the companion apps to grow out later. In the same period I took over two in-flight projects for maintenance and bug fixing, and studied alongside the work to get ahead of a domain that was new to me.",
+      "outcomes": [
+        "Modular monolith chosen over microservices for a team of 5, with module boundaries that leave room for the companion apps.",
+        "An SRS and low-level design the team built from directly.",
+        "Project infrastructure and architecture diagrams in place before feature work began."
+      ],
+      "stack": [
+        "Solution architecture",
+        "SRS",
+        "Low-level design",
+        "Modular monolith",
+        "draw.io",
+        "Mermaid"
+      ]
     }
   ],
-  "summaryExtended": "Senior .NET engineer specializing in legacy modernization — taking on the systems considered too risky to change. Designed and built single-handed, end to end: a stateless payment-middleware proxy serving 9 countries, seven gateways behind one API, an adapter per gateway, on Clean Architecture with CQRS. Led the re-architecture that removed the distributed transaction coordinator (DTC) dependency from a platform's Temporal.io orchestrator, unblocking a service estate frozen on .NET Core 2.2 and .NET Framework 4.5; a single upgrade cycle fell from 5-7 working days to a maximum of 3, recognised with a company award. Authored the transformation template, its governing rules, and an AI-guided workflow that let other teams repeat the migration; 5 platform modules modernized so far. Designs as well as builds: solution architecture documents, SRS and low-level design, Mermaid workflow models. AI that ships: an autonomous Copilot Studio agent in production use, an AI-guided modernization workflow other teams now run, and company-wide AI training (subject-matter-expert recognition). Targeting senior .NET engineering roles with architectural scope; currently completing diplomas in microservices architecture and Azure."
+  "summaryExtended": "Senior .NET engineer specializing in legacy modernization — taking on the systems considered too risky to change. Designed and wrote, with the team lead reviewing and merging: the stateless payment middleware behind Texas Chicken in 9 countries, seven gateways behind one API, an adapter per gateway, on Clean Architecture with CQRS. Led the re-architecture that removed the distributed transaction coordinator (DTC) dependency from a platform's Temporal.io orchestrator, unblocking a service estate frozen on .NET Core 2.2 and .NET Framework 4.5; a single upgrade cycle fell from 5-7 working days to a maximum of 3, recognised with a company award. Authored the transformation template, its governing rules, and an AI-guided workflow that let other teams repeat the migration; 5 platform modules modernized so far. Designs as well as builds: solution architecture documents, SRS and low-level design, Mermaid workflow models, and architecture decision records — including the four-layer tenant isolation of a multi-tenant SaaS now in development. AI that ships: an autonomous Copilot Studio agent in production use, an AI-guided modernization workflow other teams now run, and company-wide AI training (subject-matter-expert recognition). Targeting senior .NET engineering roles with architectural scope; currently completing diplomas in microservices architecture and Azure."
 }

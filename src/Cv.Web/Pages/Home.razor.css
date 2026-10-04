@@ -23,9 +23,8 @@
 }
 
 .contact__facts dt {
-    font-size: 0.74rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-size: 0.85rem;
+    font-weight: 500;
     color: var(--ink-faint);
 }
 
@@ -35,8 +34,8 @@
 
 .contact__facts dd {
     margin: 0.3rem 0 0;
-    color: var(--ink-soft);
-    font-size: 0.95rem;
+    color: var(--ink);
+    font-size: 1rem;
     line-height: 1.5;
 }
 
@@ -64,7 +63,7 @@
 }
 
 /*
-    The case index rows are owned by app.css (Legal Tender plate-series rows).
+    The case index rows are owned by app.css (Spec Sheet index rows).
     Nothing scoped here — the previous scoped grid fought the row layout at
     narrow widths and collapsed the text column to a few words per line.
 */

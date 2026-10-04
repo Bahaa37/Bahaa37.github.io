@@ -220,8 +220,8 @@ def home_body(cv: dict, testimonials: list[dict] | None = None) -> str:
       <p>{e(profile['title'])}</p>
       <p>{e(cv['summary'])}</p>
       <dl>{fact_list}</dl>
-      <h2>Skills</h2>{skills}
       <h2>Selected work</h2>{case_studies}
+      <h2>Skills</h2>{skills}
       <h2>Experience</h2>{experience}
       {testimonials_band}
       <h2>Contact</h2>
@@ -277,7 +277,19 @@ def case_study_body(study: dict) -> str:
       <h2>Approach</h2><p>{e(study.get('approach', ''))}</p>
       <h2>Outcomes</h2><ul>{bullets(study.get('outcomes', []))}</ul>
       <p>{e(', '.join(study.get('stack', [])))}</p>
+      {evidence_list(study)}
     """
+
+
+def evidence_list(study: dict) -> str:
+    """The study's third-party corroboration, as plain links a crawler can follow."""
+    links = study.get("evidence") or []
+    if not links:
+        return ""
+    items = "".join(
+        f'<li><a href="{e(link["url"])}" rel="noopener">{e(link["label"])}</a></li>' for link in links
+    )
+    return f"<h2>Check it yourself</h2><ul>{items}</ul>"
 
 
 # --------------------------------------------------------------------------------------
@@ -430,8 +442,10 @@ def build_routes(
         )
 
     # One page for every recommendation. Derived from the data file like the case
-    # studies, so publishing a testimonial publishes its place here with no new code —
-    # and an empty file still gets a page that says so honestly.
+    # studies, so publishing a testimonial publishes its place here with no new code.
+    # While the file is empty the page still exists (a stale link must not 404) but is
+    # noindex and left out of sitemap.xml and llms.txt: absence is neutral, an
+    # advertised "no recommendations yet" is not.
     entries = sorted(testimonials or [], key=lambda t: t.get("displayOrder", 0))
     routes.append(
         Route(
@@ -443,6 +457,7 @@ def build_routes(
             ),
             body=testimonials_body(entries, cv),
             json_ld=[breadcrumbs(base_url, [("Home", ""), ("Testimonials", "testimonials")])],
+            indexable=bool(entries),
         )
     )
 
@@ -513,8 +528,8 @@ VERSIONED_ASSETS = [
 # which is inlined into the same pages, so the chrome looks identical before and after
 # boot — and Blazor replaces the whole block when it takes over.
 NAV_LINKS = (
-    ("/#skills", "Skills"),
     ("/#work", "Work"),
+    ("/#skills", "Skills"),
     ("/#timeline", "Timeline"),
     ("/#credentials", "Credentials"),
     ("/testimonials", "Testimonials"),

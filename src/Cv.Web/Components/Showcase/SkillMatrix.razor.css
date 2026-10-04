@@ -1,24 +1,14 @@
 /*
-    Skills are chips, not list rows — and the groups are columns, not cards.
+    Skills are cited rows, and the groups are columns, not cards.
 
-    Seven bordered group tiles inside a sheet would be cards nested in a card, which
-    reads as scaffolding rather than composition. The grid carries the grouping on
-    whitespace and the column rule alone; the chips (and the evidenced ones especially)
-    supply all the visual weight.
+    The capsule chips are gone: a two-part citation (skill + employer) inside a
+    capsule wrapped onto three lines on a phone and made the chip bigger than the
+    claim it supported. A row puts the skill and its evidence on one line, and the
+    group heading's ink rule does the grouping. Shared row styles live in app.css.
 */
 
 .groups {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem 2.5rem;
-}
-
-.group__title {
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin: 0 0 0.9rem;
+    gap: 2.4rem 3rem;
 }

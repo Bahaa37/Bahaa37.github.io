@@ -13,18 +13,14 @@
 else
 {
     <Hero Profile="document.Profile"
-          ExperiencePhrase="@experiencePhrase"
           AwardCount="document.Awards.Count"
           CaseStudies="document.CaseStudies" />
 
-    <section class="sheet sheet--slim reveal">
-        <div class="shell">
-            <p class="summary">@document.Summary</p>
-        </div>
-    </section>
-
-    <SkillMatrix Groups="document.SkillGroups" Experience="document.Experience" />
-
+    @*
+        The summary paragraph that used to sit here repeated the hero pitch almost word
+        for word, one screen apart. It still feeds the meta description, llms.txt and
+        the printed CV; on this page the hero carries it.
+    *@
     @*
         Proof of work sits above the career detail. On the benchmarked real profiles
         of senior .NET engineers, projects-above-experience is the senior ordering
@@ -46,9 +42,10 @@ else
                 var indexStudies = orderedStudies.Skip(1).ToList();
             }
             <h2 class="sheet__title">Selected work, in depth</h2>
+            @* The count is the data's, so adding a study never leaves this line stale. *@
             <p class="sheet__lede">
-                Five engagements, told as the decisions behind them — the flagship in
-                full, the rest one skim each, every row opening its own page.
+                @orderedStudies.Count engagements, told as the decisions behind them — the
+                flagship in full, the rest one line each, every row opening its own page.
             </p>
 
             @if (featuredStudy is not null)
@@ -74,6 +71,13 @@ else
             </ol>
         </div>
     </section>
+
+    @*
+        Skills follow the work rather than lead it: the citations beside each skill
+        point back at the studies a reader has just seen, so they land as evidence
+        instead of as an inventory.
+    *@
+    <SkillMatrix Groups="document.SkillGroups" Experience="document.Experience" />
 
     <CareerTimeline Roles="roles" ExperiencePhrase="@experiencePhrase" Employers="employers"
                     SkillGroups="document.SkillGroups" />

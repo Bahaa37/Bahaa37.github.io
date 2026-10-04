@@ -23,27 +23,35 @@
             {
                 <div class="group stagger" style="--i: @index">
                     <h3 class="group__title">@group.Category</h3>
-                    <ul class="chips">
-                        @foreach (var skill in SkillEvidence.For(group, Experience))
-                        {
-                            @*
-                                The evidence is summarised to one employer plus a count.
-                                Spelling out all three inside a pill wrapped it onto
-                                three lines on a phone, which made the chip bigger than
-                                the claim it was supporting. The full list stays
-                                available as the title, and in full on the CV.
-                            *@
-                            <li class="chip @(skill.HasEvidence ? "chip--evidenced" : null)"
-                                title="@(skill.HasEvidence ? string.Join(" · ", skill.UsedAt) : null)">
-                                <span>@skill.Skill</span>
-                                @if (skill.HasEvidence)
-                                {
-                                    <span class="chip__where">@Evidence(skill)</span>
-                                    <span class="visually-hidden">Used at @string.Join(", ", skill.UsedAt)</span>
-                                }
-                            </li>
-                        }
-                    </ul>
+                    @{
+                        var skills = SkillEvidence.For(group, Experience);
+                        var cited = skills.Where(s => s.HasEvidence).ToList();
+                        var listed = skills.Where(s => !s.HasEvidence).Select(s => s.Skill).ToList();
+                    }
+                    @*
+                        A cited skill is a row: the skill on the left, the employers whose
+                        record mentions it on the right. Rows replaced the capsule chips,
+                        which wrapped a two-part citation onto three lines on a phone and
+                        made the chip bigger than the claim it supported.
+                    *@
+                    @if (cited.Count > 0)
+                    {
+                        <ul class="skill-rows">
+                            @foreach (var skill in cited)
+                            {
+                                <li class="skill-row" title="@(string.Join(" · ", skill.UsedAt))">
+                                    <span class="skill-row__name">@skill.Skill</span>
+                                    <span class="skill-row__where mono">@Evidence(skill)</span>
+                                    <span class="visually-hidden">, used at @string.Join(", ", skill.UsedAt)</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    @* Uncited skills are real but unproven here, so they read as one plain line. *@
+                    @if (listed.Count > 0)
+                    {
+                        <p class="skill-also">@string.Join(" · ", listed)</p>
+                    }
                 </div>
             }
         </div>
@@ -57,20 +65,35 @@
                     {
                         <div class="group stagger" style="--i: @index">
                             <h3 class="group__title">@group.Category</h3>
-                            <ul class="chips">
-                                @foreach (var skill in SkillEvidence.For(group, Experience))
-                                {
-                                    <li class="chip @(skill.HasEvidence ? "chip--evidenced" : null)"
-                                        title="@(skill.HasEvidence ? string.Join(" · ", skill.UsedAt) : null)">
-                                        <span>@skill.Skill</span>
-                                        @if (skill.HasEvidence)
-                                        {
-                                            <span class="chip__where">@Evidence(skill)</span>
-                                            <span class="visually-hidden">Used at @string.Join(", ", skill.UsedAt)</span>
-                                        }
-                                    </li>
-                                }
-                            </ul>
+                            @{
+                                var skills = SkillEvidence.For(group, Experience);
+                                var cited = skills.Where(s => s.HasEvidence).ToList();
+                                var listed = skills.Where(s => !s.HasEvidence).Select(s => s.Skill).ToList();
+                            }
+                            @*
+                                A cited skill is a row: the skill on the left, the employers whose
+                                record mentions it on the right. Rows replaced the capsule chips,
+                                which wrapped a two-part citation onto three lines on a phone and
+                                made the chip bigger than the claim it supported.
+                            *@
+                            @if (cited.Count > 0)
+                            {
+                                <ul class="skill-rows">
+                                    @foreach (var skill in cited)
+                                    {
+                                        <li class="skill-row" title="@(string.Join(" · ", skill.UsedAt))">
+                                            <span class="skill-row__name">@skill.Skill</span>
+                                            <span class="skill-row__where mono">@Evidence(skill)</span>
+                                            <span class="visually-hidden">, used at @string.Join(", ", skill.UsedAt)</span>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            @* Uncited skills are real but unproven here, so they read as one plain line. *@
+                            @if (listed.Count > 0)
+                            {
+                                <p class="skill-also">@string.Join(" · ", listed)</p>
+                            }
                         </div>
                     }
                 </div>
@@ -107,7 +130,7 @@
         .ToList();
 
     /// <summary>
-    /// The employer evidence in the compact form a chip can carry: the first employer,
+    /// The employer evidence in the compact form a row can carry: the first employer,
     /// plus a count of the others. The complete list is on the element's title.
     /// </summary>
     private static string Evidence(SkillWithEvidence skill)

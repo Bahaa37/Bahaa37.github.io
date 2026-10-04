@@ -214,6 +214,43 @@ public class RealCvDocumentTests
     }
 
     [Fact]
+    public void EvidenceLinksPointAtThirdPartyPagesOverHttps()
+    {
+        // Evidence exists so a reader can check a claim somewhere the author does not
+        // control. A relative link, a plain-http link or a link back into this site would
+        // look like corroboration while proving nothing.
+        foreach (var study in LoadDocument().CaseStudies)
+        {
+            foreach (var link in study.Evidence)
+            {
+                Assert.False(string.IsNullOrWhiteSpace(link.Label), $"'{study.Slug}' has an unlabelled evidence link.");
+                Assert.True(
+                    Uri.TryCreate(link.Url, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps,
+                    $"'{study.Slug}' evidence '{link.Label}' is not an absolute https URL: {link.Url}");
+                Assert.False(
+                    uri!.Host.EndsWith("bahaa37.github.io", StringComparison.OrdinalIgnoreCase),
+                    $"'{study.Slug}' evidence '{link.Label}' points back at this site.");
+            }
+        }
+    }
+
+    [Fact]
+    public void TheHeroFiguresStillHaveASourceInTheRecord()
+    {
+        // Hero.razor reads its figures out of these sentences by anchor phrase. If a copy
+        // edit drops the phrase, the figure silently becomes 0 on the live page — so the
+        // anchors are pinned here, where the failure is loud.
+        var studies = LoadDocument().CaseStudies;
+        var summaries = studies.Select(s => s.Summary).ToList();
+        var outcomes = studies.SelectMany(s => s.Outcomes).ToList();
+
+        Assert.Contains(summaries, s => s.Contains("across 9 countries", StringComparison.Ordinal));
+        Assert.Contains(outcomes, o => o.Contains("a maximum of 3", StringComparison.Ordinal));
+        Assert.Contains(outcomes, o => o.StartsWith("7 payment gateways", StringComparison.Ordinal));
+        Assert.Contains(outcomes, o => o.Contains("architecture decision records", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void TheDataFileHasNoByteOrderMark()
     {
         // A BOM breaks strict JSON parsers, and Windows tooling adds one readily.

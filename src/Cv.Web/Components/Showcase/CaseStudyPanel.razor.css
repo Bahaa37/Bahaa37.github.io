@@ -6,7 +6,7 @@
 */
 
 .case {
-    padding: 1.6rem 0 1.85rem;
+    padding: 2rem 0 .5rem;
     scroll-margin-top: 96px;
 }
 
@@ -15,13 +15,14 @@
 }
 
 .case__title {
-    font-size: clamp(1.2rem, 1.05rem + 0.7vw, 1.5rem);
-    letter-spacing: -0.015em;
+    font-size: clamp(1.35rem, 1.1rem + 1vw, 1.75rem);
+    font-weight: 650;
+    letter-spacing: -0.025em;
 }
 
 .case__org {
-    margin: 0.45rem 0 0;
-    font-size: 0.78rem;
+    margin: 0.5rem 0 0;
+    font-size: 0.82rem;
     color: var(--ink-faint);
 }
 
@@ -32,13 +33,10 @@
 }
 
 .case__block h4 {
-    font-family: var(--font-mono);
-    font-size: 0.74rem;
+    font-size: 0.95rem;
     font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    margin-bottom: 0.45rem;
+    color: var(--ink);
+    margin-bottom: 0.6rem;
 }
 
 .case__block p {
@@ -47,14 +45,25 @@
     font-size: 0.95rem;
 }
 
-/* The outcome block is the one tinted moment in a case: what actually changed is the
-   part a skim stops on. */
+/* The outcome block is the one framed moment in a case: what actually changed is the
+   part a skim stops on, so it is the panel on the page. */
 .case__block--outcomes {
-    margin-top: 1.35rem;
-    padding: 1rem 1.15rem;
-    background: var(--accent-wash);
+    margin-top: 1.5rem;
+    padding: 1.3rem 1.5rem;
+    background: var(--sheet-solid);
+    border: 1px solid var(--line);
     border-radius: var(--radius);
 }
+
+.outcomes {
+    margin: 0;
+    padding-left: 1.15rem;
+    display: grid;
+    gap: 0.45rem;
+    color: var(--ink-soft);
+}
+
+.outcomes li::marker { color: var(--accent); }
 
 .case__diagram {
     margin-top: 1.35rem;
@@ -73,8 +82,8 @@
 .diagram__canvas {
     margin-top: 1rem;
     padding: 1.25rem;
-    background: var(--wash);
-    border: 1px solid var(--sheet-line);
+    background: var(--sheet-solid);
+    border: 1px solid var(--line);
     border-radius: var(--radius);
     text-align: center;
     min-height: 80px;

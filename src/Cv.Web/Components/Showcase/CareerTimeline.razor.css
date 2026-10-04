@@ -37,7 +37,7 @@
 
 @media (min-width: 940px) {
     .entry {
-        grid-template-columns: 10.5rem 14px 1fr;
+        grid-template-columns: 12.5rem 14px 1fr;
         grid-template-areas: "period rail body";
         column-gap: 1.5rem;
     }
@@ -118,7 +118,7 @@
 }
 
 @keyframes pulse-node {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(74, 165, 131, .4); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(31, 79, 216, .35); }
     50%      { box-shadow: 0 0 0 6px transparent; }
 }
 
@@ -156,7 +156,8 @@
 
 .entry__period {
     margin: 0;
-    font-size: 0.82rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
     color: var(--ink-faint);
     display: flex;
     flex-wrap: wrap;
@@ -164,37 +165,19 @@
     gap: 0.45rem;
 }
 
-.badge {
-    display: inline-block;
-    padding: 0.05rem 0.5rem;
-    border-radius: 999px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-}
-
-.badge--now {
-    background: var(--accent-bright);
-    color: var(--paper);
-}
-
-/* Trajectory marker, not recognition — accent, never bronze. */
-.badge--return {
-    background: var(--accent-wash);
-    color: var(--accent);
-}
+/* Status words are styled once, in app.css (.badge): text with a marker, no capsule. */
 
 .entry__role {
-    margin: 0.25rem 0 0;
-    font-size: 1.12rem;
+    margin: 0.2rem 0 0;
+    font-size: 1.15rem;
+    font-weight: 600;
 }
 
 .entry__company {
     margin: 0.1rem 0 0.7rem;
-    font-weight: 600;
-    color: var(--accent-bright);
-    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    font-size: 0.98rem;
 }
 
 /* The stack byline: where the company line names who, this names with what. Mono
@@ -228,6 +211,6 @@
 .entry__points--more {
     margin-top: 0.45rem;
     padding-top: 0.45rem;
-    border-top: 1px dashed var(--line);
+    border-top: 1px solid var(--line);
     color: var(--ink-faint);
 }
