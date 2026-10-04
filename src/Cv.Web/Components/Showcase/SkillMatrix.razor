@@ -1,0 +1,142 @@
+@*
+    Skills, each annotated with the employers whose achievement record actually mentions
+    it. A skills list is the least trusted part of a CV because anyone can type anything
+    into one, attaching the evidence turns a claim into a citation.
+*@
+
+<section class="sheet reveal" id="skills">
+    <div class="shell">
+        <h2 class="sheet__title">Skills, with the work that backs them</h2>
+        <p class="sheet__lede">
+            Anyone can type a list of technologies. Next to each skill here is the
+            employer where I actually used it.
+        </p>
+
+        @*
+            The skim leads with the two positioning pillars (architecture; AI and
+            delivery), the site's headline claims get the first row, and the rest of
+            the stack stays one no-JS disclosure away instead of diluting them. Group
+            order inside each tier follows cv.json.
+        *@
+        <div class="groups">
+            @foreach (var (group, index) in LeadGroups.Select((group, index) => (group, index)))
+            {
+                <div class="group stagger" style="--i: @index">
+                    <h3 class="group__title">@group.Category</h3>
+                    @{
+                        var skills = SkillEvidence.For(group, Experience);
+                        var cited = skills.Where(s => s.HasEvidence).ToList();
+                        var listed = skills.Where(s => !s.HasEvidence).Select(s => s.Skill).ToList();
+                    }
+                    @*
+                        A cited skill is a row: the skill on the left, the employers whose
+                        record mentions it on the right. Rows replaced the capsule chips,
+                        which wrapped a two-part citation onto three lines on a phone and
+                        made the chip bigger than the claim it supported.
+                    *@
+                    @if (cited.Count > 0)
+                    {
+                        <ul class="skill-rows">
+                            @foreach (var skill in cited)
+                            {
+                                <li class="skill-row" title="@(string.Join(" · ", skill.UsedAt))">
+                                    <span class="skill-row__name">@skill.Skill</span>
+                                    <span class="skill-row__where mono">@Evidence(skill)</span>
+                                    <span class="visually-hidden">, used at @string.Join(", ", skill.UsedAt)</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    @* Uncited skills are real but unproven here, so they read as one plain line. *@
+                    @if (listed.Count > 0)
+                    {
+                        <p class="skill-also">@string.Join(" · ", listed)</p>
+                    }
+                </div>
+            }
+        </div>
+
+        @if (RestGroups.Count > 0)
+        {
+            <details class="disclosure skills__more">
+                <summary>@RestGroups.Count more skill areas</summary>
+                <div class="groups">
+                    @foreach (var (group, index) in RestGroups.Select((group, index) => (group, index)))
+                    {
+                        <div class="group stagger" style="--i: @index">
+                            <h3 class="group__title">@group.Category</h3>
+                            @{
+                                var skills = SkillEvidence.For(group, Experience);
+                                var cited = skills.Where(s => s.HasEvidence).ToList();
+                                var listed = skills.Where(s => !s.HasEvidence).Select(s => s.Skill).ToList();
+                            }
+                            @*
+                                A cited skill is a row: the skill on the left, the employers whose
+                                record mentions it on the right. Rows replaced the capsule chips,
+                                which wrapped a two-part citation onto three lines on a phone and
+                                made the chip bigger than the claim it supported.
+                            *@
+                            @if (cited.Count > 0)
+                            {
+                                <ul class="skill-rows">
+                                    @foreach (var skill in cited)
+                                    {
+                                        <li class="skill-row" title="@(string.Join(" · ", skill.UsedAt))">
+                                            <span class="skill-row__name">@skill.Skill</span>
+                                            <span class="skill-row__where mono">@Evidence(skill)</span>
+                                            <span class="visually-hidden">, used at @string.Join(", ", skill.UsedAt)</span>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            @* Uncited skills are real but unproven here, so they read as one plain line. *@
+                            @if (listed.Count > 0)
+                            {
+                                <p class="skill-also">@string.Join(" · ", listed)</p>
+                            }
+                        </div>
+                    }
+                </div>
+            </details>
+        }
+    </div>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<SkillGroup> Groups { get; set; }
+
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<ExperienceEntry> Experience { get; set; }
+
+    /// <summary>
+    /// The two categories whose names carry the positioning claims (architecture;
+    /// AI and delivery). They render first and always expand; everything else sits
+    /// behind the "Also across the stack" disclosure. Matched by name against
+    /// cv.json's category strings, renaming a category in the data moves it between
+    /// tiers, which is the point: the data stays the only source of truth.
+    /// </summary>
+    private static readonly string[] LeadCategories =
+    [
+        "Architecture & Patterns",
+        "Cloud, Delivery & AI Engineering",
+    ];
+
+    private IEnumerable<SkillGroup> LeadGroups => Groups
+        .Where(g => LeadCategories.Contains(g.Category));
+
+    private IReadOnlyList<SkillGroup> RestGroups => Groups
+        .Where(g => !LeadCategories.Contains(g.Category))
+        .ToList();
+
+    /// <summary>
+    /// The employer evidence in the compact form a row can carry: the first employer,
+    /// plus a count of the others. The complete list is on the element's title.
+    /// </summary>
+    private static string Evidence(SkillWithEvidence skill)
+    {
+        var first = skill.UsedAt[0];
+
+        return skill.UsedAt.Count > 1 ? $"{first} +{skill.UsedAt.Count - 1}" : first;
+    }
+}

@@ -1,0 +1,28 @@
+# Build output
+bin/
+obj/
+artifacts/
+publish*/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Test output
+[Tt]est[Rr]esult*/
+coverage*
+
+# Local scratch and anything private, never published
+_temp/
+_private/
+_tools/__pycache__/
+.env
+.env.*
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store

@@ -1,0 +1,263 @@
+@inherits LayoutComponentBase
+@inject CvDataService CvData
+
+@*
+    Site chrome for the showcase pages.
+
+    The printable CV uses EmptyLayout instead, so none of this reaches paper or an
+    ATS text extractor.
+
+    The header is Frosted Keynote's one piece of glass chrome: a floating capsule,
+    styled by .header-capsule in app.css. prerender.py's static_shell_header duplicates
+    this markup byte for byte (minus the Blazor @onclick, which becomes
+    data-static-theme-toggle), when the nav or the toggle changes, change both sides.
+
+    The icons inside the theme button are pure CSS state: both are always in the markup
+    and the theme selectors in app.css decide which one shows. That keeps the button
+    identical across the prerendered shell and this render, so the control that switches
+    the whole palette can never diverge pre- and post-boot.
+*@
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+    <div class="shell">
+        <div class="header-capsule">
+            <a class="site-header__name" href="/">@(profile?.Name ?? "Portfolio")</a>
+            @*
+                The toggle sits between the name and the nav in DOM order: the name's
+                flex-grow pushes the toggle to the capsule's first-row end, and the nav
+                (flex-basis 100%) wraps below both. After the nav it would strand alone
+                on a third row at 390px.
+            *@
+            @*
+                The theme control is an iOS-style switch: a tap toggles (the button's
+                own click, keyboard included), and, after boot, dragging the knob
+                past the midpoint also switches, the tactile version of the same
+                action. The drag is progressive enhancement from the shell's inline
+                script; without script this is just a button, and theming still works.
+
+                The knob's position and its sun/moon icon are pure CSS state: both
+                states are always in the markup and the theme selectors in app.css
+                decide, so the control is identical across the prerendered shell and
+                this render and can never fall out of sync with the palette.
+            *@
+            <button type="button"
+                    class="theme-toggle"
+                    role="switch"
+                    aria-checked="@isDark.ToString().ToLowerInvariant()"
+                    aria-label="@(isDark ? "Switch to light theme" : "Switch to dark theme")"
+                    title="@(isDark ? "Switch to light theme" : "Switch to dark theme")"
+                    @onclick="ToggleThemeAsync">
+                <span class="theme-toggle__track" aria-hidden="true">
+                    <span class="theme-toggle__knob">
+                        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="4" />
+                            <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41" />
+                        </svg>
+                        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                        </svg>
+                    </span>
+                </span>
+            </button>
+
+            @*
+                Root-relative, not bare fragments: a bare "#work" from /work/… scrolls
+                nowhere. Testimonials render only when there is something real to show,
+                a nav link to an empty page is a wasted click for the one visitor a
+                portfolio cannot afford to waste.
+
+                Labels stay short on purpose: the capsule's nav row is a nowrap strip at
+                ≤720px, and every link must fit a 390px screen without pushing "CV",
+                the recruiter's destination, off past the mask. "Timeline" and "Work"
+                are the strip-length spellings of the sections they jump to.
+            *@
+            <nav class="site-nav">
+                <a href="/#work">Work</a>
+                <a href="/#skills">Skills</a>
+                <a href="/#timeline">Timeline</a>
+                <a href="/#credentials">Credentials</a>
+                @*
+                    The section anchors above gain .is-current at runtime from
+                    motion.js's scroll-spy, an additive emphasis class only, so the
+                    static shell needs no marker and prerender.py stays untouched.
+                *@
+                @if (hasTestimonials)
+                {
+                    <a href="/testimonials">Testimonials</a>
+                }
+                <a href="/cv">CV</a>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<main id="main">
+    @Body
+</main>
+
+<footer class="site-footer">
+    <div class="shell">
+        @if (profile is not null)
+        {
+            <p>
+                @profile.Name · @profile.Title · @profile.Location
+            </p>
+            <p>
+                <a href="mailto:@profile.Email">@profile.Email</a>
+                @if (!string.IsNullOrWhiteSpace(profile.GitHub))
+                {
+                    <span> · </span><a href="@profile.GitHub">GitHub</a>
+                }
+                @if (!string.IsNullOrWhiteSpace(profile.LinkedIn))
+                {
+                    <span> · </span><a href="@profile.LinkedIn">LinkedIn</a>
+                }
+                <span> · </span><a href="/cv">CV</a>
+                @*
+                    The page is ~5,000px tall and the footer is where a reader
+                    finishes; a plain hash link gets them back to the hero with no
+                    script and no extra chrome. The target is #main, the skip link's
+                    existing target, because a BARE "#" is the one fragment Blazor's
+                    navigation intercepts without scrolling (it reads as
+                    navigate-to-self); a named fragment scrolls normally. Scrolled to
+                    top is also where motion.js's scroll-spy clears the
+                    current-section marker, so the nav returns to rest state.
+                *@
+                <span> · </span><a href="#main">Back to top</a>
+            </p>
+        }
+    </div>
+</footer>
+
+@*
+    The persistent contact dock (app.css .contact-dock): call and email fixed to the
+    viewport's foot on every showcase page. Plain anchors, no script, so a visitor the
+    runtime never reaches can still get in touch, prerender.py's static shell carries
+    the same markup (static_contact_dock) byte for byte; change them together.
+
+    The tel: href (Profile.PhoneHref) carries the digits without printing the number as
+    text anywhere on the page, the anti-scrape posture the contact section below keeps
+    for the visible number, extended to an always-reachable affordance. The drawn SVGs
+    match the theme toggle's icon language: 24px viewBox, currentColor stroke, 1.6
+    stroke width, round caps.
+*@
+@if (profile is not null)
+{
+    <nav class="contact-dock" aria-label="Contact">
+        <a class="contact-dock__action" href="@profile.PhoneHref">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+            </svg>
+            <span>Call</span>
+        </a>
+        @*
+            WhatsApp is how most recruiters in the Gulf and Egypt reach a candidate
+            first, so it sits beside the phone. wa.me opens the app on a phone and
+            WhatsApp Web on a desktop; the number still never appears as text.
+        *@
+        <a class="contact-dock__action" href="@profile.WhatsAppHref" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+            </svg>
+            <span>WhatsApp</span>
+        </a>
+        <a class="contact-dock__action" href="mailto:@profile.Email">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 6-10 7L2 6" />
+            </svg>
+            <span>Email</span>
+        </a>
+        @*
+            The CV, one tap from anywhere on the site. target is load-bearing: Blazor's
+            router intercepts same-origin anchors and matches no PDF route, so without
+            it the link does nothing (the same fix as the hero's download button).
+        *@
+        <a class="contact-dock__action contact-dock__action--cv" href="/Bahaa-Aldeen-Mohamed-CV.pdf"
+           target="_blank" rel="noopener" download>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 3v12m-5-5 5 5 5-5M5 21h14" />
+            </svg>
+            <span>CV</span>
+        </a>
+    </nav>
+}
+
+@*
+    The floating back-to-top (app.css .back-to-top): runtime chrome, wired by
+    motion.js's initBackToTop below, which adds its one visibility class (.is-shown)
+    after roughly a viewport of scroll. It deliberately has no static-shell copy,
+    prerender.py stays untouched, because the footer's "Back to top" hash link is
+    the no-script path to the same place, so a data-saver visitor who never boots
+    loses an affordance, never an ability. It parks above the contact dock rather
+    than beside it: the dock spans the viewport's foot at ≤720px, so above-the-dock
+    is the only placement that clears it at every width.
+*@
+<button type="button" class="back-to-top" aria-label="Back to top" title="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 19V5" />
+        <path d="m5 12 7-7 7 7" />
+    </svg>
+</button>
+
+@code {
+    [Inject]
+    private IJSRuntime JS { get; set; } = default!;
+
+    private Profile? profile;
+    private bool isDark;
+    private bool hasTestimonials;
+    private IJSObjectReference? motion;
+
+    protected override async Task OnInitializedAsync()
+    {
+        profile = (await CvData.GetAsync()).Profile;
+
+        // The nav link exists only while a quote does; the empty page stays reachable
+        // by direct link for anyone who already has the URL.
+        hasTestimonials = (await CvData.GetTestimonialsAsync()).Count > 0;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        // The theme is applied by an inline script before first paint, so by the time
+        // this runs the page is already correct. All that is read here is which label
+        // the button should carry, the icon itself is CSS state, not markup state.
+        var effective = await JS.InvokeAsync<string>("themeControl.effective");
+        isDark = effective == "dark";
+        StateHasChanged();
+
+        // The back-to-top is layout chrome, present on every showcase route like the
+        // dock it parks above, so it is wired here rather than on individual pages.
+        // motion.js is an accepted bare-path import and initBackToTop is
+        // idempotent, so sharing the module with Home.razor's start() is safe.
+        motion = await JS.InvokeAsync<IJSObjectReference>("import", "./js/motion.js");
+        await motion.InvokeVoidAsync("initBackToTop");
+    }
+
+    private async Task ToggleThemeAsync()
+    {
+        // Inverting what is on screen, rather than the stored value: with no stored
+        // preference on a dark OS, the reader is looking at dark, and one click should
+        // take them to light.
+        var effective = await JS.InvokeAsync<string>("themeControl.effective");
+        var next = effective == "dark" ? "light" : "dark";
+
+        await JS.InvokeVoidAsync("themeControl.set", next);
+        isDark = next == "dark";
+    }
+}

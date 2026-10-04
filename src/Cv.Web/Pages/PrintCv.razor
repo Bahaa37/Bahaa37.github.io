@@ -1,0 +1,221 @@
+@page "/cv"
+@layout EmptyLayout
+@inject CvDataService CvData
+
+@*
+    The printable CV.
+
+    Deliberately plain: single column, standard section headings, no tables, no icons,
+    no text inside graphics. This file is parsed by applicant tracking systems, and
+    every one of those features breaks text extraction. All visual ambition belongs on
+    the showcase page instead, see the design spec, section 4.
+*@
+
+<PageTitle>@(document?.Profile.Name ?? "CV")</PageTitle>
+
+@if (document is null)
+{
+    <p class="loading">Loading…</p>
+}
+else
+{
+    @*
+        Two routes to a file, because they serve different people. The download hands a
+        recruiter something they can drag straight into an applicant tracking system; the
+        print button is for anyone who wants the current page exactly as rendered. The
+        print dialog alone was never a download, it produced nothing to attach.
+    *@
+    <div class="cv-actions no-print">
+        @* target keeps this out of Blazor's router, see the note in Home.razor. *@
+        <a class="cv-download" href="/Bahaa-Aldeen-Mohamed-CV.pdf"
+           target="_blank" rel="noopener" download>Download CV (PDF)</a>
+        <button type="button" @onclick="PrintAsync">Print this page</button>
+        <span>Choose "Save as PDF" in the dialog to get a PDF. Margins: default. Background graphics: off.</span>
+    </div>
+
+    <article class="cv">
+
+        <header class="cv-header">
+            <h1>@document.Profile.Name</h1>
+            <p class="cv-title">@document.Profile.Title</p>
+            <p class="cv-contact">
+                @document.Profile.Location
+                <span class="sep">|</span>
+                <a href="@document.Profile.PhoneHref">@document.Profile.Phone</a>
+                <span class="sep">|</span>
+                <a href="mailto:@document.Profile.Email">@document.Profile.Email</a>
+                @if (!string.IsNullOrWhiteSpace(document.Profile.LinkedIn))
+                {
+                    <span class="sep">|</span>
+                    <a href="@document.Profile.LinkedIn">@StripScheme(document.Profile.LinkedIn)</a>
+                }
+                @if (!string.IsNullOrWhiteSpace(document.Profile.GitHub))
+                {
+                    <span class="sep">|</span>
+                    <a href="@document.Profile.GitHub">@StripScheme(document.Profile.GitHub)</a>
+                }
+                @if (!string.IsNullOrWhiteSpace(document.Profile.Website))
+                {
+                    <span class="sep">|</span>
+                    <a class="cv-portfolio" href="@document.Profile.Website">@StripScheme(document.Profile.Website)</a>
+                }
+            </p>
+            @*
+                Plain text on one line, no table and no icons: an ATS reads this as a
+                continuation of the contact block, which is exactly where a screener
+                looks for it.
+            *@
+            @if (AvailabilityLine(document.Profile) is { Length: > 0 } availability)
+            {
+                <p class="cv-availability">@availability</p>
+            }
+        </header>
+
+        <section>
+            @*
+                The long summary, not the short one. The showcase page is skimmed and gets
+                the brief version; this document is parsed in full by an ATS and read by
+                someone who has already chosen to open it.
+            *@
+            <h2>Professional Summary</h2>
+            <p>@(document.SummaryExtended ?? document.Summary)</p>
+        </section>
+
+        <section>
+            <h2>Technical Skills</h2>
+            @foreach (var group in document.SkillGroups)
+            {
+                <p class="skill-line">
+                    <strong>@group.Category:</strong> @string.Join(", ", group.Skills)
+                </p>
+            }
+        </section>
+
+        <section>
+            <h2>Professional Experience</h2>
+            @foreach (var role in CareerSummary.InReverseChronologicalOrder(document.Experience))
+            {
+                <div class="role">
+                    <h3>@role.Role<span class="sep"> | </span>@role.Company</h3>
+                    <p class="role-meta">
+                        @role.Period.ToDisplayString()@(role.Location is null ? "" : $" | {role.Location}")
+                    </p>
+                    <ul>
+                        @foreach (var highlight in role.Highlights.Where(h => h.IsFeatured))
+                        {
+                            <li>
+                                @highlight.Text
+                                @if (highlight.HasMetric)
+                                {
+                                    <strong> (@highlight.Metric)</strong>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </section>
+
+        @if (document.Awards.Count > 0)
+        {
+            <section>
+                <h2>Awards and Recognition</h2>
+                <ul>
+                    @foreach (var award in document.Awards)
+                    {
+                        <li>
+                            <strong>@award.Title</strong>, @award.Issuer.
+                            @award.Description
+                        </li>
+                    }
+                </ul>
+            </section>
+        }
+
+        <section>
+            <h2>Education</h2>
+            @foreach (var entry in document.Education.OrderByDescending(e => e.Period.Start))
+            {
+                <div class="role">
+                    <h3>@entry.Credential<span class="sep"> | </span>@entry.Institution</h3>
+                    <p class="role-meta">@entry.Period.ToDisplayString()</p>
+                    @if (entry.Details.Count > 0)
+                    {
+                        <ul>
+                            @foreach (var detail in entry.Details)
+                            {
+                                <li>@detail</li>
+                            }
+                        </ul>
+                    }
+                </div>
+            }
+        </section>
+
+        <section>
+            <h2>Certifications</h2>
+            <ul>
+                @foreach (var certification in document.Certifications.Where(c => c.IsFeatured))
+                {
+                    <li>
+                        @certification.Name, @certification.Issuer@(certification.Awarded is { } awarded ? $" ({awarded.ToDisplayString()})" : "")
+                    </li>
+                }
+            </ul>
+            @if (remainingCertifications > 0)
+            {
+                <p class="cert-note">
+                    @remainingCertifications more certifications, plus in-depth case studies, at
+                    @if (!string.IsNullOrWhiteSpace(document.Profile.Website))
+                    {
+                        <a href="@document.Profile.Website">@StripScheme(document.Profile.Website)</a>
+                    }
+                    else
+                    {
+                        <span>the online portfolio</span>
+                    }.
+                </p>
+            }
+        </section>
+
+    </article>
+}
+
+@code {
+    private CvDocument? document;
+    private int remainingCertifications;
+
+    protected override async Task OnInitializedAsync()
+    {
+        document = await CvData.GetAsync();
+        remainingCertifications = document.Certifications.Count(c => !c.IsFeatured);
+    }
+
+    private async Task PrintAsync() => await JS.InvokeVoidAsync("window.print");
+
+    [Inject]
+    private IJSRuntime JS { get; set; } = default!;
+
+    /// <summary>
+    /// Timezone, notice, relocation and languages as one pipe-separated line. Every part
+    /// is optional, so the separators are joined rather than written into the markup,
+    /// otherwise a missing field leaves a stray bar on a printed CV.
+    /// </summary>
+    private static string AvailabilityLine(Profile profile)
+    {
+        string?[] parts =
+        [
+            profile.Timezone,
+            profile.Availability,
+            profile.Relocation,
+            profile.Languages.Count > 0 ? string.Join("; ", profile.Languages) : null,
+        ];
+
+        return string.Join(" | ", parts.Where(p => !string.IsNullOrWhiteSpace(p)));
+    }
+
+    private static string StripScheme(string url) =>
+        url.Replace("https://", string.Empty, StringComparison.OrdinalIgnoreCase)
+           .Replace("http://", string.Empty, StringComparison.OrdinalIgnoreCase)
+           .TrimEnd('/');
+}

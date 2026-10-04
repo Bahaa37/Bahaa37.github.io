@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+  </PropertyGroup>
+
+  <!--
+    Download size is the one real cost of choosing WebAssembly, and this page's job is
+    to load fast for a recruiter skimming many candidates. These settings pay it down.
+  -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+
+    <!--
+      Drops the ~540KB ICU globalization payload. Safe here because every culture-aware
+      call in this solution uses CultureInfo.InvariantCulture explicitly (see YearMonth),
+      so no behaviour depends on the user's locale. Revisit if the CV is ever localized.
+    -->
+    <InvariantGlobalization>true</InvariantGlobalization>
+
+    <!-- Compression is what a static host actually serves; make sure it is produced. -->
+    <CompressionEnabled>true</CompressionEnabled>
+  </PropertyGroup>
+
+  <!--
+    Full trimming breaks two things this app relies on, both reflection-based and both
+    silent until runtime:
+
+      1. Blazor activates components through ActivatorUtilities, which needs their
+         constructors. Trimming them produced "CtorNotLocated".
+      2. System.Text.Json binds the `required` init-only properties on the domain records
+         by reflection. Trimming the setters produced
+         "JsonPropertyRequiredAndNotDeserializable".
+
+    Rooting our own three assemblies preserves them whole. They are small; the ~10MB of
+    savings comes from trimming the framework, which still happens. This keeps the size
+    win without the runtime breakage.
+  -->
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <TrimmerRootAssembly Include="Cv.Web" />
+    <TrimmerRootAssembly Include="Cv.Domain" />
+    <TrimmerRootAssembly Include="Cv.Application" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.11" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cv.Application\Cv.Application.csproj" />
+    <ProjectReference Include="..\Cv.Domain\Cv.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

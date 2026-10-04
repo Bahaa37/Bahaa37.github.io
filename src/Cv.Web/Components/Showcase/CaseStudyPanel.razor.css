@@ -1,0 +1,105 @@
+/*
+    Five case studies live inside one work sheet, so they are flat sections separated
+    by hairlines, not cards nested in a card, and no accent rails. The title, the
+    byline, and the whitespace do the separating; a hover lift on a section the reader
+    is not navigating to would be motion without a meaning.
+*/
+
+.case {
+    padding: 2rem 0 .5rem;
+    scroll-margin-top: 96px;
+}
+
+.case + .case {
+    border-top: 1px solid var(--sheet-line);
+}
+
+.case__title {
+    font-size: clamp(1.35rem, 1.1rem + 1vw, 1.75rem);
+    font-weight: 650;
+    letter-spacing: -0.025em;
+}
+
+.case__org {
+    margin: 0.5rem 0 0;
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+}
+
+.case__summary {
+    margin: 0.55rem 0 0;
+    color: var(--ink-soft);
+    max-width: var(--measure);
+}
+
+.case__block h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 0.6rem;
+}
+
+.case__block p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+}
+
+/* The outcome block is the one framed moment in a case: what actually changed is the
+   part a skim stops on, so it is the panel on the page. */
+.case__block--outcomes {
+    margin-top: 1.5rem;
+    padding: 1.3rem 1.5rem;
+    background: var(--sheet-solid);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+}
+
+.outcomes {
+    margin: 0;
+    padding-left: 1.15rem;
+    display: grid;
+    gap: 0.45rem;
+    color: var(--ink-soft);
+}
+
+.outcomes li::marker { color: var(--accent); }
+
+.case__diagram {
+    margin-top: 1.35rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+}
+
+/* The canvas and fallback are full-width siblings of the buttons in the same flex row. */
+.case__diagram > .scroll-x,
+.case__diagram > .diagram__fallback {
+    flex-basis: 100%;
+}
+
+.diagram__canvas {
+    margin-top: 1rem;
+    padding: 1.25rem;
+    background: var(--sheet-solid);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    text-align: center;
+    min-height: 80px;
+}
+
+.diagram__fallback {
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+}
+
+.diagram__fallback pre {
+    overflow-x: auto;
+    padding: 0.9rem;
+    background: var(--wash);
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    line-height: 1.45;
+}

@@ -1,0 +1,255 @@
+@page "/"
+@using Cv.Web.Components.Showcase
+@inject CvDataService CvData
+
+<PageTitle>@(document?.Profile.Name ?? "Portfolio") | @(document?.Profile.Title ?? "Software Engineer")</PageTitle>
+
+@if (document is null)
+{
+    <div class="shell booting">
+        <p>Loading…</p>
+    </div>
+}
+else
+{
+    <Hero Profile="document.Profile"
+          AwardCount="document.Awards.Count"
+          CaseStudies="document.CaseStudies" />
+
+    @*
+        The summary paragraph that used to sit here repeated the hero pitch almost word
+        for word, one screen apart. It still feeds the meta description, llms.txt and
+        the printed CV; on this page the hero carries it.
+    *@
+    @*
+        Proof of work sits above the career detail. On the benchmarked real profiles
+        of senior .NET engineers, projects-above-experience is the senior ordering
+        for a case-study portfolio: the featured study is the argument, the timeline
+        is the evidence trail behind it.
+    *@
+    <section class="sheet reveal" id="work">
+        <div class="shell">
+            @*
+                One featured case, four index rows. Five equal panels made the signature
+                DTC re-architecture, the site's whole argument, carry the same weight
+                as a routine rebuild, and a 5-way equal choice is a skim-killer. The
+                first case by display order gets the full panel; the rest are one skim
+                each, and every row opens a page with the real depth.
+            *@
+            @{
+                var orderedStudies = document.CaseStudies.OrderBy(c => c.DisplayOrder).ToList();
+                var featuredStudy = orderedStudies.FirstOrDefault();
+                var indexStudies = orderedStudies.Skip(1).ToList();
+            }
+            <h2 class="sheet__title">Selected work, in depth</h2>
+            @* The count is the data's, so adding a study never leaves this line stale. *@
+            <p class="sheet__lede">
+                @orderedStudies.Count projects and the decisions behind them. The first one in
+                full, the rest in a line each. Open any of them for the whole story.
+            </p>
+
+            @if (featuredStudy is not null)
+            {
+                <CaseStudyPanel Study="featuredStudy" Index="1" />
+            }
+
+            <ol class="case-index">
+                @foreach (var study in indexStudies)
+                {
+                    <li>
+                        <a class="case-index__item" href="/work/@study.Slug">
+                            <span class="case-index__title">@study.ShortTitle</span>
+                            <span class="case-index__org mono">@study.Organisation</span>
+                            <span class="case-index__summary">@study.Summary</span>
+                            @if (study.Outcomes.Count > 0)
+                            {
+                                <span class="case-index__outcome mono">@study.Outcomes[0]</span>
+                            }
+                        </a>
+                    </li>
+                }
+            </ol>
+        </div>
+    </section>
+
+    @*
+        Skills follow the work rather than lead it: the citations beside each skill
+        point back at the studies a reader has just seen, so they land as evidence
+        instead of as an inventory.
+    *@
+    <SkillMatrix Groups="document.SkillGroups" Experience="document.Experience" />
+
+    <CareerTimeline Roles="roles" ExperiencePhrase="@experiencePhrase" Employers="employers"
+                    SkillGroups="document.SkillGroups" />
+
+    <Credentials Awards="document.Awards"
+                 Education="document.Education"
+                 Certifications="document.Certifications" />
+
+    @* Third-party words are the strongest social proof a portfolio carries, so they get
+       a band of their own, but only when there is something real to show. An empty
+       testimonials file renders nothing here, never an invented quote. *@
+    @if (testimonials is { Count: > 0 })
+    {
+        <section class="sheet reveal" id="testimonials">
+            <div class="shell">
+                <h2 class="sheet__title">What people say</h2>
+                <p class="sheet__lede">
+                    Recommendations from colleagues and collaborators, each attributed
+                    to its author.
+                    <a href="/testimonials">Read them all</a>.
+                </p>
+                <div class="testimonials__grid">
+                    @foreach (var testimonial in testimonials.OrderBy(t => t.DisplayOrder).Take(3))
+                    {
+                        <TestimonialCard Testimonial="testimonial" />
+                    }
+                </div>
+            </div>
+        </section>
+    }
+
+    <section class="sheet reveal" id="contact">
+        <div class="shell contact">
+            <h2 class="sheet__title">Open to senior .NET and architecture roles</h2>
+            <p class="sheet__lede">
+                Email is the fastest way to reach me. The CV has the same content, laid out
+                for printing and for applicant tracking systems.
+            </p>
+            <div class="contact__actions">
+                @*
+                    A verb and an icon, not a bare address: a filled button showing only
+                    an email address reads as a label to copy rather than an action to
+                    tap. The icon matches the contact dock's envelope so the two read as
+                    one system.
+                *@
+                <a class="btn btn--primary contact__email" href="mailto:@document.Profile.Email">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="2" y="4" width="20" height="16" rx="2" />
+                        <path d="m22 6-10 7L2 6" />
+                    </svg>
+                    <span class="contact__email-lines">
+                        <span>Email me</span>
+                        <span class="contact__email-addr mono">@document.Profile.Email</span>
+                    </span>
+                </a>
+                @*
+                    The number is deliberately not printed as text here, this is the
+                    page most likely to be scraped. It is reachable in one tap through
+                    the floating contact dock's tel: link, which carries the digits
+                    without displaying them (decision updated 2026-09-13; before that
+                    the phone lived only on /cv).
+                *@
+                <a class="btn btn--ghost" href="/cv">Read the CV</a>
+                @*
+                    LinkedIn sits beside them here rather than in the hero: it is the
+                    recruiter's verification channel, and this is the row where a
+                    reader who has decided to check arrives.
+                *@
+                @if (!string.IsNullOrWhiteSpace(document.Profile.LinkedIn))
+                {
+                    <a class="btn btn--ghost" href="@document.Profile.LinkedIn" target="_blank"
+                       rel="noopener">LinkedIn</a>
+                }
+                @*
+                    target is load-bearing, not decoration: Blazor's router claims
+                    same-origin anchor clicks and tries to resolve them as routes, and a
+                    PDF matches none, so the link did nothing. An anchor carrying a
+                    target is left to the browser. Opening in a tab also suits a
+                    recruiter, who usually wants to look before saving.
+                *@
+                <a class="btn btn--ghost" href="/Bahaa-Aldeen-Mohamed-CV.pdf"
+                   target="_blank" rel="noopener" download>Download CV (PDF)</a>
+            </div>
+
+            @*
+                The facts a recruiter asks for in their first reply. Answering them here
+                removes a round trip, and for a remote or relocation role it is often the
+                question that decides whether the reply comes at all.
+            *@
+            <dl class="contact__facts">
+                @if (!string.IsNullOrWhiteSpace(document.Profile.Timezone))
+                {
+                    <div>
+                        <dt class="mono">Timezone</dt>
+                        <dd>
+                            @document.Profile.Timezone
+                            @if (!string.IsNullOrWhiteSpace(document.Profile.WorkingOverlap))
+                            {
+                                <span class="contact__overlap">· @document.Profile.WorkingOverlap</span>
+                            }
+                        </dd>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(document.Profile.Availability))
+                {
+                    <div>
+                        <dt class="mono">Availability</dt>
+                        <dd>@document.Profile.Availability</dd>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(document.Profile.Relocation))
+                {
+                    <div>
+                        <dt class="mono">Working arrangement</dt>
+                        <dd>@document.Profile.Relocation</dd>
+                    </div>
+                }
+                @if (document.Profile.Languages.Count > 0)
+                {
+                    <div>
+                        <dt class="mono">Languages</dt>
+                        <dd>@string.Join(" · ", document.Profile.Languages)</dd>
+                    </div>
+                }
+            </dl>
+        </div>
+    </section>
+}
+
+@code {
+    [Inject]
+    private IJSRuntime JS { get; set; } = default!;
+
+    private CvDocument? document;
+    private IReadOnlyList<ExperienceEntry> roles = [];
+    private IReadOnlyList<string> employers = [];
+    private IReadOnlyList<Testimonial> testimonials = [];
+    private string experiencePhrase = string.Empty;
+    private IJSObjectReference? motion;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Sections only exist after the document has loaded and rendered, so the observer
+        // is armed here rather than on initialization.
+        if (document is null)
+        {
+            return;
+        }
+
+        if (motion is null)
+        {
+            motion = await JS.InvokeAsync<IJSObjectReference>("import", "./js/motion.js");
+            await motion.InvokeVoidAsync("start");
+        }
+        else
+        {
+            await motion.InvokeVoidAsync("observe");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        document = await CvData.GetAsync();
+        testimonials = await CvData.GetTestimonialsAsync();
+
+        // "Now" is read once here rather than inside the render tree, so every derived
+        // figure on the page is computed against the same instant.
+        var today = YearMonth.FromDateTime(DateTime.Now);
+
+        roles = CareerSummary.InReverseChronologicalOrder(document.Experience);
+        employers = CareerSummary.Employers(document.Experience);
+        experiencePhrase = CareerSummary.ExperiencePhrase(document.Experience, today);
+    }
+}

@@ -1,0 +1,71 @@
+name: CI
+
+# Build and test on every branch and pull request.
+#
+# pages.yml also runs the tests, but only on a push to main, which means a compile error
+# or a content-rule violation was previously discovered *during* a deploy, with the
+# broken commit already on the default branch. This workflow moves that feedback to the
+# branch, where it is still cheap to act on. It publishes nothing.
+
+on:
+  pull_request:
+  push:
+    branches-ignore: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # Contact details are not in the repository; they arrive as Actions secrets and
+      # are written into cv.json here, before anything reads it. A missing secret fails.
+      - name: Inject contact details
+        env:
+          CV_EMAIL: ${{ secrets.CV_EMAIL }}
+          CV_PHONE: ${{ secrets.CV_PHONE }}
+        run: python _tools/inject_profile.py
+
+      # Tests cover the content rules as well as the code: CvValidator and
+      # RealCvDocumentTests run against the live cv.json, so an edit to the CV is
+      # checked here exactly as an edit to a record would be.
+      - name: Test
+        run: dotnet test tests/Cv.Tests/Cv.Tests.csproj --configuration Release
+
+      # Publish with the same settings the deploy uses. Trimming is Release-only and has
+      # broken this app before (DI activator constructors, System.Text.Json reflection
+      # over required properties), so a Debug-only build would not prove much.
+      - name: Publish
+        run: dotnet publish src/Cv.Web/Cv.Web.csproj --configuration Release --output publish
+
+      # Run the same publish-time steps the deploy runs, so a break in them is found on
+      # the branch rather than while deploying. prerender.py fails the build if two
+      # routes would look like the same page to a crawler; ats_check.py fails it if the
+      # generated CV's text layer does not extract.
+      # The PDF is rendered before the prerender step, not after: prerender.py now
+      # refuses to finish unless the CV it links to is actually in the published output,
+      # so the file has to exist by then. The PDF renderer does not need the prerendered
+      # pages, serve_publish.py serves the app shell for /cv either way.
+      - name: Render and gate the CV PDF
+        run: |
+          python -m pip install --quiet playwright pypdf
+          python -m playwright install --with-deps chromium
+          python _tools/make_cv_pdf.py publish/wwwroot publish/wwwroot/Bahaa-Aldeen-Mohamed-CV.pdf
+          python _tools/ats_check.py publish/wwwroot/Bahaa-Aldeen-Mohamed-CV.pdf
+
+      - name: Prerender routes
+        # No analytics token here: CI must never emit a page that reports traffic.
+        run: python _tools/prerender.py publish/wwwroot --base-url https://bahaa37.github.io

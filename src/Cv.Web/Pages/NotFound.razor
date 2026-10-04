@@ -1,0 +1,18 @@
+﻿@page "/not-found"
+@layout MainLayout
+
+@*
+    Reached only by an unmatched client-side route; the server serves prerendered 404
+    material for anything a visitor could actually hit. The links are the recovery: the
+    two places a lost reader is most likely trying to reach.
+*@
+
+<section class="sheet">
+    <div class="shell">
+        <h1 class="sheet__title">Page not found</h1>
+        <p class="sheet__lede">
+            Nothing lives at this address. Try the <a href="/">home page</a> or the
+            <a href="/cv">CV</a>.
+        </p>
+    </div>
+</section>

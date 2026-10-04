@@ -1,0 +1,216 @@
+.timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/*
+    Narrow: the rail runs down the left and spans both rows, with the period above the
+    body. Wide: the period moves into a column of its own (see the media query below),
+    which is what stops a 1120px shell holding one 68ch column of text and a lot of
+    empty space to its right.
+
+    Placement is by grid-area, so the DOM order, and therefore the reading order, is
+    identical at both widths.
+*/
+/*
+    Narrow: the rail runs down the left and spans both rows, with the period above the
+    body. Wide: the period moves into a column of its own (see the media query below).
+
+    The gutter is deliberately tight on a phone. At 1.25rem the rail pushed every entry
+    34px right of the section heading, which read as the section being misaligned and cost
+    a third of an already-narrow text column.
+*/
+.entry {
+    display: grid;
+    grid-template-columns: 14px 1fr;
+    grid-template-areas:
+        "rail period"
+        "rail body";
+    column-gap: 0.7rem;
+    padding-bottom: 2rem;
+}
+
+.entry__period { grid-area: period; }
+.entry__rail   { grid-area: rail; }
+.entry__body   { grid-area: body; }
+
+@media (min-width: 940px) {
+    .entry {
+        grid-template-columns: 12.5rem 14px 1fr;
+        grid-template-areas: "period rail body";
+        column-gap: 1.5rem;
+    }
+
+    /*
+        Right-aligned against the rail, so the dates form a clean edge down the page.
+
+        align-self: start is load-bearing. A grid item stretches to its row by default,
+        and this row is as tall as the whole achievement list, which left the date
+        floating vertically centred halfway down the entry, with the badge stranded
+        further down still.
+    */
+    .entry__period {
+        align-self: start;
+        justify-content: flex-end;
+        align-items: flex-start;
+        text-align: right;
+        padding-top: 0.15rem;
+    }
+}
+
+.entry:last-child {
+    padding-bottom: 0;
+}
+
+/* The rail is the vertical line plus the node dot, drawn as one element. */
+.entry__rail {
+    position: relative;
+    background: linear-gradient(var(--line), var(--line)) 6px 0 / 2px 100% no-repeat;
+}
+
+.entry:last-child .entry__rail {
+    background-size: 2px 14px;
+}
+
+/*
+    The accent spine that draws down the rail as the section is reached, one entry after
+    another, so the career reads as something traversed rather than a static list.
+
+    It is a separate ::after over the grey rail rather than an animation of the rail
+    itself: the rail's own background doubles as the last-entry stub, and animating that
+    would fight the background-size rule above.
+*/
+.entry__rail::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 6px;
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(var(--accent), var(--sheet-line));
+    transform-origin: top center;
+    transform: scaleY(0);
+}
+
+.entry:last-child .entry__rail::after {
+    height: 14px;
+}
+
+.js-motion .reveal.is-visible .entry__rail::after {
+    animation: draw-y .85s cubic-bezier(.3, .7, .3, 1) forwards;
+    animation-delay: calc(var(--i, 0) * 130ms + 120ms);
+}
+
+/* Without the script the spine is simply already drawn. */
+.entry__rail::after {
+    transform: scaleY(1);
+}
+
+.js-motion .entry__rail::after {
+    transform: scaleY(0);
+}
+
+/* The current role is the one thing on the timeline still in progress, so its node is
+   the only one that keeps moving. */
+.entry--current .entry__rail::before {
+    animation: pulse-node 2.6s ease-in-out infinite;
+}
+
+@keyframes pulse-node {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(120, 130, 145, .4); }
+    50%      { box-shadow: 0 0 0 6px transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .entry--current .entry__rail::before {
+        animation: none;
+    }
+}
+
+/*
+    The node sits ON TOP of the spine, not under it.
+
+    ::after paints above ::before, so the accent spine was drawing straight through the
+    middle of every dot, and because the dot's border was --line (near-invisible on the
+    dark ground) each node read as a bisected smudge rather than a point on a timeline.
+    z-index lifts the dot; the accent border makes it legible on both grounds.
+*/
+.entry__rail::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    top: 6px;
+    left: 0;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid var(--accent);
+}
+
+.entry--current .entry__rail::before {
+    border-color: var(--accent-bright);
+    background: var(--accent-bright);
+}
+
+.entry__period {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+/* Status words are styled once, in app.css (.badge): text with a marker, no capsule. */
+
+.entry__role {
+    margin: 0.2rem 0 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+.entry__company {
+    margin: 0.1rem 0 0.7rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    font-size: 0.98rem;
+}
+
+/* The stack byline: where the company line names who, this names with what. Mono
+   because it is a data line, ink-faint because the bullets below carry the weight. */
+.entry__stack {
+    margin: -0.45rem 0 0.7rem;
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    overflow-wrap: anywhere;
+}
+
+.entry__points {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: var(--ink-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    max-width: var(--measure);
+}
+
+.entry__points li {
+    padding-left: 0.15rem;
+}
+
+.entry__points .metric-chip {
+    margin-left: 0.4rem;
+}
+
+/* The disclosed tail keeps the list rhythm but sits a step back in colour. */
+.entry__points--more {
+    margin-top: 0.45rem;
+    padding-top: 0.45rem;
+    border-top: 1px solid var(--line);
+    color: var(--ink-faint);
+}

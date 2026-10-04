@@ -1,0 +1,86 @@
+@page "/testimonials"
+@inject CvDataService CvData
+@using Cv.Web.Components.Showcase
+
+@*
+    What people say about working with Bahaa.
+
+    Third-party words are the strongest signal a portfolio can carry and the easiest to
+    fake, so every entry is attributed: a name, a role if one was given, and a link back
+    to the person's LinkedIn or GitHub, the identity rule the data file is validated on.
+    Entries are curated into data/testimonials.json; nothing renders that was not really
+    said, and when the file is empty this page says so plainly rather than inventing
+    social proof.
+*@
+
+<PageTitle>Testimonials | Bahaa Aldeen Mohamed</PageTitle>
+
+@if (testimonials is null || document is null)
+{
+    <p class="booting">Loading…</p>
+}
+else if (testimonials.Count == 0)
+{
+    @*
+        The empty state says so plainly rather than inventing social proof, and it
+        still works as a page: crumbs to find the way back, a real action to take.
+        A dead end here spends the one speculative click a screening recruiter has.
+        The address comes from the profile like every other rendering of it.
+    *@
+    <section class="sheet">
+        <div class="shell">
+            <nav class="crumbs" aria-label="Breadcrumb">
+                <a href="/">Home</a>
+                <span aria-hidden="true">/</span>
+                <a href="/testimonials">Testimonials</a>
+            </nav>
+
+            <h1 class="sheet__title">No recommendations yet</h1>
+            <p class="sheet__lede">
+                Recommendations from people I have worked with appear here as they are
+                written. If we have worked together and you would like to add one,
+                <a href="mailto:@document.Profile.Email">get in touch</a>, yours will
+                be the first.
+            </p>
+        </div>
+    </section>
+}
+else
+{
+    <article class="testimonials">
+        <div class="shell">
+
+            <nav class="crumbs" aria-label="Breadcrumb">
+                <a href="/">Home</a>
+                <span aria-hidden="true">/</span>
+                <a href="/testimonials">Testimonials</a>
+            </nav>
+
+            <header class="testimonials__head">
+                <h1 class="testimonials__title">What people say</h1>
+                <p class="testimonials__lede">
+                    Recommendations from colleagues and collaborators, each one attributed
+                    to the person who actually wrote it.
+                </p>
+            </header>
+
+            <div class="testimonials__grid">
+                @foreach (var testimonial in testimonials.OrderBy(t => t.DisplayOrder))
+                {
+                    <TestimonialCard Testimonial="testimonial" />
+                }
+            </div>
+        </div>
+    </article>
+}
+
+@code {
+    private CvDocument? document;
+    private IReadOnlyList<Testimonial>? testimonials;
+
+    protected override async Task OnInitializedAsync()
+    {
+        document = await CvData.GetAsync();
+        testimonials = await CvData.GetTestimonialsAsync();
+    }
+}

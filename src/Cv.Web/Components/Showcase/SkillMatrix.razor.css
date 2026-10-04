@@ -1,0 +1,14 @@
+/*
+    Skills are cited rows, and the groups are columns, not cards.
+
+    The capsule chips are gone: a two-part citation (skill + employer) inside a
+    capsule wrapped onto three lines on a phone and made the chip bigger than the
+    claim it supported. A row puts the skill and its evidence on one line, and the
+    group heading's ink rule does the grouping. Shared row styles live in app.css.
+*/
+
+.groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2.4rem 3rem;
+}

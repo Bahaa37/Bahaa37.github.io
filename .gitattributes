@@ -1,0 +1,11 @@
+# Normalise line endings so the repo stays consistent across machines.
+* text=auto
+
+# Vendored minified bundle. Marked binary so diffs and merges never try to render a
+# single 3.5MB minified line, and so it does not distort language statistics for anyone
+# browsing this repository as a portfolio piece.
+src/Cv.Web/wwwroot/lib/mermaid/mermaid.min.js binary linguist-vendored
+
+# Generated output, not authored source.
+docs/screenshots/*.png binary
+output/*.pdf binary
