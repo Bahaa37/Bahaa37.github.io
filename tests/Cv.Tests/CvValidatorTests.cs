@@ -14,7 +14,7 @@ public class CvValidatorTests
             Name = "Test Person",
             Title = "Engineer",
             Location = "Alexandria, Egypt",
-            Phone = "+20 128 458 6608",
+            Phone = "+20 100 000 0000",
             Email = "test@example.com",
             GitHub = "https://github.com/example",
             Website = "https://example.github.io",
@@ -123,7 +123,7 @@ public class CvValidatorTests
         var document = DocumentWith(Role("A", "2023-03", null, EmploymentType.FullTime));
         document = document with
         {
-            Profile = document.Profile with { Phone = "+20 01284586608" },
+            Profile = document.Profile with { Phone = "+20 01000000000" },
         };
 
         Assert.Contains(
