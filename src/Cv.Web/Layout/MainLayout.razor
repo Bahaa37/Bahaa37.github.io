@@ -156,6 +156,18 @@
             </svg>
             <span>Call</span>
         </a>
+        @*
+            WhatsApp is how most recruiters in the Gulf and Egypt reach a candidate
+            first, so it sits beside the phone. wa.me opens the app on a phone and
+            WhatsApp Web on a desktop; the number still never appears as text.
+        *@
+        <a class="contact-dock__action" href="@profile.WhatsAppHref" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+            </svg>
+            <span>WhatsApp</span>
+        </a>
         <a class="contact-dock__action" href="mailto:@profile.Email">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -163,6 +175,19 @@
                 <path d="m22 6-10 7L2 6" />
             </svg>
             <span>Email</span>
+        </a>
+        @*
+            The CV, one tap from anywhere on the site. target is load-bearing: Blazor's
+            router intercepts same-origin anchors and matches no PDF route, so without
+            it the link does nothing (the same fix as the hero's download button).
+        *@
+        <a class="contact-dock__action contact-dock__action--cv" href="/Bahaa-Aldeen-Mohamed-CV.pdf"
+           target="_blank" rel="noopener" download>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 3v12m-5-5 5 5 5-5M5 21h14" />
+            </svg>
+            <span>CV</span>
         </a>
     </nav>
 }

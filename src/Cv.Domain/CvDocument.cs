@@ -93,6 +93,12 @@ public sealed record Profile
 
     /// <summary>Digits only, for the tel: href.</summary>
     public string PhoneHref => "tel:" + new string([.. Phone.Where(c => char.IsDigit(c) || c == '+')]);
+
+    /// <summary>
+    /// A wa.me chat link for the same number. wa.me wants the international number as
+    /// bare digits — no "+", no spaces — so it is derived from Phone, never typed.
+    /// </summary>
+    public string WhatsAppHref => "https://wa.me/" + new string([.. Phone.Where(char.IsDigit)]);
 }
 
 /// <summary>A named cluster of skills, e.g. "Architecture &amp; Patterns".</summary>

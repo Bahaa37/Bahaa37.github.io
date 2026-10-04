@@ -1,8 +1,8 @@
 /* ==========================================================================
    SPEC SHEET — the showcase's visual world (2026-10-04).
 
-   The portfolio as good engineering documentation: cool neutral greys, one
-   cobalt accent, a modern grotesk with its own mono, flat sections separated
+   The portfolio as good engineering documentation: cool neutral greys, a
+   graphite accent (no hue), a modern grotesk with its own mono, flat sections separated
    by hairlines, and nothing shaped like a capsule. It replaces the Annual
    Report (rag paper, ledger green, bronze) at the owner's word — he did not
    like the pills or the colours — and after a design review that found every
@@ -22,7 +22,7 @@
    cannot share one declaration list between them. Change both.
 
    Contrast (light, on --paper #f7f8fa): ink 16.9:1, ink-soft 9.8:1, ink-faint
-   5.7:1, accent 6.3:1. Dark (on #0d1117): 15.7, 9.9, 6.2, 7.7. Control
+   5.7:1, accent 16.7:1. Dark (on #0d1117): 15.7, 9.9, 6.2, 17.2. Control
    borders (--edge-silver) hold 3:1 against both grounds.
    ========================================================================== */
 
@@ -38,24 +38,26 @@
     --ink-soft: #374151;
     --ink-faint: #5b6472;
 
-    /* The one accent: cobalt. Links, the primary action, focus, "current". */
-    --accent: #1f4fd8;
-    --accent-bright: #1a3fb0;
-    --accent-wash: #ebf0fd;
-    --action-bg: #1f4fd8;
-    --action-bg-hover: #1a3fb0;
+    /* The accent is graphite: no hue. Near-black carries links (always underlined,
+       so they never rely on colour), the primary action, focus and "current".
+       Chosen 2026-10-04 over cobalt, which the owner disliked. */
+    --accent: #111827;
+    --accent-bright: #374151;
+    --accent-wash: #eef0f3;
+    --action-bg: #111827;
+    --action-bg-hover: #2d3748;
     --action-ink: #ffffff;
 
     /* Recognition is no longer a second metal — it reads as ink and accent. */
-    --gold: #1f4fd8;
-    --gold-wash: #ebf0fd;
+    --gold: #111827;
+    --gold-wash: #eef0f3;
 
     --alarm: #b42318;
     --alarm-wash: #fdecea;
 
     /* Diagram fallback hues. */
     --stage-legacy: #5b6472;
-    --stage-lead: #1f4fd8;
+    --stage-lead: #111827;
 
     /* Hairlines and control borders. --line separates; --edge-silver outlines
        interactive controls and holds 3:1 for WCAG 1.4.11. */
@@ -107,21 +109,21 @@
         --ink-soft: #b4bcc8;
         --ink-faint: #8b95a3;
 
-        --accent: #7da2ff;
-        --accent-bright: #9db8ff;
-        --accent-wash: #18233d;
-        --action-bg: #7da2ff;
-        --action-bg-hover: #9db8ff;
-        --action-ink: #0b1220;
+        --accent: #f3f4f6;
+        --accent-bright: #d1d5db;
+        --accent-wash: #1b222c;
+        --action-bg: #f3f4f6;
+        --action-bg-hover: #d1d5db;
+        --action-ink: #0d1117;
 
-        --gold: #7da2ff;
-        --gold-wash: #18233d;
+        --gold: #f3f4f6;
+        --gold-wash: #1b222c;
 
         --alarm: #f97066;
         --alarm-wash: #2d1414;
 
         --stage-legacy: #8b95a3;
-        --stage-lead: #7da2ff;
+        --stage-lead: #f3f4f6;
 
         --line: #2a323d;
         --wash: #1b222c;
@@ -144,21 +146,21 @@
     --ink-soft: #b4bcc8;
     --ink-faint: #8b95a3;
 
-    --accent: #7da2ff;
-    --accent-bright: #9db8ff;
-    --accent-wash: #18233d;
-    --action-bg: #7da2ff;
-    --action-bg-hover: #9db8ff;
-    --action-ink: #0b1220;
+    --accent: #f3f4f6;
+    --accent-bright: #d1d5db;
+    --accent-wash: #1b222c;
+    --action-bg: #f3f4f6;
+    --action-bg-hover: #d1d5db;
+    --action-ink: #0d1117;
 
-    --gold: #7da2ff;
-    --gold-wash: #18233d;
+    --gold: #f3f4f6;
+    --gold-wash: #1b222c;
 
     --alarm: #f97066;
     --alarm-wash: #2d1414;
 
     --stage-legacy: #8b95a3;
-    --stage-lead: #7da2ff;
+    --stage-lead: #f3f4f6;
 
     --line: #2a323d;
     --wash: #1b222c;
@@ -200,7 +202,7 @@ body {
     text-rendering: optimizeLegibility;
 }
 
-::selection { background: rgba(31, 79, 216, .2); }
+::selection { background: rgba(120, 130, 145, .28); }
 
 ::-webkit-scrollbar { width: 12px; height: 12px; }
 ::-webkit-scrollbar-track { background: var(--paper); }
@@ -662,34 +664,41 @@ main { display: block; padding-bottom: 4rem; }
 .chip__where { font-family: var(--font-mono); font-size: .72rem; color: var(--ink-faint); }
 
 .disclosure { margin-top: 1.4rem; }
+/*
+    A disclosure looks like the control it is: an outlined button with a chevron
+    that turns when open. The text-only summary read as a heading, so readers did
+    not see that it expanded.
+*/
 .disclosure summary {
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: .4rem;
+    gap: .55rem;
     min-height: 2.75rem;
-    font-size: .95rem;
+    padding: .45rem .9rem;
+    border: 1px solid var(--edge-silver);
+    border-radius: var(--radius-sm);
+    background: var(--sheet-solid);
+    font-size: .93rem;
     font-weight: 500;
-    color: var(--accent);
+    color: var(--ink);
     list-style: none;
+    user-select: none;
+    transition: border-color .15s ease, background .15s ease;
 }
 .disclosure summary::-webkit-details-marker { display: none; }
-.disclosure summary::before {
-    content: "+";
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.1rem;
-    height: 1.1rem;
-    border: 1px solid currentColor;
-    border-radius: 3px;
-    font-family: var(--font-mono);
-    font-size: .8rem;
-    line-height: 1;
+.disclosure summary::after {
+    content: "";
+    width: .45rem;
+    height: .45rem;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform .2s ease;
 }
-.disclosure[open] summary::before { content: "−"; }
-.disclosure summary:hover { color: var(--accent-bright); }
-.disclosure[open] summary { margin-bottom: .6rem; }
+.disclosure[open] summary::after { transform: translateY(2px) rotate(-135deg); }
+.disclosure summary:hover { border-color: var(--ink); }
+.disclosure[open] summary { margin-bottom: 1rem; background: var(--wash); }
 
 .skills__more { border-top: 1px solid var(--line); padding-top: .8rem; margin-top: 2.4rem; }
 
@@ -1037,6 +1046,16 @@ main { display: block; padding-bottom: 4rem; }
     text-transform: none;
 }
 .contact-dock__action svg { width: 1rem; height: 1rem; flex: none; }
+.contact-dock__action--cv {
+    background: var(--action-bg);
+    color: var(--action-ink);
+}
+.contact-dock__action--cv:hover { background: var(--action-bg-hover); color: var(--action-ink); }
+
+/* Four actions on a 390px screen: tighter padding and labels, same 44px taps. */
+@media (max-width: 430px) {
+    .contact-dock__action { padding: 0 .6rem; gap: .35rem; font-size: .84rem; }
+}
 .contact-dock__action:hover {
     color: var(--accent);
     background: var(--wash);

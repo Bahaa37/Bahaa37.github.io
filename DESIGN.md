@@ -1,17 +1,17 @@
 ---
 name: Spec Sheet
-description: The portfolio as good engineering documentation — cool neutral greys, one cobalt accent, Geist and Geist Mono, flat sections separated by hairlines, and nothing shaped like a capsule.
+description: The portfolio as good engineering documentation — cool neutral greys, a graphite (no-hue) accent, Geist and Geist Mono, flat sections separated by hairlines, and nothing shaped like a capsule.
 colors:
   paper: "#f7f8fa"          # page ground            dark: #0d1117
   sheet-solid: "#ffffff"    # framed panels          dark: #151b23
   ink: "#111827"            # headings, primary text dark: #e6eaf0
   ink-soft: "#374151"       # prose                  dark: #b4bcc8
   ink-faint: "#5b6472"      # smallest text          dark: #8b95a3
-  accent: "#1f4fd8"         # links, primary, focus  dark: #7da2ff
-  accent-bright: "#1a3fb0"  # hover                  dark: #9db8ff
-  accent-wash: "#ebf0fd"    # quiet accent fill      dark: #18233d
-  action-bg: "#1f4fd8"      # primary button fill    dark: #7da2ff
-  action-ink: "#ffffff"     # text on the fill       dark: #0b1220
+  accent: "#111827"         # links, primary, focus  dark: #f3f4f6
+  accent-bright: "#374151"  # hover                  dark: #d1d5db
+  accent-wash: "#eef0f3"    # quiet accent fill      dark: #1b222c
+  action-bg: "#111827"      # primary button fill    dark: #f3f4f6
+  action-ink: "#ffffff"     # text on the fill       dark: #0d1117
   line: "#dce0e6"           # hairlines              dark: #2a323d
   edge-silver: "#858e9c"    # control borders, 3:1   dark: #5e6878
   wash: "#eef0f3"           # tag fill               dark: #1b222c
@@ -51,8 +51,10 @@ about twenty capsule rules; a broken key-figures row) and a hiring-manager read
 1. **One surface, few frames.** Sections are flat and separated by whitespace and one
    hairline. Only evidence is framed: the hero's key figures, a study's outcomes,
    awards, prev/next links. A frame means "this is the proof".
-2. **One accent.** Cobalt marks links, the primary action, focus, the current nav
-   item and the current role. Nothing else is coloured. Recognition is plain ink.
+2. **No hue.** The accent is graphite (2026-10-04: the owner rejected cobalt after
+   seeing six options). Near-black marks the primary action, focus, the current nav
+   item and the current role; links are always underlined so they never rely on
+   colour. Nothing on the page carries a hue except photos and diagrams.
 3. **No capsules.** Buttons are 6px rectangles in sentence case; tags are 3px squares
    with no border; status ("Current", "Returned", "In progress") is text with a
    marker; the theme switch is squared off. Skills are cited rows, not chips.
@@ -71,6 +73,9 @@ about twenty capsule rules; a broken key-figures row) and a hiring-manager read
 - **Case study pages:** long-form styles live in app.css (`.study*`), 68ch measure,
   paragraphs split on blank lines in cv.json, outcomes framed, third-party evidence
   ("Check it yourself") when the study carries `evidence` links.
+- **Contact dock:** fixed bar with Call, WhatsApp (wa.me, derived from the phone),
+  Email and CV (filled, the PDF). Mirrored in prerender.py's `static_contact_dock`.
+- **Disclosures:** outlined buttons with a turning chevron, never bare text.
 - **Pre-boot document:** `.prerendered` gets a readable document style — it is the
   whole page for visitors whose runtime never boots.
 
@@ -86,6 +91,6 @@ about twenty capsule rules; a broken key-figures row) and a hiring-manager read
 
 ## Don't
 
-- Don't reintroduce capsules, cream/paper grounds, a second accent or bronze.
+- Don't reintroduce capsules, cream/paper grounds, a coloured accent or bronze.
 - Don't add cards inside sections or shadows on sections.
 - Don't type a figure into markup.

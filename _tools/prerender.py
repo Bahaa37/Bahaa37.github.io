@@ -592,6 +592,8 @@ def static_contact_dock(cv: dict) -> str:
     """
     phone = cv["profile"]["phone"]
     tel = "".join(c for c in phone if c.isdigit() or c == "+")
+    # Profile.WhatsAppHref's equivalent: wa.me wants bare digits, no "+".
+    whatsapp = "https://wa.me/" + "".join(c for c in phone if c.isdigit())
     mail = e(cv["profile"]["email"])
     return (
         '<nav class="contact-dock" aria-label="Contact">'
@@ -603,12 +605,24 @@ def static_contact_dock(cv: dict) -> str:
         '2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 '
         '2.81.7A2 2 0 0 1 22 16.92z"></path></svg>'
         "<span>Call</span></a>"
+        f'<a class="contact-dock__action" href="{whatsapp}" target="_blank" rel="noopener">'
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" '
+        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path>'
+        '</svg>'
+        "<span>WhatsApp</span></a>"
         f'<a class="contact-dock__action" href="mailto:{mail}">'
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" '
         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
         '<rect x="2" y="4" width="20" height="16" rx="2"></rect>'
         '<path d="m22 6-10 7L2 6"></path></svg>'
-        "<span>Email</span></a></nav>"
+        "<span>Email</span></a>"
+        f'<a class="contact-dock__action contact-dock__action--cv" href="/{CV_PDF_NAME}" '
+        'target="_blank" rel="noopener" download>'
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" '
+        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        '<path d="M12 3v12m-5-5 5 5 5-5M5 21h14"></path></svg>'
+        "<span>CV</span></a></nav>"
     )
 
 
