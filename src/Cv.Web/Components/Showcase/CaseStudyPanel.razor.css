@@ -1,0 +1,78 @@
+/*
+    The featured case study inside the work section's ruled frame. The kit owns the
+    card (surface, ring border, hover wash) and the compare (coral/mint washes, the
+    lit rule); this file owns spacing, the bylines and the non-interactive chips.
+*/
+
+.case {
+    scroll-margin-top: 96px;
+}
+
+.case__title {
+    text-wrap: balance;
+}
+
+.case__org {
+    margin: var(--hl-space-8) 0 0;
+    font-family: var(--hl-font-mono);
+    font-size: 0.78rem;
+    color: var(--hl-text-4);
+}
+
+.case__summary {
+    margin: var(--hl-space-12) 0 0;
+    max-width: 68ch;
+}
+
+.case .hl-compare {
+    margin-top: var(--hl-space-24);
+}
+
+/* The outcomes list is shared with the case-study pages; its rules live in app.css. */
+
+.evidence-line {
+    margin: var(--hl-space-16) 0 0;
+    font-size: 0.92rem;
+    color: var(--hl-text-4);
+}
+
+.evidence-line__label {
+    margin-right: var(--hl-space-8);
+    font-family: var(--hl-font-mono);
+    font-size: 0.78rem;
+    color: var(--hl-text-4);
+}
+
+/* Stack chips are data, not controls: the kit's chip shape without its hover life. */
+.case__stack {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--hl-space-6);
+    margin: var(--hl-space-16) 0 0;
+    padding: 0;
+}
+
+.case__chip,
+.case__chip:hover {
+    cursor: default;
+    transform: none;
+    color: var(--hl-text-4);
+    border-color: var(--hl-line-soft);
+    background: var(--hl-veil);
+}
+
+.case__actions {
+    margin-top: var(--hl-space-24);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--hl-space-10);
+}
+
+/* The diagram's canvas and fallback are ArchitectureDiagram's own markup, so a
+   scoped rule here cannot reach them — their styles live in app.css. */
+
+@media print {
+    .case__actions { display: none; }
+}

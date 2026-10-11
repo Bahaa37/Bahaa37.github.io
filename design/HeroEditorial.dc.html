@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; }
+    a { color: #14425f; text-decoration: none; }
+    a:hover { color: #1d6fa5; }
+    .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+    .display { font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif; }
+  </style>
+</helmet>
+
+<div style="width: 1280px; background: #fbfcfd; color: #16202a; padding: 0 0 68px;">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 72px; border-bottom: 1px solid #e2e9ef;">
+    <span class="display" style="font-weight: 700; font-size: 15px; letter-spacing: -0.01em;">Bahaa Aldeen Mohamed</span>
+    <div style="display: flex; gap: 28px; font-size: 13.5px; color: #5a6c7d;">
+      <span>Skills</span><span>Experience</span><span>Selected work</span><span>Credentials</span>
+      <span style="color: #14425f; font-weight: 600;">CV</span>
+    </div>
+  </div>
+
+  <div style="padding: 84px 72px 0; max-width: 1000px;">
+
+    <div class="mono" style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #7b8b9a;">
+      Solution architecture &nbsp;·&nbsp; Systems analysis &nbsp;·&nbsp; .NET
+    </div>
+
+    <h1 class="display" style="margin: 22px 0 0; font-size: 72px; line-height: 0.98; letter-spacing: -0.04em; font-weight: 700; text-wrap: balance;">
+      An upgrade cycle
+      <span style="color: {{accent}};">of 5–7 days,</span>
+      cut to three.
+    </h1>
+
+    <p style="margin: 30px 0 0; max-width: 62ch; font-size: 19px; line-height: 1.6; color: #46586a; text-wrap: pretty;">
+      I led the re-architecture of a distributed orchestrator to remove its
+      transaction-coordinator dependency — the constraint that had frozen an entire
+      service estate on unsupported runtimes — then authored the transformation
+      template, its governing rules, and the AI-guided workflow that let other teams
+      repeat it.
+    </p>
+
+    <div style="display: flex; align-items: center; gap: 14px; margin-top: 36px;">
+      <span class="display" style="display: inline-flex; align-items: center; padding: 14px 24px; border-radius: 8px; background: #14425f; color: #ffffff; font-weight: 700; font-size: 15px;">Read the CV</span>
+      <span class="display" style="display: inline-flex; align-items: center; padding: 14px 24px; border-radius: 8px; border: 1px solid #cfdae4; color: #16202a; font-weight: 600; font-size: 15px;">Selected work</span>
+      <span class="mono" style="margin-left: 8px; font-size: 12.5px; color: #7b8b9a;">bahaa37.github.io</span>
+    </div>
+  </div>
+
+  <div style="margin: 64px 72px 0; border-top: 1px solid #e2e9ef; padding-top: 34px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 34px;">
+
+    <div>
+      <div class="display" style="font-size: 30px; font-weight: 700; letter-spacing: -0.025em; color: #8a6116;">5–7 d → 3</div>
+      <div class="mono" style="margin-top: 7px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #7b8b9a;">Upgrade cycle · awarded</div>
+    </div>
+
+    <div>
+      <div class="display" style="font-size: 30px; font-weight: 700; letter-spacing: -0.025em;">9 countries</div>
+      <div class="mono" style="margin-top: 7px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #7b8b9a;">Payment middleware</div>
+    </div>
+
+    <div>
+      <div class="display" style="font-size: 30px; font-weight: 700; letter-spacing: -0.025em;">5 modules</div>
+      <div class="mono" style="margin-top: 7px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #7b8b9a;">Modernized to date</div>
+    </div>
+
+    <div>
+      <div class="display" style="font-size: 30px; font-weight: 700; letter-spacing: -0.025em;">2 awards</div>
+      <div class="mono" style="margin-top: 7px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #7b8b9a;">Delivery · AI enablement</div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#14425f","options":["#14425f","#1d6fa5","#8a6116","#2f6f5e"]}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#14425f' };
+  }
+}
+</script>
+</body>
+</html>

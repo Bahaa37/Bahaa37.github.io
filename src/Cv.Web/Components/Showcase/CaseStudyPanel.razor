@@ -1,0 +1,92 @@
+@*
+    The flagship case study, as the kit's featured card: the title and summary up
+    top, then the argument as one before/after — the problem on the coral side, the
+    outcomes on the mint side, joined by the kit's lit rule. A CV bullet has room to
+    say what was done; this has room to show how it was decided, which is the part a
+    hiring manager is actually assessing.
+
+    The stack reads as mono chips — data, not buttons, so no hover lift. The diagram
+    stays behind ArchitectureDiagram's own ghost toggle (Mermaid is 3.5 MB and loads
+    only when asked).
+*@
+
+<article class="hl-card hl-card--featured case" id="@Study.Slug" data-hl-reveal>
+    <header class="case__head">
+        <h3 class="hl-h3 case__title">@Study.Title</h3>
+        @*
+            Attribution reads as a byline under the title, never as a label above it:
+            the heading carries its own weight, and the organisation is metadata.
+        *@
+        <p class="case__org">@(Study.Organisation ?? "Personal project")</p>
+        <p class="hl-body case__summary">@Study.Summary</p>
+    </header>
+
+    <div class="hl-compare">
+        <div class="hl-compare__from">
+            <h4 class="hl-h4">Problem</h4>
+            <p class="hl-body">@Study.Problem</p>
+        </div>
+        <div class="hl-compare__to">
+            <h4 class="hl-h4">Outcome</h4>
+            <ul class="outcomes">
+                @foreach (var outcome in Study.Outcomes)
+                {
+                    <li>@outcome</li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    @if (Study.Evidence.Count > 0)
+    {
+        <p class="evidence-line">
+            <span class="evidence-line__label">Verify</span>
+            @foreach (var (link, i) in Study.Evidence.Select((link, i) => (link, i)))
+            {
+                if (i > 0)
+                {
+                    <span aria-hidden="true"> · </span>
+                }
+                <a href="@link.Url" target="_blank" rel="noopener">@link.Label</a>
+            }
+        </p>
+    }
+
+    @if (Study.Stack.Count > 0)
+    {
+        <ul class="case__stack">
+            @foreach (var item in Study.Stack)
+            {
+                <li class="hl-chip case__chip">@item</li>
+            }
+        </ul>
+    }
+
+    <div class="case__actions">
+        <a class="hl-btn hl-btn--primary hl-btn--sm" href="@($"/work/{Study.Slug}")">Read the case study</a>
+
+        @*
+            The write-up button renders only when it goes somewhere the case-study
+            button does not: the panel once showed both as two pills to the same URL,
+            which reads as padding on the one study whose claims most need a second
+            destination (an external repo or essay) to be believed.
+        *@
+        @if (Study.HasWriteup && Study.WriteupUrl != $"/work/{Study.Slug}")
+        {
+            <a class="hl-btn hl-btn--ghost hl-btn--sm" href="@Study.WriteupUrl">Full technical write-up</a>
+        }
+
+        @if (Study.HasDiagram)
+        {
+            <ArchitectureDiagram Id="@($"panel-{Study.Slug}")" Source="@Study.MermaidDiagram" />
+        }
+    </div>
+</article>
+
+@code {
+    [Parameter, EditorRequired]
+    public required CaseStudy Study { get; set; }
+
+    [Parameter]
+    public int Index { get; set; }
+}

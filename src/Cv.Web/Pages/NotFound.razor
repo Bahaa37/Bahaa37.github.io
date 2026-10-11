@@ -1,0 +1,42 @@
+@page "/not-found"
+@layout MainLayout
+@inject NavigationManager Navigation
+
+@*
+    Reached only by an unmatched client-side route; the server serves prerendered 404
+    material for anything a visitor could actually hit. The console shows the router
+    doing what it did — open the path, fail to match — and the links are the recovery:
+    the two places a lost reader is most likely trying to reach. The static 404.html
+    mirrors this markup with a generic "<this page>" line, because at prerender time
+    there is no requested path to show; change both.
+*@
+
+<section class="sheet">
+    <div class="shell">
+        <h1 class="sheet__title">Page not found</h1>
+        <p class="sheet__lede">
+            Nothing lives at this address. Try the <a href="/">home page</a> or the
+            <a href="/cv">CV</a>.
+        </p>
+
+        <div class="hl-window notfound__window">
+            <div class="hl-window__bar">
+                <div class="hl-window__dots"><i></i><i></i><i></i></div>
+                <span class="hl-window__title">router</span>
+            </div>
+            <div class="hl-window__log notfound__log">
+                <p class="hl-window__line hl-window__line--cmd">open @RequestedPath</p>
+                <p class="hl-window__line notfound__warn">route not found</p>
+                <p class="hl-window__line hl-window__line--accent">◆ try one of these</p>
+                <p class="hl-window__line notfound__route"><a href="/">/</a></p>
+                <p class="hl-window__line notfound__route"><a href="/#work">/#work</a></p>
+                <p class="hl-window__line notfound__route"><a href="/cv">/cv</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    /// <summary>The path that failed to match, read from the URL bar at render time.</summary>
+    private string RequestedPath => new Uri(Navigation.Uri).AbsolutePath;
+}

@@ -1,0 +1,59 @@
+@using System.Globalization
+
+@* One attributed recommendation, as it appears on the testimonials page and in the
+   home page's highlights band: the kit's card, the quote at lead size, and the
+   attribution as mono data — name, role, and the profile the reader can check.
+   Styles live in app.css on purpose: prerender.py renders the same markup into the
+   static pages, and isolated component CSS cannot reach that copy. *@
+
+<figure class="hl-card testimonial">
+    <blockquote class="testimonial__quote">
+        <p class="hl-lead">@Testimonial.Text</p>
+    </blockquote>
+    <figcaption class="testimonial__by">
+        <span class="testimonial__name">@Testimonial.Name</span>
+        @if (Meta(Testimonial) is { } meta)
+        {
+            <span class="testimonial__meta">@meta</span>
+        }
+        @* The source link carries whichever profile exists — LinkedIn first, GitHub
+           second. The label is the host itself, so it can never claim more than the
+           URL does. The data rules guarantee at least one; a name with neither
+           renders unlinked rather than invented. *@
+        @if (LinkFor(Testimonial) is { } link)
+        {
+            <a class="testimonial__source" href="@link" rel="noopener noreferrer">@Host(link)</a>
+        }
+    </figcaption>
+</figure>
+
+@code {
+    [Parameter, EditorRequired]
+    public Testimonial Testimonial { get; set; } = default!;
+
+    private static string? LinkFor(Testimonial testimonial)
+        => testimonial.LinkedIn ?? testimonial.GitHub;
+
+    private static string? Meta(Testimonial testimonial)
+    {
+        var who = string.Join(", ", new[] { testimonial.Role, testimonial.Company }
+            .Where(part => !string.IsNullOrWhiteSpace(part)));
+
+        return string.IsNullOrEmpty(who) ? null : who;
+    }
+
+    /// <summary>"linkedin.com" / "github.com" — the link's own host, nothing invented.</summary>
+    private static string Host(string url)
+    {
+        if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
+        {
+            var host = uri.Host;
+
+            return host.StartsWith("www.", true, CultureInfo.InvariantCulture)
+                ? host["www.".Length..]
+                : host;
+        }
+
+        return url;
+    }
+}

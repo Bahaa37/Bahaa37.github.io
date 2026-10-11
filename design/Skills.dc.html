@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; }
+    a { color: #8ec6ea; text-decoration: none; }
+    a:hover { color: #a9d7f5; }
+    .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+    .display { font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif; }
+  </style>
+</helmet>
+
+<div style="width: 1280px; background: #111920; color: #e6edf3; padding: 66px 72px 72px;">
+
+  <div class="mono" style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #6f8496;">Capabilities</div>
+  <h2 class="display" style="margin: 10px 0 0; font-size: 36px; letter-spacing: -0.03em; font-weight: 700;">Skills, with the work that backs them</h2>
+  <p style="margin: 12px 0 0; max-width: 68ch; font-size: 16px; color: #a9b8c6;">
+    Anyone can list a technology. Where a skill appears in the achievement record, the
+    employers are named beside it — the rest are listed plainly, without a badge.
+  </p>
+
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 34px;">
+
+    <sc-for list="{{groups}}" as="group" hint-placeholder-count="6">
+      <div style="border: 1px solid #24313c; border-radius: 12px; background: #16202a; padding: 20px 22px 22px;">
+        <div class="display" style="font-size: 14px; font-weight: 700; color: {{accent}}; letter-spacing: -0.005em;">{{group.name}}</div>
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;">
+          <sc-for list="{{group.skills}}" as="skill" hint-placeholder-count="4">
+            <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 14px; padding-bottom: 10px; border-bottom: 1px dashed #24313c;">
+              <span style="font-size: 13.5px; color: #e6edf3;">{{skill.name}}</span>
+              <span class="mono" style="font-size: 10.5px; color: #6f8496; text-align: right; white-space: nowrap;">{{skill.at}}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+
+  </div>
+</div>
+
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#8ec6ea","options":["#8ec6ea","#7fd1b9","#c3a6f0","#e0b95f"]}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      accent: this.props.accent ?? '#8ec6ea',
+      groups: [
+        { name: 'Architecture & Patterns', skills: [
+          { name: 'Clean Architecture', at: 'PS Digital' },
+          { name: 'CQRS', at: 'Andalusia · PS Digital' },
+          { name: 'Strategy · Pipeline', at: 'PS Digital' },
+          { name: 'DTC removal', at: 'Andalusia' },
+          { name: 'Workflow orchestration', at: 'Andalusia' },
+        ]},
+        { name: 'Systems Analysis & Design', skills: [
+          { name: 'Solution architecture docs', at: 'MEEM · PS Digital' },
+          { name: 'SRS', at: 'MEEM' },
+          { name: 'Low-Level Design', at: 'MEEM' },
+          { name: 'Mermaid diagramming', at: 'Andalusia' },
+          { name: 'Requirements analysis', at: '' },
+        ]},
+        { name: 'Legacy Modernization', skills: [
+          { name: 'Framework upgrade strategy', at: 'Andalusia' },
+          { name: 'Project templating & rules', at: 'Andalusia' },
+          { name: 'Refactoring at scale', at: 'Andalusia' },
+          { name: 'Cross-team leadership', at: 'Andalusia' },
+          { name: 'Incremental migration', at: '' },
+        ]},
+        { name: 'AI Engineering & Enablement', skills: [
+          { name: 'Copilot Studio', at: 'Andalusia' },
+          { name: 'Autonomous agents', at: 'Andalusia' },
+          { name: 'AI-guided workflows', at: 'Andalusia' },
+          { name: 'Curriculum design', at: 'Andalusia' },
+        ]},
+        { name: 'Languages & Frameworks', skills: [
+          { name: 'C# · .NET', at: 'all roles' },
+          { name: 'ASP.NET Core', at: 'PS Digital' },
+          { name: 'Entity Framework', at: 'PS Digital' },
+          { name: 'Dapper', at: 'PS Digital' },
+          { name: 'Blazor', at: '' },
+        ]},
+        { name: 'Data & Messaging', skills: [
+          { name: 'SQL Server', at: 'PS Digital' },
+          { name: 'RabbitMQ', at: 'Andalusia' },
+          { name: 'Query optimization', at: 'PS Digital' },
+          { name: 'Redis', at: '' },
+        ]},
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,230 @@
+/*
+    The write-up body sits inside the shared .study sheet (app.css); everything here
+    styles the long-form content inside it. Section headings (.study__heading) and
+    the pull-quote/compare grammar are shared with the case-study pages and live in
+    app.css; this file owns what is specific to the write-up.
+*/
+
+.study__shell {
+    max-width: 760px;
+}
+
+.title {
+    margin-top: 0.7rem;
+}
+
+/* The standfirst is the piece's thesis in one line — lead size, the page's own
+   ink, no accent: the mint is spent on state, not on prose. */
+.standfirst {
+    margin: 0.9rem 0 0;
+    font: var(--hl-type-lead);
+    color: var(--hl-text-2);
+    font-weight: 500;
+}
+
+.lede {
+    margin-top: 1.8rem;
+    font-size: 1.1rem;
+    line-height: 1.65;
+}
+
+.study p {
+    line-height: 1.72;
+    color: var(--hl-text-3);
+    max-width: 68ch;
+}
+
+.study code {
+    padding: 0.08em 0.35em;
+    border-radius: 4px;
+    background: var(--hl-surface-3);
+    color: var(--hl-text-1);
+}
+
+/*
+    The pull quote is set off by hairlines above and below and nothing else — no
+    tile, no accent rail. A thick border on one side is the one tell the design
+    detector flags every time it ships.
+*/
+.pull {
+    margin: 2.2rem 0;
+    padding: 1.4rem 0;
+    border-top: 1px solid var(--hl-line);
+    border-bottom: 1px solid var(--hl-line);
+    font: var(--hl-type-lead);
+    line-height: 1.55;
+    color: var(--hl-text-1) !important;
+    max-width: 68ch;
+}
+
+/* ---------- code window ---------- */
+
+/* The kit owns the window (surface, bar, dots); the site owns the code body and
+   the syntax hues, which map onto the kit's own colour tokens so they follow the
+   theme with no twice-written dark override. */
+.code {
+    margin: 1.5rem 0;
+}
+
+.code__tag {
+    font-size: 0.6875rem;
+    color: var(--hl-text-4);
+}
+
+.code pre {
+    margin: 0;
+    padding: 1rem 1.15rem;
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: var(--hl-text-1);
+    overflow-x: auto;
+}
+
+.code .c { color: var(--hl-text-4); }
+.code .k { color: var(--hl-violet); }
+.code .t { color: var(--hl-accent-bright); }
+.code .f { color: var(--hl-gold); }
+.code .n { color: var(--hl-accent-teal); }
+
+/* The kit's teal (teal-600) measures ~4.1:1 on this window's white ground — under
+   the 4.5:1 AA floor at 0.8rem. Teal-700 holds ~5.3:1. Light only; dark keeps the
+   brighter token. A site rule, not a kit edit. */
+@media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) .code .n { color: #0f766e; }
+}
+:root[data-theme="light"] .code .n { color: #0f766e; }
+
+/* ---------- points ---------- */
+
+.points {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    margin: 1.4rem 0 0;
+}
+
+.points dt {
+    font-family: var(--hl-font-sans);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--hl-text-1);
+}
+
+.points dd {
+    margin: 0.3rem 0 0;
+    line-height: 1.68;
+    color: var(--hl-text-3);
+    max-width: 68ch;
+}
+
+/* ---------- architecture figure ---------- */
+
+.arch {
+    margin: 1.8rem 0;
+    padding: 1.4rem 1.25rem 1.1rem;
+    border: 1px solid var(--hl-line);
+    border-radius: var(--hl-r-card);
+    background: var(--hl-surface-2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.arch__row {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: center;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.arch__row--three {
+    margin-top: 0.4rem;
+}
+
+.arch__arrow {
+    color: var(--hl-text-4);
+    line-height: 1;
+}
+
+/* The boxes step up one surface from the figure's ground, hairline-ruled like
+   every other container in this world. */
+.box {
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--hl-line);
+    border-radius: var(--hl-r-chip-sq);
+    background: var(--hl-surface-2);
+    font-size: 0.8rem;
+    color: var(--hl-text-3);
+    text-align: center;
+}
+
+/* The entry point carries the accent edge; the bounded context at the heart of
+   the merge carries the edge plus the wash — the same grammar as the compare. */
+.box--lead {
+    border-color: var(--hl-accent-edge);
+    color: var(--hl-accent);
+    font-weight: 600;
+}
+
+.box--focus {
+    border-color: var(--hl-accent-edge);
+    background: var(--hl-accent-wash);
+    color: var(--hl-accent);
+    font-weight: 600;
+}
+
+.arch figcaption {
+    margin-top: 0.6rem;
+    font-size: 0.72rem;
+    color: var(--hl-text-4);
+    text-align: center;
+}
+
+/* ---------- table ---------- */
+
+/* Ruled rows, the stack as data: the first column is mono like every other
+   place a technology name appears. */
+.stack-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.stack-table th,
+.stack-table td {
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--hl-line);
+    text-align: left;
+    vertical-align: top;
+}
+
+.stack-table th {
+    width: 30%;
+    white-space: nowrap;
+    font-family: var(--hl-font-mono);
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: var(--hl-text-4);
+}
+
+.stack-table td {
+    color: var(--hl-text-3);
+}
+
+.closing {
+    margin-top: 1rem;
+    font-size: 1.02rem;
+}
+
+.back {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--hl-line);
+}
+
+.back a {
+    text-decoration: none;
+    font-weight: 600;
+}

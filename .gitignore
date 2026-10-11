@@ -1,0 +1,79 @@
+# Build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+artifacts/
+# Any local publish directory. Broadened from publish/ + publish-test*/ so a new
+# verification build (publish-verify/, etc.) cannot be committed by accident.
+publish*/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Test output
+[Tt]est[Rr]esult*/
+coverage*
+
+# Local tooling / scratch
+_temp/
+_tools/__pycache__/
+
+# Internal working notes — NOT published.
+#
+# These contain candid career material: direct quotes about how gaps in the CV might be
+# read, notes on what is not remembered, framing strategy, and (in earlier revisions) a
+# colleague's medical detail. They stay on disk and remain readable locally; they are
+# simply never committed to the public repository.
+docs/content/
+docs/superpowers/
+#
+# Loose notes dropped straight into docs/ were caught by name one at a time, which only
+# ever worked for files that already existed: plan.md and resume-prompt.md landed here
+# later and were tracked by nothing, so `git add .` would have published them. Ignore the
+# whole top level instead. Subdirectories are unaffected, which is what keeps the two
+# genuinely published trees — docs/writeups/ and docs/screenshots/ — committable.
+/docs/*.md
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Seeded design canvas output (regenerated from design/*.dc.html)
+design/portfolio-landing-page.html
+
+# Superseded source CVs. Kept locally for reference; never published — they carry
+# an old phone number and content that output/ now supersedes.
+/resume 2-9-26.pdf
+/Bahaa Aldeen Mohamed.pdf
+
+# Local agent tooling state. Never published: ZCode writes session plans here, and the
+# delegate lane map carries an approval hash bound to this worktree's git metadata —
+# committing it would hand collaborators lanes that fail closed anyway.
+/.zcode/
+/.delegate/
+
+# Impeccable design-guidance skill (github.com/pbakaus/impeccable), installed locally
+# for the redesign phase. Third-party agent tooling, not project content — reinstall
+# from a fresh clone rather than restoring from history.
+/.agents/
+/.claude/skills/
+/.claude/agents/
+
+# Impeccable working state: capture evidence, decision mocks, and live-session
+# journals are large and ephemeral. The durable records (critique snapshots,
+# design.json, surface briefs) are tracked alongside DESIGN.md.
+/.impeccable/review/
+/.impeccable/mocks/
+/.impeccable/live/
+/.impeccable/questions/
+/.impeccable/build/
+
+# Design-system research (screenshots of a third-party site) lives in the private
+# hairline-kit repo, not in this public one.
+docs/design-reference/

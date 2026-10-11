@@ -1,0 +1,218 @@
+@using static Cv.Web.Components.Showcase.CaseStudyConsole
+@*
+    The opening statement, in the Hairline world: the claim and its proof on the
+    left, a console that RUNS the case studies on the right.
+
+    The headline keeps the existing words — "I make the architecture decisions,
+    then I write the code." — with the positioning phrase carrying the accent. The
+    entrance staggers are the kit's (.hl-enter under html.hl-motion only, so a dead
+    or reduced-motion visitor gets the fully visible static hero); the kit's
+    hairline.js drives the console, so it also runs on the prerendered copy
+    prerender.py mirrors into the static shell.
+
+    Every figure is read out of the case-study record (see the code below), never
+    typed into this markup: an audited figure that can drift from its source is not
+    one.
+*@
+
+@using System.Net
+
+<section class="hero" aria-label="Introduction">
+    @* Decorative, kit-styled; clipped by the section and behind the columns. *@
+    <span class="hl-glow hero__glow" aria-hidden="true"></span>
+
+    <div class="hl-container hero__grid">
+        <div class="hero__main">
+            <h1 class="hl-display hero__headline">
+                <span class="hl-enter" style="--hl-enter-delay:0ms"><span class="hl-dim">I make the</span> <span class="hl-key">architecture decisions</span>,</span>
+                <span class="hl-enter" style="--hl-enter-delay:90ms"><span class="hl-dim">then I write</span> the code.</span>
+            </h1>
+
+            <p class="hl-lead hero__pitch hl-enter" style="--hl-enter-delay:200ms">
+                I designed and wrote the payment middleware behind Texas Chicken in
+                @PaymentMarkets countries, led the re-architecture that unfroze a legacy .NET
+                estate — with an AI-guided workflow that cut its upgrade cycle from 5–7 days
+                to @UpgradeCycleDays — and I am building a multi-tenant SaaS whose every
+                structural decision is written down first.
+            </p>
+
+            <div class="hero__actions hl-enter" style="--hl-enter-delay:300ms">
+                <a class="hl-btn hl-btn--primary" href="/cv">Read the CV</a>
+                @*
+                    The PDF, one tap from the first screen. target is load-bearing: an
+                    anchor carrying target is left to the browser instead of Blazor's
+                    router, which matches no PDF route.
+                *@
+                <a class="hl-btn hl-btn--ghost" href="/Bahaa-Aldeen-Mohamed-CV.pdf"
+                   target="_blank" rel="noopener" download>Download CV (PDF)</a>
+                <a class="hl-btn hl-btn--ghost" href="/#work">See the work</a>
+            </div>
+
+            @*
+                The term follows the number in the markup's reading order for assistive
+                tech (dt, then dd); visually the number leads. The counting span carries
+                its final value as text, so a dead script leaves the true figure on
+                screen — motion.js's counters only ever animate what is already there.
+            *@
+            <dl class="hl-grid hero__figures hl-enter" style="--hl-enter-delay:400ms" aria-label="Key figures">
+                <div class="hl-cell hero__fact">
+                    <dt class="hero__fact-label">countries on one payment API, @GatewayCount gateways behind it</dt>
+                    <dd class="hero__fact-value"><span data-count-to="@PaymentMarkets" aria-hidden="true">@PaymentMarkets</span><span class="visually-hidden">@PaymentMarkets</span></dd>
+                </div>
+                <div class="hl-cell hero__fact">
+                    <dt class="hero__fact-label">days per upgrade cycle, down from 5–7, after the AI-guided workflow</dt>
+                    <dd class="hero__fact-value"><span data-count-to="@UpgradeCycleDays" aria-hidden="true">@UpgradeCycleDays</span><span class="visually-hidden">@UpgradeCycleDays</span></dd>
+                </div>
+                <div class="hl-cell hero__fact">
+                    <dt class="hero__fact-label">architecture decision records behind my multi-tenant SaaS</dt>
+                    <dd class="hero__fact-value"><span data-count-to="@DecisionRecords" aria-hidden="true">@DecisionRecords</span><span class="visually-hidden">@DecisionRecords</span></dd>
+                </div>
+                <div class="hl-cell hero__fact">
+                    <dt class="hero__fact-label">company awards, for that workflow and for AI training</dt>
+                    <dd class="hero__fact-value"><span data-count-to="@AwardCount" aria-hidden="true">@AwardCount</span><span class="visually-hidden">@AwardCount</span></dd>
+                </div>
+            </dl>
+        </div>
+
+        @*
+            The console (the kit's .hl-window; hairline.js owns the behaviour — see
+            the JS contract in kit/hairline.js). The static log ships the first
+            study's run COMPLETED, so the static and no-JS page shows a finished
+            run; the templates carry every study's lines, and the chips run any of
+            them on tap. Every line is built only from the study's own record.
+        *@
+        <div class="hl-window hl-enter hl-enter--scene hero__console" style="--hl-enter-delay:350ms"
+             data-hl-console data-hl-interval="6000">
+            <div class="hl-window__bar">
+                <div class="hl-window__dots"><i></i><i></i><i></i></div>
+                <span class="hl-window__title">bahaa · case-studies.run</span>
+            </div>
+            <div class="hl-window__log" aria-live="off">
+                @if (FirstStudy is not null)
+                {
+                    @RunLines(FirstStudy)
+                }
+            </div>
+            <div class="hl-window__status">
+                <span class="hl-dot" aria-hidden="true"></span>
+                <span>Tap a study to run it</span>
+            </div>
+            <div class="hl-window__chips">
+                @foreach (var study in OrderedStudies)
+                {
+                    @* The chip's label is the study's slug — the same command the
+                       console's own "open {slug}" line runs, and the reference's
+                       /scope-style chip. The human title rides in title/aria-label;
+                       the label span is the kit's ellipsis surface if a slug ever
+                       outgrows its cell. *@
+                    <a class="hl-chip" href="@StudyUrl(study)" data-hl-run="@study.Slug"
+                       title="@study.DisplayTitle" aria-label="Run: @study.DisplayTitle"><span class="hl-chip__label">@study.Slug</span></a>
+                }
+            </div>
+            @foreach (var study in OrderedStudies)
+            {
+                <template data-hl-run-id="@study.Slug">@RunLines(study)</template>
+            }
+        </div>
+    </div>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public required Profile Profile { get; set; }
+
+    [Parameter]
+    public int AwardCount { get; set; }
+
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<CaseStudy> CaseStudies { get; set; }
+
+    /// <summary>The studies in the order the page argues them — the console's run order.</summary>
+    private IEnumerable<CaseStudy> OrderedStudies => CaseStudies.OrderBy(c => c.DisplayOrder);
+
+    private CaseStudy? FirstStudy => OrderedStudies.FirstOrDefault();
+
+    /// <summary>
+    /// The figures are read out of the case-study record, not written into this
+    /// markup — they can never drift from the studies they come from. The anchors
+    /// are pinned by RealCvDocumentTests.TheHeroFiguresStillHaveASourceInTheRecord,
+    /// so a copy edit that drops one fails the build instead of rendering a zero.
+    /// </summary>
+    private int UpgradeCycleDays => NumberAfter(FindOutcome("5-7 working days"), "maximum of");
+
+    private int PaymentMarkets => NumberAfter(FindSummary("9 countries"), "across");
+
+    private int GatewayCount => NumberBefore(FindOutcome("payment gateways"), "payment gateways");
+
+    private int DecisionRecords => NumberBefore(FindOutcome("architecture decision records"), "architecture decision records");
+
+    private string? FindOutcome(string contains) => CaseStudies
+        .SelectMany(s => s.Outcomes)
+        .FirstOrDefault(o => o.Contains(contains, StringComparison.OrdinalIgnoreCase));
+
+    private string? FindSummary(string contains) => CaseStudies
+        .FirstOrDefault(s => s.Summary.Contains(contains, StringComparison.OrdinalIgnoreCase))
+        ?.Summary;
+
+    /// <summary>
+    /// The number that follows the given anchor phrase — "a maximum of 3", "across 9
+    /// countries" — not the leading digits, which these sentences do not start with.
+    /// </summary>
+    private static int NumberAfter(string? text, string anchor)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return 0;
+        }
+
+        var anchorIndex = text.IndexOf(anchor, StringComparison.OrdinalIgnoreCase);
+
+        if (anchorIndex < 0)
+        {
+            return 0;
+        }
+
+        var digits = new string(text[(anchorIndex + anchor.Length)..]
+            .TakeWhile(c => char.IsDigit(c) || char.IsWhiteSpace(c))
+            .ToArray())
+            .Trim();
+
+        return int.TryParse(digits, out var value) ? value : 0;
+    }
+
+    /// <summary>
+    /// The number immediately before the anchor phrase — "7 payment gateways",
+    /// "14 architecture decision records".
+    /// </summary>
+    private static int NumberBefore(string? text, string anchor)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return 0;
+        }
+
+        var anchorIndex = text.IndexOf(anchor, StringComparison.OrdinalIgnoreCase);
+
+        if (anchorIndex <= 0)
+        {
+            return 0;
+        }
+
+        // Walked by index rather than with Reverse(): under C# 14's first-class spans an
+        // extension Reverse() call can bind to MemoryExtensions.Reverse, which mutates
+        // in place and returns nothing.
+        var end = anchorIndex;
+        while (end > 0 && char.IsWhiteSpace(text[end - 1]))
+        {
+            end--;
+        }
+
+        var start = end;
+        while (start > 0 && char.IsDigit(text[start - 1]))
+        {
+            start--;
+        }
+
+        return int.TryParse(text[start..end], out var value) ? value : 0;
+    }
+}

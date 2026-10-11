@@ -1,0 +1,200 @@
+/*
+    Print CV styling.
+
+    Constraint: this document is machine-parsed by applicant tracking systems.
+    Single column, real text, no icon fonts, no tables, no content in pseudo-elements
+    — an ATS reads none of those. Visual richness belongs on the showcase page.
+*/
+
+/*
+    These two sit on the page background rather than on the CV sheet, so they follow the
+    theme and their colour has to follow it too. Literal #555 read 2.46:1 against the dark
+    background — below the 4.5:1 floor — while measuring 7.46:1 in light, which is why it
+    survived review. The #555 further down stays literal on purpose: those rules are inside
+    article.cv, which is always white because it is a sheet of paper.
+*/
+.loading {
+    padding: 2rem;
+    font-family: Georgia, "Times New Roman", serif;
+    color: var(--hl-text-3);
+}
+
+/*
+    The action row is on-page chrome, so it wears the kit's pills (the classes ride
+    the markup; hairline.css owns their look) while the document below stays plain —
+    plain where machines read, expressive where humans look. The row is .no-print,
+    so nothing here can reach the PDF; the rules below are layout only.
+*/
+.cv-actions {
+    max-width: 8.5in;
+    margin: 0 auto;
+    padding: 1rem 0.75in 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    font-family: var(--hl-font-sans);
+    font-size: 0.9rem;
+    color: var(--hl-text-3);
+}
+
+.cv-actions > * { margin: 0; }
+
+.cv {
+    max-width: 8.5in;
+    margin: 0 auto;
+    padding: 0.5in 0.75in 0.75in;
+    background: #fff;
+    color: #1a1a1a;
+    /* A serif body face reads better in print and extracts cleanly. */
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 10.5pt;
+    line-height: 1.42;
+}
+
+/* The document is white paper in both themes, but the kit colours every heading and
+   link from the theme: in dark mode the name and section headings went near-white on
+   white. Screen only, so the printed PDF stays byte-for-byte what it was. */
+@media screen {
+    .cv h1,
+    .cv h2,
+    .cv h3 { color: #1a1a1a; }
+    .cv a { color: #14425f; }
+}
+
+.cv-header {
+    margin-bottom: 0.9rem;
+}
+
+.cv h1 {
+    margin: 0;
+    font-size: 20pt;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.cv-title {
+    margin: 0.15rem 0 0.3rem;
+    font-size: 12pt;
+    color: #14425f;
+}
+
+.cv-contact {
+    margin: 0;
+    /* On-screen measure only: ATS extraction is linear, so wrapping changes nothing
+       it reads, and the cap ≈ the print content width anyway. */
+    max-width: 68ch;
+    font-size: 9.5pt;
+    color: #333;
+}
+
+.cv-contact a {
+    color: #14425f;
+    text-decoration: none;
+}
+
+.cv-availability {
+    margin: 0.25rem 0 0;
+    font-size: 9pt;
+    color: #555;
+}
+
+.sep {
+    color: #999;
+    padding: 0 0.25rem;
+}
+
+.cv section {
+    margin-top: 0.85rem;
+}
+
+.cv h2 {
+    margin: 0 0 0.4rem;
+    padding-bottom: 0.15rem;
+    font-size: 11.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #14425f;
+}
+
+.cv h3 {
+    margin: 0;
+    font-size: 11pt;
+}
+
+.role {
+    margin-bottom: 0.65rem;
+    /* Keep a job block whole rather than splitting it across a page break. */
+    break-inside: avoid;
+}
+
+.role-meta {
+    margin: 0.05rem 0 0.25rem;
+    font-size: 9.5pt;
+    font-style: italic;
+    color: #555;
+}
+
+.cv ul {
+    margin: 0.2rem 0 0;
+    padding-left: 1.1rem;
+}
+
+.cv li {
+    margin-bottom: 0.22rem;
+}
+
+.skill-line {
+    margin: 0 0 0.2rem;
+}
+
+.cert-note {
+    margin: 0.35rem 0 0;
+    font-size: 9.5pt;
+    font-style: italic;
+    color: #555;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    /*
+        Tuned so the document lands on exactly 2 pages. Without this it runs to 3, with
+        only the last few certifications on the final page — which wastes a third of the
+        reader's attention on almost nothing. Tightening leading and vertical rhythm
+        recovers the needed lines without shrinking the type below comfortable reading
+        size, which is the trade to make in this direction.
+    */
+    .cv {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        font-size: 9.8pt;
+        line-height: 1.32;
+    }
+
+    .cv section {
+        margin-top: 0.6rem;
+        break-inside: auto;
+    }
+
+    .cv h2 {
+        margin-bottom: 0.28rem;
+        /* Never leave a section heading stranded at the foot of a page. */
+        break-after: avoid;
+    }
+
+    .role {
+        margin-bottom: 0.45rem;
+    }
+
+    .cv li {
+        margin-bottom: 0.14rem;
+    }
+
+    .skill-line {
+        margin-bottom: 0.12rem;
+    }
+}

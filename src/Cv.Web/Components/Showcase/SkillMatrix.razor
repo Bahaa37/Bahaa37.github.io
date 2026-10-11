@@ -1,0 +1,223 @@
+@using System.Text
+
+@*
+    Skills, each annotated with the employers whose achievement record actually
+    mentions it, as the kit's autoplaying tabs: one tab per group, the citation rows
+    on the right, a small evidence window on the left whose log counts — per employer —
+    the cited skills backing the group.
+
+    A skills list is the least trusted part of a CV because anyone can type anything
+    into one — attaching the evidence turns a claim into a citation. The evidence is
+    SkillEvidence's (Cv.Application): nothing here invents an employer or a count.
+
+    The markup is the kit's tabs contract exactly (see demo/index.html): the tab list
+    and the ring controls render `hidden` and every panel renders stacked, so without
+    hairline.js the whole matrix reads top to bottom; the engine unhides the strip,
+    wires the ARIA tablist and advances a panel every 7s. prerender.py mirrors this
+    whole section into the static page with the same class names (styled by app.css,
+    which both copies share), so the tabs also run for a visitor Blazor never reaches.
+*@
+
+<section class="section" id="skills">
+    <div class="hl-container section__frame">
+        <header class="section__head" data-hl-reveal>
+            <h2 class="hl-h2"><span class="hl-dim">Skills,</span> with the work that backs them</h2>
+            <p class="hl-lead">
+                Anyone can list a technology. Where a skill shows up in the achievement record,
+                the employers are named beside it.
+            </p>
+        </header>
+
+        @*
+            The two positioning pillars (architecture; AI and delivery) keep the first
+            tabs — PRODUCT.md's headline claims open the autoplay — and the rest of the
+            stack follows in cv.json's order instead of hiding behind a disclosure.
+        *@
+        <div class="hl-tabs skills-tabs" data-hl-tabs data-hl-autoplay="7000">
+            <div class="hl-tabs__list" hidden>
+                @foreach (var group in OrderedGroups)
+                {
+                    <button class="hl-tabs__tab" type="button" data-hl-tab="@Slug(group.Category)">@group.Category</button>
+                }
+            </div>
+
+            @foreach (var group in OrderedGroups)
+            {
+                var slug = Slug(group.Category);
+                var skills = SkillEvidence.For(group, Experience);
+                var cited = skills.Where(s => s.HasEvidence).ToList();
+                var listed = skills.Where(s => !s.HasEvidence).Select(s => s.Skill).ToList();
+                var employerCounts = EmployerCounts(cited);
+
+                <section class="hl-tabs__panel" data-hl-panel="@slug">
+                    @*
+                        Copy first in the DOM so a phone stacks text above the window; the
+                        desktop order (window left) comes from CSS. Every panel carries its
+                        own h3 — without enhancement the tabs degrade to stacked sections.
+                    *@
+                    <div class="skills-panel__copy">
+                        <h3 class="hl-h3">@group.Category</h3>
+                        @*
+                            A cited skill is a row: the arrow and the name, then the employers
+                            whose record mentions it. Rows replaced capsule chips, which wrapped
+                            a two-part citation onto three lines on a phone and made the chip
+                            bigger than the claim it supported.
+                        *@
+                        @if (cited.Count > 0)
+                        {
+                            <ul class="skills-rows">
+                                @foreach (var skill in cited)
+                                {
+                                    <li class="skills-row" title="@(string.Join(" · ", skill.UsedAt))">
+                                        <span class="skills-row__arrow" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                                                 stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M5 12h14" />
+                                                <path d="m12 5 7 7-7 7" />
+                                            </svg>
+                                        </span>
+                                        <span class="skills-row__name">@skill.Skill</span>
+                                        <span class="skills-row__where">@Evidence(skill)</span>
+                                        <span class="visually-hidden">, used at @string.Join(", ", skill.UsedAt)</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        @* Uncited skills are real but unproven here, so they read as one plain line. *@
+                        @if (listed.Count > 0)
+                        {
+                            <p class="skills-also">@string.Join(" · ", listed)</p>
+                        }
+                    </div>
+
+                    @*
+                        The group's evidence as a console log: one line per distinct employer
+                        with the count of this group's cited skills there, then the ◆ summary.
+                        A group with no cited skills gets no window — an empty log is not
+                        evidence of anything. The window's cell (.skills-panel__evidence) is
+                        one half of the panel's ruled frame, with the kit's glow orb behind
+                        the centered window.
+                    *@
+                    @if (cited.Count > 0)
+                    {
+                        <div class="skills-panel__evidence">
+                            <span class="hl-glow skills-panel__glow" aria-hidden="true"></span>
+                            <div class="hl-window skills-panel__window">
+                                <div class="hl-window__bar">
+                                    <div class="hl-window__dots"><i></i><i></i><i></i></div>
+                                    <span class="hl-window__title">evidence · @(slug).log</span>
+                                </div>
+                                <div class="hl-window__log skills-window__log">
+                                    @foreach (var (employer, count) in employerCounts)
+                                    {
+                                        <p class="hl-window__line hl-window__line--muted">@employer · @count</p>
+                                    }
+                                    <p class="hl-window__result">◆ @cited.Count skills cited across @employerCounts.Count employers</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </section>
+            }
+
+            <div class="hl-tabs__controls" hidden>
+                <div class="hl-ring">
+                    <svg viewBox="0 0 40 40" aria-hidden="true">
+                        <circle class="hl-ring__track" cx="20" cy="20" r="17"></circle>
+                        <circle class="hl-ring__bar" cx="20" cy="20" r="17" pathLength="100"></circle>
+                    </svg>
+                    <button class="hl-ring__btn" type="button" aria-label="Pause autoplay">
+                        <svg class="hl-ring__icon hl-ring__icon--pause" viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1.5" width="3" height="9" rx="1" fill="currentColor"/><rect x="7" y="1.5" width="3" height="9" rx="1" fill="currentColor"/></svg>
+                        <svg class="hl-ring__icon hl-ring__icon--play" viewBox="0 0 12 12" aria-hidden="true" hidden><path d="M3.5 1.5v9l7-4.5z" fill="currentColor"/></svg>
+                    </button>
+                </div>
+                <span class="hl-tabs__count">1 / @OrderedGroups.Count()</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<SkillGroup> Groups { get; set; }
+
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<ExperienceEntry> Experience { get; set; }
+
+    /// <summary>
+    /// The two categories whose names carry the positioning claims (architecture;
+    /// AI and delivery). They open the tab strip; everything else follows in cv.json's
+    /// order. Matched by name against cv.json's category strings — renaming a category
+    /// in the data moves it between tiers, which is the point: the data stays the only
+    /// source of truth.
+    /// </summary>
+    private static readonly string[] LeadCategories =
+    [
+        "Architecture & Patterns",
+        "Cloud, Delivery & AI Engineering",
+    ];
+
+    private IEnumerable<SkillGroup> OrderedGroups => LeadGroups.Concat(RestGroups);
+
+    private IEnumerable<SkillGroup> LeadGroups => Groups
+        .Where(g => LeadCategories.Contains(g.Category));
+
+    private IReadOnlyList<SkillGroup> RestGroups => Groups
+        .Where(g => !LeadCategories.Contains(g.Category))
+        .ToList();
+
+    /// <summary>
+    /// The employer evidence in the compact form a row can carry: the first employer,
+    /// plus a count of the others. The complete list is on the element's title.
+    /// </summary>
+    private static string Evidence(SkillWithEvidence skill)
+    {
+        var first = skill.UsedAt[0];
+
+        return skill.UsedAt.Count > 1 ? $"{first} +{skill.UsedAt.Count - 1}" : first;
+    }
+
+    /// <summary>
+    /// Each distinct employer backing the group, with how many of the group's cited
+    /// skills were used there — the evidence window's log, aggregated from the same
+    /// SkillEvidence data the rows show, in first-seen order.
+    /// </summary>
+    private static IReadOnlyList<(string Employer, int Count)> EmployerCounts(
+        IReadOnlyList<SkillWithEvidence> cited)
+    {
+        var counts = new List<(string, int)>();
+
+        foreach (var skill in cited)
+        {
+            foreach (var employer in skill.UsedAt)
+            {
+                var existing = counts.FirstOrDefault(c =>
+                    string.Equals(c.Item1, employer, StringComparison.OrdinalIgnoreCase));
+
+                if (existing == default)
+                {
+                    counts.Add((employer, 1));
+                }
+                else
+                {
+                    counts[counts.IndexOf(existing)] = (existing.Item1, existing.Item2 + 1);
+                }
+            }
+        }
+
+        return counts;
+    }
+
+    /// <summary>The category as a tab id and a log filename: lowercase, dashes, no ampersands.</summary>
+    private static string Slug(string category)
+    {
+        var slug = new StringBuilder();
+
+        foreach (var c in category.ToLowerInvariant())
+        {
+            slug.Append(char.IsLetterOrDigit(c) ? c : '-');
+        }
+
+        return slug.ToString().Trim('-');
+    }
+}

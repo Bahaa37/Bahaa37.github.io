@@ -1,0 +1,499 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-10T00:00:00Z",
+  "title": "Design System: Hairline",
+  "world": {
+    "name": "Hairline",
+    "direction": "HAIRLINE",
+    "seedKey": null,
+    "decidedAt": "2026-10-09",
+    "decision": {
+      "answer": "user-pinned",
+      "buildPath": "code",
+      "declined": "Direction roll skipped: a user-pinned reference beats the roll. Replaces Spec Sheet; pills, mint and the guarded blur reversed its bans at the owner's word."
+    },
+    "surfaceBrief": ".impeccable/surfaces/src-cv-web-pages-home-razor.md",
+    "sourcesOfRecord": [
+      "src/Cv.Web/wwwroot/kit/hairline.css",
+      "src/Cv.Web/wwwroot/kit/hairline.js",
+      "src/Cv.Web/wwwroot/css/app.css",
+      "src/Cv.Web/Components/Showcase/Hero.razor",
+      "src/Cv.Web/Components/Showcase/CaseStudyConsole.cs",
+      "src/Cv.Web/Components/Showcase/CaseStudyPanel.razor",
+      "src/Cv.Web/Components/Showcase/SkillMatrix.razor",
+      "src/Cv.Web/Components/Showcase/CareerTimeline.razor.css",
+      "src/Cv.Web/Components/Showcase/Credentials.razor.css",
+      "src/Cv.Web/Pages/Home.razor",
+      "src/Cv.Web/Pages/StyleGuide.razor",
+      "_tools/prerender.py",
+      "_tools/sync_kit.py"
+    ],
+    "dosageRules": [
+      "Mint marks active, live, outcome, the console command, the current role and the hero key phrase. Never decoration, never chrome.",
+      "Coral for problems, sky for flows and stack trails, gold for awards. No era or category colours.",
+      "Light tokens are written twice in the kit (OS-preference block and [data-theme=\"light\"]); change both.",
+      "Geist Mono for commands, data, dates, stack, slugs, labels, and the single primary CTA in uppercase; secondary buttons are Geist sentence case.",
+      "Soft radial glows and a static hero mesh; nothing in the mesh animates."
+    ],
+    "bannedPatterns": [
+      "Eyebrows or kickers above headings; .hl-label is for data labels only",
+      "Numbered sections",
+      "Border-left accent stripes",
+      "Gradient text",
+      "Mint on decoration, chrome or links at rest; gold outside awards; era colours",
+      "Animated layers inside the hero mesh",
+      "Mono-caps on secondary or ghost buttons",
+      "color-mix() and the individual translate/rotate/scale properties (old Edge WebView)",
+      "backdrop-filter outside @supports or without an opaque fallback",
+      "Unconditional opacity: 0",
+      "Typed figures in markup; every figure is derived from cv.json",
+      "Visual design on the printed CV"
+    ],
+    "northStar": "Hairline",
+    "overview": "The portfolio as a running engineering console. A near-black #050709 ground (light #f6f7f9), a 1px #2e3238 blueprint grid framing every section, two-tone Geist headings, and Geist Mono for commands and data. A mint #6ee7a0 accent (emerald #047857 in light) is spent only on state. Pill CTAs and chips, 12px cards, 16px console windows. The hero console runs the real case studies on a 6s autoplay. Pinned by the owner on 2026-10-09 to jsmastery.com's agentic-engineering course page, replacing the Spec Sheet world."
+  },
+  "extensions": {
+    "colorMeta": {
+      "bg": {
+        "role": "neutral",
+        "displayName": "Ground",
+        "canonical": "#050709",
+        "darkCanonical": "#050709",
+        "lightCanonical": "#f6f7f9",
+        "purpose": "Page ground; dark-first."
+      },
+      "surface-1": {
+        "role": "neutral",
+        "displayName": "Window",
+        "canonical": "#0b0c0f",
+        "darkCanonical": "#0b0c0f",
+        "lightCanonical": "#ffffff",
+        "purpose": "Console windows."
+      },
+      "surface-2": {
+        "role": "neutral",
+        "displayName": "Card",
+        "canonical": "#0d0e11",
+        "darkCanonical": "#0d0e11",
+        "lightCanonical": "#fbfbfc",
+        "purpose": "Cards."
+      },
+      "surface-3": {
+        "role": "neutral",
+        "displayName": "Raised",
+        "canonical": "#101115",
+        "darkCanonical": "#101115",
+        "lightCanonical": "#f0f2f5",
+        "purpose": "Raised fills."
+      },
+      "surface-4": {
+        "role": "neutral",
+        "displayName": "Deep step",
+        "canonical": "#1d1d24",
+        "darkCanonical": "#1d1d24",
+        "lightCanonical": "#e6e9ee",
+        "purpose": "Window dots, deepest step."
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Blueprint Rule",
+        "canonical": "#2e3238",
+        "darkCanonical": "#2e3238",
+        "lightCanonical": "#d5dae1",
+        "purpose": "The 1px grid that frames every section; card and window edges."
+      },
+      "text-1": {
+        "role": "neutral",
+        "displayName": "Key",
+        "canonical": "#f2f3f5",
+        "darkCanonical": "#f2f3f5",
+        "lightCanonical": "#0b0d10",
+        "purpose": "Headings and the key words of two-tone headings."
+      },
+      "text-2": {
+        "role": "neutral",
+        "displayName": "Lead",
+        "canonical": "#c3c8cf",
+        "darkCanonical": "#c3c8cf",
+        "lightCanonical": "#2a3038",
+        "purpose": "Lead and prose."
+      },
+      "text-3": {
+        "role": "neutral",
+        "displayName": "Body",
+        "canonical": "#9eaabf",
+        "darkCanonical": "#9eaabf",
+        "lightCanonical": "#4a5363",
+        "purpose": "Body, console lines."
+      },
+      "text-4": {
+        "role": "neutral",
+        "displayName": "Dim",
+        "canonical": "#8a8f98",
+        "darkCanonical": "#8a8f98",
+        "lightCanonical": "#5b6472",
+        "purpose": "Dim lead-in words, labels."
+      },
+      "text-5": {
+        "role": "neutral",
+        "displayName": "Faint",
+        "canonical": "#7a808c",
+        "darkCanonical": "#7a808c",
+        "lightCanonical": "#6b7280",
+        "purpose": "Smallest meta, the $ prompt."
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Mint / Emerald",
+        "canonical": "#6ee7a0",
+        "darkCanonical": "#6ee7a0",
+        "lightCanonical": "#047857",
+        "purpose": "State only: active, live, outcome, the console command, the current role, the hero key phrase."
+      },
+      "accent-bright": {
+        "role": "primary",
+        "displayName": "Lit Mint",
+        "canonical": "#81ffb6",
+        "darkCanonical": "#81ffb6",
+        "lightCanonical": "#059669",
+        "purpose": "Lit rules and glows."
+      },
+      "info": {
+        "role": "semantic",
+        "displayName": "Sky",
+        "canonical": "#7bd8ff",
+        "darkCanonical": "#7bd8ff",
+        "lightCanonical": "#0369a1",
+        "purpose": "Flows and stack trails."
+      },
+      "warn": {
+        "role": "semantic",
+        "displayName": "Coral",
+        "canonical": "#ffa2a2",
+        "darkCanonical": "#ffa2a2",
+        "lightCanonical": "#b42318",
+        "purpose": "Problems (compare 'from', traffic dot)."
+      },
+      "gold": {
+        "role": "semantic",
+        "displayName": "Gold",
+        "canonical": "#e6c766",
+        "darkCanonical": "#e6c766",
+        "lightCanonical": "#a16207",
+        "purpose": "Awards only."
+      },
+      "action-bg": {
+        "role": "primary",
+        "displayName": "Action Fill",
+        "canonical": "#ffffff",
+        "darkCanonical": "#ffffff",
+        "lightCanonical": "#0b0d10",
+        "purpose": "The single primary pill."
+      },
+      "action-ink": {
+        "role": "primary",
+        "displayName": "Action Ink",
+        "canonical": "#0a0a0a",
+        "darkCanonical": "#0a0a0a",
+        "lightCanonical": "#ffffff",
+        "purpose": "Text on the action fill."
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "value": "700 clamp(2.5rem, 1.6rem + 3.4vw, 4rem)/1.06 Geist, -0.025em",
+        "purpose": "Hero headline, two-tone, mint key phrase; hero sizes to clamp(2.5rem, 1.1rem + 3.2vw, 3.75rem)."
+      },
+      "headline": {
+        "displayName": "H2",
+        "value": "500 clamp(2rem, 1.5rem + 2vw, 3rem)/1.08 Geist, -0.042em",
+        "purpose": "Section titles: dim lead-in, text-1 key words; never mint."
+      },
+      "title": {
+        "displayName": "H3/H4",
+        "value": "600 1.5rem/1.33; 600 1.1875rem/1.47 -0.01em",
+        "purpose": "Card, panel and entry titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "value": "400 1.0625rem/1.65 Geist (lead 400 1.25rem/1.4)",
+        "purpose": "Prose at a 68ch measure."
+      },
+      "meta": {
+        "displayName": "Term",
+        "value": "400 .71875rem/2 Geist Mono",
+        "purpose": "Console lines, commands, data, dates, stack, slugs."
+      },
+      "label": {
+        "displayName": "Label",
+        "value": "500 .6875rem/1.4 Geist Mono, uppercase, .12em",
+        "purpose": "Data labels only (console status, dt terms, counters); never an eyebrow above a heading."
+      },
+      "cta": {
+        "displayName": "CTA Voice",
+        "value": "700 1.125rem/1.4 Geist Mono, uppercase, .12em",
+        "purpose": "The single primary pill; ghost and secondary buttons are Geist 600 sentence case."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-window",
+        "value": "0 40px 120px -30px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.05)",
+        "lightValue": "0 40px 120px -30px rgba(16,24,40,.3), inset 0 1px 0 rgba(255,255,255,.9)",
+        "purpose": "Console windows."
+      },
+      {
+        "name": "shadow-deep",
+        "value": "0 24px 50px -30px rgba(0,0,0,.95)",
+        "lightValue": "0 24px 50px -30px rgba(16,24,40,.25)",
+        "purpose": "Deep lift."
+      },
+      {
+        "name": "glow-lift",
+        "value": "0 10px 30px -10px rgba(255,255,255,.35)",
+        "lightValue": "0 10px 30px -10px rgba(11,13,16,.45)",
+        "purpose": "Primary pill hover."
+      },
+      {
+        "name": "glow-chip",
+        "value": "0 0 16px -5px rgba(110,231,160,.5)",
+        "lightValue": "0 0 16px -5px rgba(4,120,87,.35)",
+        "purpose": "Active chip, selected-tab underline."
+      }
+    ],
+    "motion": [
+      {
+        "name": "durations",
+        "value": "150/200/300/500/700/800ms",
+        "purpose": "--hl-dur-1..6."
+      },
+      {
+        "name": "eases",
+        "value": "standard (.4,0,.2,1); out (0,0,.2,1); reveal (.2,.8,.2,1); expo (.22,1,.36,1); pop (.2,.9,.3,1.2)",
+        "purpose": "--hl-ease-*."
+      },
+      {
+        "name": "reveal",
+        "value": "rise 16px, 700ms reveal ease; media 24px + scale .97, 800ms",
+        "purpose": "Section entrance, only under html.hl-motion."
+      },
+      {
+        "name": "hero-enter",
+        "value": "hl-rise 700ms, 90ms stagger via --hl-enter-delay",
+        "purpose": "Headline lines settle once on load."
+      },
+      {
+        "name": "console-run",
+        "value": "lines fade 300ms; result pops 500ms with overshoot; 6s autoplay",
+        "purpose": "The signature run; pauses on hover, focus, offscreen, hidden tab."
+      },
+      {
+        "name": "tabs-ring",
+        "value": "7s progress ring; panel swap hl-scene-in 400ms",
+        "purpose": "Skills autoplay."
+      },
+      {
+        "name": "rail-grow",
+        "value": "scaleY(0) to none, 700ms reveal ease",
+        "purpose": "The current role's segment grows on reveal."
+      },
+      {
+        "name": "sheen",
+        "value": "7s cycle, crosses in the first 22%",
+        "purpose": "Primary pill only."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "all completed states shown; no autoplay, marquee wraps static, no pulse/sheen/float",
+        "purpose": "Accessibility floor."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px",
+        "purpose": "Gutter 16 to 24px; cells pad 24px."
+      },
+      {
+        "name": "md",
+        "value": "720px",
+        "purpose": "Header single row; tab strip stops scrolling; console log 18rem."
+      },
+      {
+        "name": "lg",
+        "value": "960px",
+        "purpose": "Hero 58/42, compare and tab panels go two-column."
+      }
+    ],
+    "material": {
+      "grid": ".hl-grid owns side rules, .hl-cell owns top and start rules, -1px start margin so seams never double",
+      "glows": "radial --hl-glow-accent / --hl-glow-gold orbs behind hero, skills panel and awards; static --hl-hero-mesh behind the hero",
+      "blur": "header and dock only, 12px, inside @supports over an opaque --hl-header-bg fallback",
+      "lit-rules": "--hl-lit-x (featured card ring), --hl-lit-y (rail), --hl-lit-compare (coral-to-mint compare rule)"
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Pill",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one mono-uppercase CTA voice: white fill (ink in light), 56px pill, 7s sheen under motion, lifts 2px with a glow on hover.",
+      "html": "<a class=\"hl-btn hl-btn--primary\" href=\"/cv\">Read the CV</a>",
+      "css": "/* src/Cv.Web/wwwroot/kit/hairline.css .hl-btn, .hl-btn--primary */"
+    },
+    {
+      "name": "Ghost Pill",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Secondary action: Geist 600 sentence case on a translucent fill with a soft line.",
+      "html": "<a class=\"hl-btn hl-btn--ghost\" href=\"#work\">See the work</a>",
+      "css": "/* src/Cv.Web/wwwroot/kit/hairline.css .hl-btn--ghost */"
+    },
+    {
+      "name": "Slug Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Mono pill; active state is mint text, mint wash, mint edge and chip glow. Long labels ellipsize in .hl-chip__label.",
+      "html": "<button class=\"hl-chip\" aria-pressed=\"true\"><span class=\"hl-chip__label\">payment-gateway</span></button>",
+      "css": "/* src/Cv.Web/wwwroot/kit/hairline.css .hl-chip */"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "12px, surface-2, hairline edge; hover lights the edge mint with a top wash. Featured variant: travelling lit ring.",
+      "html": "<article class=\"hl-card hl-card--featured\">...</article>",
+      "css": "/* src/Cv.Web/wwwroot/kit/hairline.css .hl-card */"
+    },
+    {
+      "name": "Console Window",
+      "kind": "window",
+      "refersTo": "console",
+      "description": "16px window: traffic dots, mono title, bottom-anchored log ($ command in mint, stack trail in sky, ◆ result chip), live status row, slug chips.",
+      "html": "<div class=\"hl-window\"><div class=\"hl-window__bar\">...</div><div class=\"hl-window__log\">...</div></div>",
+      "css": "/* src/Cv.Web/wwwroot/kit/hairline.css .hl-window */"
+    },
+    {
+      "name": "Tabs with Ring",
+      "kind": "tabs",
+      "refersTo": "tabs",
+      "description": "Hairline tab strip, keycap hover, mint underline on the selected tab, 7s progress ring; scroll row with trailing fade under 720px.",
+      "html": "<div class=\"hl-tabs\" data-hl-tabs data-hl-autoplay=\"7000\">...</div>",
+      "css": "/* src/Cv.Web/wwwroot/kit/hairline.css .hl-tabs, .hl-ring */"
+    },
+    {
+      "name": "Compare",
+      "kind": "compare",
+      "refersTo": "compare",
+      "description": "Problem (coral wash) beside outcome (mint wash), joined by one coral-to-mint lit rule.",
+      "html": "<div class=\"hl-compare\"><div class=\"hl-compare__from\">...</div><div class=\"hl-compare__to\">...</div></div>",
+      "css": "/* src/Cv.Web/wwwroot/kit/hairline.css .hl-compare */"
+    },
+    {
+      "name": "Career Rail",
+      "kind": "timeline",
+      "refersTo": "timeline",
+      "description": "Neutral 1px rail; only the current role carries the 3px mint bar (grows by scaleY) and the live dot.",
+      "html": "<li class=\"hl-rail entry entry--current\"><span class=\"hl-rail__bar\" aria-hidden=\"true\"></span>...</li>",
+      "css": "/* src/Cv.Web/wwwroot/kit/hairline.css .hl-rail; Components/Showcase/CareerTimeline.razor.css */"
+    },
+    {
+      "name": "Ruled Grid",
+      "kind": "layout",
+      "refersTo": "grid",
+      "description": "The blueprint frame for every section: 1px rules, shared seams.",
+      "html": "<ul class=\"hl-grid\"><li class=\"hl-cell\">...</li></ul>",
+      "css": "/* src/Cv.Web/wwwroot/kit/hairline.css .hl-grid, .hl-cell */"
+    }
+  ],
+  "narrative": {
+    "northStar": "Hairline",
+    "overview": "The portfolio as a running engineering console. A near-black #050709 ground (light #f6f7f9), a 1px #2e3238 blueprint grid framing every section, two-tone Geist headings, and Geist Mono for commands and data. A mint #6ee7a0 accent (emerald #047857 in light) is spent only on state. Pill CTAs and chips, 12px cards, 16px console windows. The hero console runs the real case studies on a 6s autoplay. Pinned by the owner on 2026-10-09 to jsmastery.com's agentic-engineering course page, replacing the Spec Sheet world.",
+    "keyCharacteristics": [
+      "Dark-first near-black ground with surfaces stepping up 2-4%; a light theme on the same structure.",
+      "A 1px ruled blueprint grid frames every section.",
+      "Mint spent only on state; coral problems, sky flows, gold awards.",
+      "Two-tone Geist headings; Geist Mono for data and the single primary CTA.",
+      "Pills for CTAs and chips, 12px cards, 16px console windows.",
+      "The hero console runs the real case studies; skills autoplay on a 7s ring; the career rail lights only the current role."
+    ],
+    "rules": [
+      {
+        "name": "The State-Only Mint Rule",
+        "section": "colors",
+        "body": "Mint marks active, live, outcome, the console command, the current role and the hero key phrase. Never decoration, never chrome."
+      },
+      {
+        "name": "The Semantic Hue Rule",
+        "section": "colors",
+        "body": "Coral for problems, sky for flows and stack trails, gold for awards. No era or category colours."
+      },
+      {
+        "name": "The Twice-Written Rule",
+        "section": "colors",
+        "body": "Light tokens are written twice in the kit (OS-preference block and [data-theme=\"light\"]); change both."
+      },
+      {
+        "name": "The Blueprint Rule",
+        "section": "layout",
+        "body": "A 1px --hl-line ruled grid frames every section; seams never double."
+      },
+      {
+        "name": "The Two-Tone Rule",
+        "section": "typography",
+        "body": "Dim lead-in words, text-1 key words; mint key phrase in the hero only; no gradient text."
+      },
+      {
+        "name": "The One Mono Voice Rule",
+        "section": "typography",
+        "body": "Geist Mono for commands, data, dates, stack, slugs, labels, and the single primary CTA in uppercase; secondary buttons are Geist sentence case."
+      },
+      {
+        "name": "The Still Ground Rule",
+        "section": "effects",
+        "body": "Soft radial glows and a static hero mesh; nothing in the mesh animates."
+      },
+      {
+        "name": "The Running Console Rule",
+        "section": "components",
+        "body": "The console runs real case studies from cv.json, autoplays every 6s and pauses on hover, focus, offscreen or a hidden tab."
+      },
+      {
+        "name": "The Additive Motion Rule",
+        "section": "motion",
+        "body": "Content hides only under html.hl-motion or .js-motion; reduced motion shows every completed state."
+      },
+      {
+        "name": "The Old WebView Rule",
+        "section": "effects",
+        "body": "No color-mix(), no individual translate/rotate/scale; backdrop-filter only inside @supports over an opaque fallback."
+      },
+      {
+        "name": "The Mirror Rule",
+        "section": "components",
+        "body": "Header, dock, hero console and figures, marquee, skills tabs, testimonial card and /styleguide are mirrored in _tools/prerender.py; change both sides."
+      },
+      {
+        "name": "The Plain CV Rule",
+        "section": "layout",
+        "body": "/cv stays ATS-plain white paper; only its action row wears the world."
+      }
+    ],
+    "dos": [
+      "Derive every console line and figure from cv.json.",
+      "Use .hl-dim/.hl-key for two-tone headings.",
+      "Give interactive chrome a static counterpart in prerender.py.",
+      "Verify both themes at 390x844 and at desktop width."
+    ],
+    "donts": [
+      "Eyebrows or kickers above headings; .hl-label is for data labels only",
+      "Numbered sections",
+      "Border-left accent stripes",
+      "Gradient text",
+      "Mint on decoration, chrome or links at rest; gold outside awards; era colours",
+      "Animated layers inside the hero mesh",
+      "Mono-caps on secondary or ghost buttons"
+    ]
+  }
+}

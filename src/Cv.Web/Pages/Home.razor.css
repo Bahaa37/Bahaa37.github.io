@@ -1,0 +1,190 @@
+/*
+    The work index rows and the contact block. Both are Home's own markup (the
+    prerendered copy renders them as flat text), so scoped styles are safe here.
+
+    The section frame, the skills tabs and the testimonial card are shared with
+    prerender.py's static mirror and therefore live in app.css, not here.
+*/
+
+/* ------------------------------------------------------------------ */
+/* The case index — ruled rows, title column | body column from 960px  */
+/* ------------------------------------------------------------------ */
+
+.case-index {
+    margin-top: var(--hl-space-40);
+    /* The cells carry the top rules and the grid the side rules; this closes the
+       frame under the last row so the verticals never stop mid-air. */
+    border-bottom: 1px solid var(--hl-line);
+}
+
+/* The cell's own padding moves onto the link so the hover wash runs edge to edge. */
+.case-row {
+    padding: 0;
+}
+
+.case-row__link {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--hl-space-8);
+    padding: var(--hl-space-16);
+    color: inherit;
+    text-decoration: none;
+}
+
+@media (min-width: 640px) {
+    .case-row__link { padding: var(--hl-space-24); }
+}
+
+@media (min-width: 960px) {
+    .case-row__link {
+        grid-template-columns: minmax(0, 24rem) minmax(0, 1fr);
+        align-items: start;
+        column-gap: var(--hl-space-24);
+    }
+
+    /* The ruled seam between the title and body columns, drawn at the body column's
+       start edge — the same place .hl-cell draws its start rule — so the verticals
+       align down the page like the reference's ruled feature grid. */
+    .case-row__body {
+        border-inline-start: 1px solid var(--hl-line);
+        padding-inline-start: var(--hl-space-24);
+    }
+}
+
+/* Whole-row hover: the surface steps up one notch and the arrow nudges. Nothing
+   else changes colour — the row is a link, not a spotlight. */
+.case-row:hover {
+    background: var(--hl-surface-3);
+}
+
+.case-row__lead {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--hl-space-12);
+}
+
+.case-row__title {
+    color: var(--hl-text-1);
+}
+
+.case-row__arrow {
+    flex: none;
+    color: var(--hl-accent);
+    /* The svg sits on the title's first-line optical centre; it has no text
+       baseline of its own. */
+    display: inline-flex;
+    margin-top: 0.3rem;
+    transition: transform var(--hl-dur-2) var(--hl-ease-standard);
+}
+
+.case-row__arrow svg { width: 1rem; height: 1rem; }
+
+.case-row:hover .case-row__arrow {
+    transform: translateX(4px);
+}
+
+.case-row__org {
+    font-family: var(--hl-font-mono);
+    font-size: 0.78rem;
+    color: var(--hl-text-4);
+}
+
+.case-row__summary {
+    margin-top: var(--hl-space-4);
+    max-width: 64ch;
+}
+
+.case-row__outcome {
+    margin-top: var(--hl-space-8);
+    font-family: var(--hl-font-mono);
+    font-size: 0.78rem;
+    /* text-2, not text-1: in white mono this line out-shouted the row's own title. */
+    color: var(--hl-text-2);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------------ */
+/* Contact — the close: kit pills, ruled fact cells                    */
+/* ------------------------------------------------------------------ */
+
+.contact__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--hl-space-12);
+}
+
+/* The primary contact button is a two-line action: verb + icon say "tap me", the
+   address below says where it goes. Left-aligned so the two lines read as one block
+   inside the pill; the address keeps its own casing (the pill's CTA voice is
+   uppercase, and an uppercased address reads like a different string).
+
+   The gap is site CSS because the kit's .hl-btn sets none (kit candidate: a
+   default gap would serve every icon+label pill) — without it the icon sits
+   flush against the label. */
+.contact__email {
+    gap: var(--hl-space-12);
+    text-decoration: none;
+}
+
+.contact__email svg {
+    width: 1.05rem;
+    height: 1.05rem;
+    flex: none;
+}
+
+.contact__email-lines {
+    display: grid;
+    text-align: left;
+    line-height: 1.3;
+}
+
+.contact__email-addr {
+    font-family: var(--hl-font-mono);
+    font-size: 0.78rem;
+    text-transform: none;
+    letter-spacing: 0;
+    opacity: 0.92;
+}
+
+/* The fact cells: a mono data label over the value. */
+.contact__fact {
+    display: flex;
+    flex-direction: column;
+    gap: var(--hl-space-6);
+    padding: var(--hl-space-16);
+}
+
+@media (min-width: 640px) {
+    .contact__fact { padding: var(--hl-space-24); }
+}
+
+.contact__facts {
+    margin-top: var(--hl-space-40);
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 720px) {
+    .contact__facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 960px) {
+    .contact__facts { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.contact__fact dt {
+    font: var(--hl-type-label);
+    text-transform: uppercase;
+    letter-spacing: var(--hl-track-label);
+    color: var(--hl-text-4);
+}
+
+.contact__fact dd {
+    margin: 0;
+    color: var(--hl-text-1);
+    line-height: 1.5;
+}
+
+.contact__overlap {
+    color: var(--hl-text-4);
+}

@@ -1,0 +1,1798 @@
+/* ==========================================================================
+   HAIRLINE — the site layer over the vendored kit (kit/hairline.css).
+
+   Every colour, type, spacing and radius token belongs to the kit; this sheet
+   reads --hl-* names directly and defines only the handful of layout tokens
+   that are this site's own (the measure, the fixed-header/dock clearances).
+   ========================================================================== */
+
+:root {
+    /* Layout — the site's own tokens. Everything visual is a --hl-* token. */
+    --measure: 68ch;
+    /* The fixed .hl-header's total height — 72px, growing to the two-row mobile
+       strip under 720px. Everything that must clear the bar reads this. */
+    --site-header-h: var(--hl-header-h);
+    --scroll-margin: calc(var(--site-header-h) + 1.3rem);
+    /* The dock's total height: 8px bar padding twice, a 44px pill, the hairline.
+       Everything that must clear the dock (footer, back-to-top) reads this. */
+    --site-dock-h: 61px;
+}
+
+/* FocusOnNavigate (App.razor) moves focus to each page's h1 so screen readers announce
+   the new page. That focus is programmatic, not a control the visitor can act on, so it
+   must not draw the kit's focus ring around the page title. */
+h1:focus { outline: none; }
+
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+    background: var(--hl-bg);
+    /* color-scheme itself is the kit's now: it flips with the same rules that
+       flip the --hl-* values, so the UA chrome (scrollbars, form controls)
+       can never disagree with the palette. */
+    caret-color: var(--hl-accent);
+    scrollbar-color: var(--hl-text-5) var(--hl-bg);
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    background: var(--hl-bg);
+    color: var(--hl-text-1);
+    font-family: var(--hl-font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+::selection { background: var(--hl-accent-wash); }
+
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: var(--hl-bg); }
+::-webkit-scrollbar-thumb {
+    background: var(--hl-text-5);
+    border: 3px solid var(--hl-bg);
+    border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--hl-text-4); }
+
+:focus-visible {
+    outline: 2px solid var(--hl-accent);
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
+a {
+    color: var(--hl-accent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: .2em;
+}
+a:hover { color: var(--hl-accent-bright); text-decoration-thickness: 2px; }
+
+h1, h2, h3, h4 {
+    margin: 0;
+    font-family: var(--hl-font-sans);
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    color: var(--hl-text-1);
+}
+
+p { margin: 0; }
+
+img, svg { display: block; max-width: 100%; }
+
+.mono {
+    font-family: var(--hl-font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+}
+
+.visually-hidden {
+    position: absolute !important;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0; border: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.skip-link {
+    position: fixed;
+    top: .75rem; left: .75rem;
+    z-index: 100;
+    padding: .6rem 1rem;
+    background: var(--hl-surface-2);
+    border: 1px solid var(--hl-text-5);
+    border-radius: var(--hl-r-chip-sq);
+    color: var(--hl-text-1);
+    text-decoration: none;
+    transform: translateY(-300%);
+}
+.skip-link:focus { transform: none; }
+
+/* ==========================================================================
+   Layout — flat sections on one ground, separated by hairlines
+   ========================================================================== */
+
+.shell {
+    width: min(100% - 2.5rem, var(--hl-container));
+    margin-inline: auto;
+}
+
+main {
+    display: block;
+    /* The header is the kit's FIXED bar — content starts below it, not under it. */
+    padding-top: var(--site-header-h);
+    padding-bottom: 3rem;
+}
+
+/*
+    A section, not a card. The previous worlds floated every section as a paper
+    sheet with a shadow and a heavy rule, so nine sections all spoke at the same
+    volume. Now the page is one surface and sections are separated by whitespace
+    and a single hairline; panels (the hero figures, outcomes, diagrams) are the
+    only framed things, which is what makes them read as evidence.
+*/
+.sheet {
+    width: min(100% - 2.5rem, var(--hl-container));
+    margin-inline: auto;
+    padding: clamp(2.6rem, 1.8rem + 3vw, 4.5rem) 0;
+    border-top: 1px solid var(--hl-line);
+    position: relative;
+}
+
+.sheet > .shell { width: 100%; }
+
+.sheet__title {
+    font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.25rem);
+    font-weight: 650;
+    letter-spacing: -0.03em;
+    line-height: 1.12;
+    text-wrap: balance;
+}
+
+.sheet__lede {
+    margin-top: .8rem;
+    max-width: 62ch;
+    color: var(--hl-text-3);
+    font-size: 1.05rem;
+}
+
+/* ==========================================================================
+   The section frame — Home's ruled blueprint column. Every section below the
+   hero wraps its container in this: side hairlines at the container width, a
+   hairline between sections, content in between. The rules are UNSCOPED on
+   purpose: SkillMatrix/CareerTimeline/Credentials render the same frame, and
+   prerender.py mirrors the skills section into the static page with these
+   class names.
+   ========================================================================== */
+
+.section {
+    scroll-margin-top: var(--scroll-margin);
+}
+
+.section__frame {
+    border-inline: 1px solid var(--hl-line);
+    /* Every frame closes its own top — including the first one, where the ruled
+       column begins at "Selected work" under the marquee's full-width band, so
+       the side rules never start hanging in mid-air. Between sections this is
+       the seam (no frame carries a bottom border, so nothing doubles). */
+    border-top: 1px solid var(--hl-line);
+    padding-block: clamp(3.5rem, 4vw + 2rem, 6rem);
+}
+
+/* The frame that follows the marquee would double its rule against the band's
+   full-width bottom border; riding up 1px paints both in the same row — one
+   continuous line, with the frame's corners closing exactly on it. */
+.tech-marquee + .section .section__frame {
+    margin-top: -1px;
+}
+
+.section__head {
+    max-width: 72ch;
+    margin-bottom: var(--hl-space-40);
+}
+
+.section__head .hl-lead {
+    margin-top: var(--hl-space-16);
+}
+
+/* A ruled grid that reaches the frame's own side rules instead of sitting
+   gutter-inset: the negative margin equals the container's gutter plus its 1px
+   border, so the grid's border-inline lands exactly on the frame's — the same
+   never-double-a-seam trick .hl-cell uses with its -1px start margin. */
+.hl-grid--flush {
+    margin-inline: calc(-1 * var(--hl-gutter) - 1px);
+}
+
+.scroll-x { overflow-x: auto; }
+
+/* ==========================================================================
+   Hero — the opening statement. UNSCOPED on purpose: prerender.py mirrors the
+   whole hero (headline, actions, figures, console) into the static shell with
+   these class names, and a scoped component stylesheet cannot reach that copy.
+   The pre-boot first viewport must match the booted one — the mobile reorder
+   below exists for exactly that contract.
+   ========================================================================== */
+
+.hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-image: var(--hl-hero-mesh);
+    padding-block: clamp(2.75rem, 1.9rem + 3.4vw, 5rem);
+}
+
+/* Behind the console column, off its top-right corner. */
+.hero__glow {
+    top: -9rem;
+    right: -11rem;
+}
+
+.hero__grid {
+    display: grid;
+    gap: var(--hl-space-40);
+    align-items: center;
+}
+
+/* 58/42, not the kit split's 50/50: the display headline's first line
+   ("I make the architecture decisions,") needs ~715px to hold one line at the
+   size below — measured, not eyeballed — and the console stays usable at 42%. */
+@media (min-width: 960px) {
+    .hero__grid { grid-template-columns: minmax(0, 58fr) minmax(0, 42fr); gap: var(--hl-space-40); }
+}
+
+.hero__headline {
+    /* The kit's display token carries family, weight and tracking. At 1440 this
+       lands near the reference's 64px h1: the claim runs three lines instead of
+       two, and the proof row may sit just under the fold. Impact won that trade —
+       a 44px claim read as body copy next to the console. */
+    font-size: clamp(2.5rem, 1.1rem + 3.2vw, 3.75rem);
+    text-wrap: balance;
+}
+
+/* The entrance spans are the headline's lines; block keeps the stagger readable
+   as two rising lines rather than one reflowing paragraph. */
+.hero__headline .hl-enter { display: block; }
+
+.hero__pitch {
+    margin-top: var(--hl-space-24);
+    max-width: 56ch;
+}
+
+.hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--hl-space-12);
+    margin-top: var(--hl-space-24);
+}
+
+/* Only the primary keeps the kit's mono-uppercase CTA voice. The ghosts are the
+   reference's quiet secondary actions — sans, sentence case — so the row reads
+   one primary plus two plain links-that-are-buttons, and all three share the
+   primary's height (the kit's .hl-btn min-height). */
+.hero__actions .hl-btn--ghost {
+    font-family: var(--hl-font-sans);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+/* THE MOBILE CONTRACT (STORY): the console sits inside the first phone
+   viewport. Below 720px the copy column dissolves (display: contents — one
+   markup, two orders) so the headline, pitch and actions keep their DOM order
+   while the console takes the slot above the figures row. The grid gap steps
+   aside; the children's own 24px margin-tops carry the rhythm, so nothing
+   double-spaces. */
+@media (max-width: 719.98px) {
+    .hero__grid { gap: 0; }
+    .hero__main { display: contents; }
+    .hero__console { order: 1; margin-top: var(--hl-space-24); }
+    .hero__figures { order: 2; }
+
+    /* The reference's mobile CTA stack: one full-width primary (THE action),
+       the two ghosts sharing the row beneath it (the alternatives). Tighter
+       inline padding and one step down in size keep "Download CV (PDF)" on one
+       line inside its half of a 390px row. */
+    .hero__actions .hl-btn--primary { flex-basis: 100%; }
+    .hero__actions .hl-btn--ghost {
+        flex: 1 1 0;
+        justify-content: center;
+        padding-inline: var(--hl-space-12);
+        font-size: .9375rem;
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* The figures — one ruled strip, four mono cells                      */
+/* ------------------------------------------------------------------ */
+
+.hero__figures {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: var(--hl-space-24);
+    /* The strip's cells carry the top rules; this closes the frame at its foot
+       so the ruled grid reads as a box, not an open channel. */
+    border-bottom: 1px solid var(--hl-line);
+}
+
+@media (min-width: 720px) {
+    .hero__figures { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* The term follows the number in the markup's reading order for assistive tech
+   (dt, then dd); visually the number leads. */
+.hero__fact {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: var(--hl-space-6);
+    padding: var(--hl-space-12) var(--hl-space-16);
+}
+
+.hero__fact-value {
+    margin: 0;
+    font-family: var(--hl-font-mono);
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--hl-text-1);
+}
+
+.hero__fact-label {
+    font-family: var(--hl-font-mono);
+    font-size: .6875rem;
+    line-height: 1.45;
+    color: var(--hl-text-4);
+}
+
+/* ------------------------------------------------------------------ */
+/* The console's chips — commands, so they left-align and never         */
+/* squeeze below the longest slug                                      */
+/* ------------------------------------------------------------------ */
+
+/* The chip labels are the studies' slugs (mono commands, matching the
+   console's own "open {slug}" line). The longest is ~210px at chip size, so
+   the grid floors a cell at 13.25rem instead of the kit's 7.5rem — auto-fill
+   then yields one generous column on phones and two only where both fit,
+   rather than ellipsizing mid-range. */
+.hero__console .hl-window__chips {
+    grid-template-columns: repeat(auto-fill, minmax(13.25rem, 1fr));
+}
+
+.hero__console .hl-chip { justify-content: flex-start; }
+
+/* ==========================================================================
+   Header — the kit's fixed 72px bar (.hl-header); the name row, nav, theme
+   switch and the CV pill ride inside .hl-container
+   ========================================================================= */
+
+/* The kit styles .hl-header (fixed, height, glass, hairline); the site adds the
+   row's flex behaviour and lets it grow to two rows under 720px, where the nav
+   collapses to a horizontally scrollable strip under the name — no hamburger: the
+   static layer must keep the nav working without script. */
+@media (max-width: 720px) {
+    .site-header.hl-header { height: auto; min-height: var(--hl-header-h); }
+    .header-capsule { padding-block: .55rem; row-gap: .1rem; }
+    /* The whole-page offset below the fixed bar: row 1 (name + 44px switch), the
+       nav strip (44px targets), and the capsule's block padding. Kept in step with
+       the markup; --scroll-margin reads it for the section anchors. */
+    :root { --site-header-h: 118px; }
+}
+
+.header-capsule {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .2rem 1rem;
+    width: 100%;
+}
+
+.site-header__name {
+    display: inline-flex;
+    align-items: baseline;
+    gap: .65rem;
+    margin-inline-end: auto;
+    font-family: var(--hl-font-sans);
+    font-weight: 600;
+    font-size: .9375rem;
+    letter-spacing: -0.01em;
+    color: var(--hl-text-1);
+    text-decoration: none;
+    white-space: nowrap;
+}
+.site-header__name:hover { color: var(--hl-text-1); text-decoration: none; }
+
+/* The quiet companion: the discipline half of the title, wide screens only. */
+.site-header__title {
+    display: none;
+    font-size: .75rem;
+    font-weight: 400;
+    color: var(--hl-text-4);
+    white-space: nowrap;
+}
+@media (min-width: 960px) {
+    .site-header__title { display: inline; }
+}
+
+.site-nav {
+    display: flex;
+    align-items: center;
+    gap: .15rem;
+    flex-basis: 100%;
+    order: 3;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.site-nav::-webkit-scrollbar { display: none; }
+
+.site-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 .7rem;
+    color: var(--hl-text-3);
+    font-size: .875rem;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+    /* The current marker is an underline drawn inside the tap target, so marking a
+       section never shifts the strip. */
+    box-shadow: inset 0 -2px 0 transparent;
+    transition: color .15s ease, box-shadow .15s ease;
+}
+.site-nav a:hover { color: var(--hl-text-1); text-decoration: none; }
+.site-nav a.is-current {
+    color: var(--hl-text-1);
+    box-shadow: inset 0 -2px 0 var(--hl-accent);
+}
+
+/* The CV pill — the bar's one primary action, the recruiter's destination.
+   Re-asserted at higher specificity than the nav link rule (class+type): the
+   pill is an action, not a nav link, and grey-on-white was unreadable. */
+.site-nav .site-nav__cta { margin-left: .45rem; flex: none; }
+.site-nav a.site-nav__cta,
+.site-nav a.site-nav__cta:hover {
+    color: var(--hl-action-ink);
+    text-decoration: none;
+}
+
+/* Wide: one row — name, then the nav and the theme switch together at the far
+   end. Under 720px the nav wraps below both (order 3, full basis), which is the
+   collapsed strip. */
+@media (min-width: 721px) {
+    .site-nav {
+        flex-basis: auto;
+        order: 1;
+    }
+    .theme-toggle { order: 2; }
+    .header-capsule { flex-wrap: nowrap; }
+}
+
+/* ==========================================================================
+   Theme toggle — the same switch, in the Hairline material: a pill track with
+   a line-soft border, a knob that glows accent in the dark
+   ========================================================================= */
+
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: var(--hl-r-pill);
+    cursor: pointer;
+    /* The drag (index.html's inline script) pointer-captures the control; without
+       this a touch drag also scrolls the page under the finger. */
+    touch-action: none;
+}
+
+.theme-toggle__track {
+    position: relative;
+    display: block;
+    width: 44px;
+    height: 24px;
+    border-radius: var(--hl-r-pill);
+    background: var(--hl-surface-3);
+    border: 1px solid var(--hl-line-soft);
+    transition: background .2s ease, border-color .2s ease;
+}
+
+/* Sizing is pinned: index.html's drag script walks the knob by
+   THEME_KNOB_TRAVEL = 22px against these exact box sizes. */
+.theme-toggle__knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: var(--hl-r-pill);
+    background: var(--hl-action-bg);
+    transform: translateX(0);
+    transition: transform .2s cubic-bezier(.3, .9, .3, 1), box-shadow .2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* The knob follows the finger, not the transition. */
+.theme-toggle.is-dragging .theme-toggle__knob { transition: none; }
+
+.theme-toggle .icon-sun,
+.theme-toggle .icon-moon {
+    width: 12px;
+    height: 12px;
+    color: var(--hl-action-ink);
+}
+
+/* Light (explicit or system): sun only. Moon hidden at the base so the two
+   glyphs can never superimpose. */
+.theme-toggle .icon-moon { display: none; }
+
+:root[data-theme="dark"] .theme-toggle__knob {
+    transform: translateX(20px);
+    box-shadow: 0 0 10px var(--hl-accent);
+}
+:root[data-theme="dark"] .theme-toggle .icon-sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .icon-moon { display: block; }
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-toggle__knob {
+        transform: translateX(20px);
+        box-shadow: 0 0 10px var(--hl-accent);
+    }
+    :root:not([data-theme="light"]) .theme-toggle .icon-sun { display: none; }
+    :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: block; }
+}
+
+/* ==========================================================================
+   Markers — status words and metric chips (the kit's pills cover buttons)
+   ========================================================================== */
+
+/* Status words, not stickers: "Current", "Returned", "In progress" read as
+   text with a marker. Squared stamps and capsules both retired. */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: var(--hl-font-mono);
+    font-size: .75rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    vertical-align: baseline;
+}
+.badge--now { color: var(--hl-accent); }
+.badge--now::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--hl-accent);
+}
+.badge--return { color: var(--hl-text-4); }
+.badge--return::before { content: "↺"; }
+.badge--progress { color: var(--hl-text-4); }
+.badge--progress::before { content: "· "; }
+
+.metric-chip {
+    display: inline;
+    margin-left: .35rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--hl-accent);
+    font-family: var(--hl-font-mono);
+    font-size: .8rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* ==========================================================================
+   Skills — the kit's tabs, with the citation rows and the evidence window.
+   UNSCOPED on purpose: prerender.py mirrors this whole section into the static
+   page with the same class names, and a scoped component stylesheet cannot
+   reach that copy (the same reason the hero console's rules live here).
+   ========================================================================== */
+
+/* The panel as the reference frames it: two ruled cells with a centre divider
+   (a horizontal rule below 960px, where the DOM order stacks copy above
+   evidence). The kit's panel padding and gap step aside; the cells own theirs. */
+.skills-tabs .hl-tabs__panel {
+    border: 1px solid var(--hl-line);
+    gap: 0;
+    padding-block: 0;
+}
+
+.skills-panel__copy {
+    padding: var(--hl-space-24);
+}
+
+@media (min-width: 640px) {
+    .skills-panel__copy { padding: var(--hl-space-40); }
+}
+
+/* The evidence cell: the window rides centred over one decorative accent glow,
+   clipped by the cell. The window itself is opaque, so the glow reads around
+   it — behind it, as behind the reference's console. */
+.skills-panel__evidence {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--hl-space-24);
+    border-top: 1px solid var(--hl-line);
+}
+
+@media (min-width: 640px) {
+    .skills-panel__evidence { padding: var(--hl-space-40); }
+}
+
+/* Desktop: the evidence cell takes the LEFT column, the divider moves to its
+   end edge, and both cells stretch to the frame's height. */
+@media (min-width: 960px) {
+    .skills-tabs .hl-tabs__panel {
+        align-items: stretch;
+    }
+
+    .skills-panel__evidence {
+        order: -1;
+        border-top: 0;
+        border-inline-end: 1px solid var(--hl-line);
+    }
+}
+
+/* The orb is centred by offset, not transform: the kit's float animation
+   animates transform and would fight a centering translate. */
+.skills-panel__glow {
+    top: calc(50% - 20rem);
+    left: calc(50% - 20rem);
+}
+
+/* The evidence window is a short log, not the hero's tall console: it hugs its
+   content instead of holding the kit's fixed 15/18rem height. */
+.skills-tabs .hl-window__log {
+    height: auto;
+}
+
+.skills-panel__copy .hl-h3 {
+    margin-bottom: var(--hl-space-8);
+}
+
+/* A cited skill is a row: arrow, name, evidence. The employers ride the title
+   and the visually-hidden span; the visible evidence is the compact form. */
+.skills-rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.skills-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--hl-space-12);
+    align-items: baseline;
+    padding: var(--hl-space-10) 0;
+}
+
+/* The cited-row marker: the authored arrow (the dock icons' stroke language).
+   Centre-aligned in its cell — an svg has no text baseline for the row's
+   baseline alignment to hold on to. */
+.skills-row__arrow {
+    display: inline-flex;
+    align-self: center;
+    color: var(--hl-accent);
+}
+
+.skills-row__arrow svg { width: .8rem; height: .8rem; }
+
+/* Below 720px the employer evidence drops under the name: beside it, a long
+   employer line squeezed three-word skill names into three cramped lines. */
+@media (max-width: 719.98px) {
+    .skills-row { grid-template-columns: auto minmax(0, 1fr); }
+
+    .skills-row__where {
+        grid-column: 2;
+        margin-top: var(--hl-space-4);
+        text-align: start;
+    }
+}
+
+.skills-row__name {
+    color: var(--hl-text-1);
+}
+
+.skills-row__where {
+    font-family: var(--hl-font-mono);
+    font-size: 0.78rem;
+    color: var(--hl-text-4);
+    text-align: end;
+}
+
+/* Uncited skills are real but unproven here, so they read as one plain line. */
+.skills-also {
+    margin: var(--hl-space-12) 0 0;
+    color: var(--hl-text-3);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.disclosure { margin-top: var(--hl-space-16); }
+/*
+    A disclosure looks like the control it is: an outlined ghost pill (the kit's
+    button classes come with the markup) with a chevron that turns when open. The
+    text-only summary read as a heading, so readers did not see that it expanded.
+*/
+.disclosure summary {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--hl-space-8);
+    list-style: none;
+    user-select: none;
+}
+.disclosure summary::-webkit-details-marker { display: none; }
+.disclosure summary::after {
+    content: "";
+    width: .45rem;
+    height: .45rem;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform .2s ease;
+}
+.disclosure[open] summary::after { transform: translateY(2px) rotate(-135deg); }
+.disclosure[open] summary { border-color: var(--hl-edge-bright); }
+.disclosure[open] > *:not(summary) { margin-top: var(--hl-space-12); }
+
+/* ==========================================================================
+   The stack row — mono chips, no border, no hover life (data, not controls).
+   Used by the case-study head; Home's featured panel reaches for the kit's
+   chip shape instead (see CaseStudyPanel.razor.css).
+   ========================================================================== */
+
+.stack {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    margin: 1.2rem 0 0;
+    padding: 0;
+}
+
+.stack .tag {
+    padding: .2rem .5rem;
+    border: 0;
+    border-radius: var(--hl-r-xs);
+    background: var(--hl-surface-3);
+    color: var(--hl-text-3);
+    font-family: var(--hl-font-mono);
+    font-size: .78rem;
+    line-height: 1.5;
+}
+
+/* Third-party corroboration under a case study: the note above the ruled grid
+   of link cells (the grid itself is the kit's .hl-grid of .hl-cell rows, the
+   same grammar as the work index — arrow, label, hover nudge). */
+
+.evidence__note {
+    color: var(--hl-text-4);
+    font-size: .95rem;
+}
+
+.evidence-cell { padding: 0; }
+
+.evidence-cell__link {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--hl-space-12);
+    padding: var(--hl-space-12) var(--hl-space-16);
+    color: var(--hl-text-2);
+    text-decoration: none;
+    line-height: 1.45;
+}
+
+.evidence-cell__link:hover { color: var(--hl-text-1); text-decoration: none; }
+
+.evidence-cell__arrow {
+    flex: none;
+    display: inline-flex;
+    align-self: center;
+    color: var(--hl-accent);
+    transition: transform var(--hl-dur-2) var(--hl-ease-standard);
+}
+
+.evidence-cell__arrow svg { width: .9rem; height: .9rem; }
+
+.evidence-cell:hover .evidence-cell__arrow {
+    transform: translate(3px, -3px);
+}
+
+/* ==========================================================================
+   The diagram — shared by the featured panel and the case-study pages, so it
+   lives here rather than in either parent's scoped sheet (a scoped rule cannot
+   reach ArchitectureDiagram's own markup anyway).
+   ========================================================================== */
+
+.diagram__toggle { text-decoration: none; }
+
+.diagram__canvas {
+    flex-basis: 100%;
+    margin-top: var(--hl-space-16);
+    padding: var(--hl-space-16);
+    background: var(--hl-surface-1);
+    border: 1px solid var(--hl-line);
+    border-radius: var(--hl-r-window);
+    text-align: center;
+    min-height: 80px;
+}
+
+.diagram__fallback {
+    flex-basis: 100%;
+    margin-top: var(--hl-space-12);
+    font-size: .85rem;
+    color: var(--hl-text-3);
+}
+
+.diagram__fallback pre {
+    overflow-x: auto;
+    padding: .9rem;
+    background: var(--hl-surface-3);
+    border-radius: var(--hl-r-panel);
+    font-size: .8rem;
+    line-height: 1.45;
+}
+
+/* ==========================================================================
+   /cv — the printable document's on-page chrome (page itself stays plain).
+   The action bar's rules live scoped in PrintCv.razor.css; only the print
+   drop-out below (in the print section) is site-wide.
+   ========================================================================== */
+
+/* ==========================================================================
+   Contact — the section itself is Home.razor's (scoped there); the marquee and
+   dock chrome that also touch contact live in their own sections below.
+   ========================================================================== */
+
+/* ==========================================================================
+   Footer — one ruled .hl-grid row: who and where on the left, the closing links
+   on the right
+   ========================================================================= */
+
+.site-footer {
+    padding: var(--hl-space-40) 0 calc(var(--site-dock-h, 61px) + env(safe-area-inset-bottom, 0px) + var(--hl-space-40));
+}
+
+.site-footer__grid {
+    grid-template-columns: 1fr;
+    /* The cells carry the top rules and the grid the side rules; this closes the
+       box at the foot — the frame's last open end. */
+    border-bottom: 1px solid var(--hl-line);
+}
+
+@media (min-width: 720px) {
+    .site-footer__grid { grid-template-columns: minmax(0, 1fr) auto; }
+}
+
+.site-footer__who {
+    display: flex;
+    flex-direction: column;
+    gap: var(--hl-space-6);
+}
+
+.site-footer__name { color: var(--hl-text-1); font-weight: 600; font-size: .9375rem; }
+.site-footer__title { color: var(--hl-text-3); font-size: .875rem; }
+.site-footer__loc {
+    font-family: var(--hl-font-mono);
+    font-size: .75rem;
+    color: var(--hl-text-4);
+}
+
+.site-footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--hl-space-8) var(--hl-space-16);
+}
+
+@media (min-width: 720px) {
+    .site-footer__links { justify-content: flex-end; }
+}
+
+.site-footer__links a {
+    color: var(--hl-text-3);
+    font-size: .875rem;
+    text-decoration: none;
+}
+.site-footer__links a:hover { color: var(--hl-text-1); text-decoration: underline; }
+
+.site-footer__email {
+    font-family: var(--hl-font-mono);
+    font-size: .8125rem;
+}
+
+/* ==========================================================================
+   Contact dock — the kit's .hl-dock: a full-width fixed bar at the viewport's
+   foot; ghost pills for the channels, the one primary pill for the CV
+   ========================================================================= */
+
+/* The kit positions and glasses .hl-dock; the site adds the pill material and the
+   notch clearance the kit does not carry. */
+.contact-dock.hl-dock {
+    padding-bottom: calc(var(--hl-space-8) + env(safe-area-inset-bottom, 0px));
+}
+
+.hl-dock .contact-dock__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    min-height: 44px;
+    padding: var(--hl-space-8) var(--hl-space-16);
+    background: var(--hl-ghost-bg);
+    border: 1px solid var(--hl-line-soft);
+    border-radius: var(--hl-r-pill);
+    color: var(--hl-text-1);
+    font-size: .875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color var(--hl-dur-1) var(--hl-ease-standard),
+                border-color var(--hl-dur-1) var(--hl-ease-standard),
+                box-shadow var(--hl-dur-1) var(--hl-ease-standard);
+}
+.hl-dock .contact-dock__action svg { width: 1rem; height: 1rem; flex: none; }
+
+.hl-dock .contact-dock__action:hover {
+    color: var(--hl-text-1);
+    border-color: var(--hl-edge-bright);
+    text-decoration: none;
+}
+
+.hl-dock .contact-dock__action--cv {
+    background: var(--hl-action-bg);
+    color: var(--hl-action-ink);
+    border-color: transparent;
+}
+.hl-dock .contact-dock__action--cv:hover {
+    background: var(--hl-action-bg);
+    color: var(--hl-action-ink);
+    border-color: transparent;
+    box-shadow: var(--hl-glow-lift);
+}
+
+/* Four pills on a 390px screen: tighter inline padding, same 44px taps. */
+@media (max-width: 430px) {
+    .hl-dock .contact-dock__action { padding-inline: var(--hl-space-10); gap: .35rem; font-size: .84rem; }
+}
+
+/* Mobile only: the dock waits until the visitor has moved, so the first viewport
+   is never masked. The class is motion.js's; the gate sits behind .js-motion, so
+   no-JS and reduced-motion keep the dock on. */
+@media (max-width: 720px) {
+    .contact-dock.hl-dock {
+        transition: opacity .3s cubic-bezier(.22, .8, .3, 1), transform .3s cubic-bezier(.22, .8, .3, 1);
+    }
+    .js-motion .contact-dock.hl-dock:not(.is-shown) {
+        opacity: 0;
+        transform: translateY(10px);
+        pointer-events: none;
+    }
+}
+
+/* ==========================================================================
+   Back to top — a 44px round ghost pill parked above the dock
+   ========================================================================= */
+
+.back-to-top {
+    position: fixed;
+    right: max(1rem, env(safe-area-inset-right));
+    bottom: calc(var(--site-dock-h, 61px) + env(safe-area-inset-bottom, 0px) + 1rem);
+    z-index: 39;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: var(--hl-ghost-bg);
+    border: 1px solid var(--hl-line-soft);
+    border-radius: 50%;
+    color: var(--hl-text-2);
+    cursor: pointer;
+    transition: color var(--hl-dur-1) var(--hl-ease-standard),
+                border-color var(--hl-dur-1) var(--hl-ease-standard);
+}
+.back-to-top svg { width: 1.1rem; height: 1.1rem; }
+.back-to-top.is-shown { display: flex; }
+.back-to-top:hover {
+    color: var(--hl-accent);
+    border-color: var(--hl-accent-edge);
+}
+
+/* ==========================================================================
+   The hero console's log lines — the kit window, tuned for this site's real
+   sentences. These rules live HERE, unscoped, on purpose: the lines are written
+   as raw markup (Hero.razor's RunLines) and mirrored by prerender.py's static
+   copy, and neither carries a component isolation scope attribute, so a rule in
+   Hero.razor.css would never match them. Nothing may overflow at 390px.
+   ========================================================================= */
+
+.hero__console .hl-window__line--muted {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+/* The outcome sentence leads; the link into the study sits on its own line
+   below it, left-aligned — a wrapped inline link crowded the sentence's tail. */
+.hero__console .hl-window__result {
+    display: block;
+    align-self: stretch;
+    white-space: normal;
+    max-width: 100%;
+}
+
+.hero__console .hl-window__result a {
+    display: block;
+    margin-top: var(--hl-space-4);
+    color: inherit;
+}
+
+/* ==========================================================================
+   The tech-stack marquee — the fold line below the hero
+   ========================================================================= */
+
+.tech-marquee {
+    border-top: 1px solid var(--hl-line);
+    border-bottom: 1px solid var(--hl-line);
+    padding-block: var(--hl-space-12);
+}
+
+.tech-marquee .hl-marquee__track {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* The separator is a small line-coloured dot after each item; the next item's
+   inline padding completes the gap, so the row stays flush for the loop. */
+.tech-marquee__item {
+    font-family: var(--hl-font-mono);
+    font-size: .8125rem;
+    color: var(--hl-text-4);
+    padding-inline: var(--hl-space-24);
+    white-space: nowrap;
+}
+.tech-marquee__item::after {
+    content: "·";
+    margin-left: var(--hl-space-24);
+    color: var(--hl-line);
+}
+
+/* ==========================================================================
+   The long form — case-study pages and the WWB write-up. Shared by two
+   components, so it lives here: CSS isolation scopes one component, and both
+   render the same article.study grammar (crumbs, head, blocks, headings).
+   ========================================================================== */
+
+/*
+    Flow. The kit's reset (* { margin: 0 }) flattens article prose — paragraphs
+    ran together and h2s sat flush on the paragraph above. This restores the
+    rhythm at the shell level only: every block after the first gets ~1em of
+    air, headings more above than below (their own margin-bottom is the below).
+
+    The rules sit at single-class specificity ON PURPOSE and ahead of everything
+    else in this section: the hand-tuned margins that already exist (the
+    compare, the write-up's .lede/.pull/.code/.arch, the block rhythm) are all
+    at equal or higher specificity, so each keeps its own spacing and this only
+    fills the gaps the reset left.
+*/
+.study__shell > * + * { margin-top: 1em; }
+.study__shell > h2 { margin-top: 2.5em; }
+.study__shell > h3 { margin-top: 1.75em; }
+.study__shell > h2 + *,
+.study__shell > h3 + * { margin-top: 0; }
+
+.study { padding: clamp(2rem, 1.5rem + 3vw, 4rem) 0 2rem; }
+
+/* Crumbs are paths, so they read as data: mono, faint, slashes already in the
+   markup (aria-hidden on the separators). */
+.crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    font-family: var(--hl-font-mono);
+    font-size: .8rem;
+    color: var(--hl-text-4);
+}
+.crumbs a { color: var(--hl-text-4); text-decoration: none; }
+.crumbs a:hover { color: var(--hl-text-1); text-decoration: underline; }
+
+.study__head {
+    margin-top: 1.4rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--hl-line);
+}
+
+/* The title itself rides the kit's .hl-h2; this adds only the measure. */
+.study__title {
+    max-width: 24ch;
+    text-wrap: balance;
+}
+
+.study__org {
+    margin-top: .8rem;
+    font-size: .78rem;
+    color: var(--hl-text-4);
+}
+
+.study__summary {
+    margin-top: var(--hl-space-16);
+    max-width: var(--measure);
+}
+
+/* Prose at reading line-height, whichever container it sits in. */
+.study .hl-body { line-height: 1.7; }
+
+/* The argument as one before/after, the featured card's treatment. The kit
+   owns the washes and the lit rule; the site owns the rhythm. */
+.study__compare { margin-top: var(--hl-space-40); }
+
+.study__compare .hl-compare__from p + p { margin-top: .5rem; }
+
+/* Section blocks: a hairline separates each section, and there is more space
+   above a heading than below it — the rule lands, then the heading follows. */
+.study__block {
+    max-width: var(--measure);
+    margin-top: var(--hl-space-56);
+    padding-top: var(--hl-space-24);
+    border-top: 1px solid var(--hl-line);
+}
+
+.study__heading {
+    margin-bottom: var(--hl-space-16);
+    font: var(--hl-type-h3);
+    letter-spacing: -0.015em;
+}
+
+.study__block p + p { margin-top: 1rem; }
+
+/* The outcomes list: mint markers, body ink. Shared with the featured card. */
+.outcomes {
+    margin: 0;
+    padding-left: 1.15rem;
+    display: grid;
+    gap: .45rem;
+    color: var(--hl-text-3);
+}
+.outcomes li::marker { color: var(--hl-accent); }
+
+.study__evidence { margin-top: var(--hl-space-16); }
+
+/* The architecture diagram rides in a console window titled by its source
+   file; inside, the canvas is body content — it keeps its pan (wide diagrams
+   scroll, never shrink the page) but drops its own frame. */
+.study__diagram { margin-top: var(--hl-space-16); }
+
+.study__diagram-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--hl-space-12);
+    padding: var(--hl-space-16);
+}
+
+.study__diagram-body .diagram__canvas {
+    margin-top: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    min-height: 0;
+    align-self: stretch;
+    text-align: left;
+}
+
+.study__diagram-body .diagram__fallback { align-self: stretch; }
+
+.study__writeup { margin-top: var(--hl-space-56); }
+
+/* Prev/next as the kit's cards (.hl-card carries surface, border, hover); the
+   site adds the two-line grammar: mono label over the neighbour's title. */
+.study__nav {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-top: var(--hl-space-56);
+    padding-top: var(--hl-space-24);
+    border-top: 1px solid var(--hl-line);
+}
+
+.study__link {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+    color: var(--hl-text-1);
+    text-decoration: none;
+}
+.study__link:hover { color: var(--hl-text-1); text-decoration: none; }
+.study__link--next { text-align: right; }
+
+.study__link-label {
+    font-family: var(--hl-font-mono);
+    font-size: .78rem;
+    color: var(--hl-text-4);
+}
+.study__link-title { font-weight: 600; line-height: 1.35; }
+
+/* ==========================================================================
+   The pre-boot document — what a reader sees before (or without) the runtime
+   ========================================================================== */
+
+/*
+    prerender.py writes each route's real text into #app as plain semantic HTML.
+    It is the whole page for a visitor whose runtime never boots (data-saver, 2G,
+    a script failure) and the first paint for everyone else, so it gets a
+    readable document style instead of browser defaults.
+*/
+.prerendered {
+    width: min(100% - 2.5rem, 46rem);
+    margin: 0 auto;
+    padding: 3rem 0 4rem;
+}
+.prerendered h1 { font-size: clamp(1.9rem, 1.4rem + 2.4vw, 2.8rem); font-weight: 650; letter-spacing: -0.03em; }
+.prerendered h2 { margin-top: 2.4rem; font-size: 1.35rem; font-weight: 600; }
+.prerendered h3 { margin-top: 1.3rem; font-size: 1.05rem; font-weight: 600; }
+.prerendered p,
+.prerendered ul,
+.prerendered dl { margin-top: .7rem; color: var(--hl-text-3); }
+.prerendered dt { margin-top: .5rem; font-size: .85rem; color: var(--hl-text-4); }
+.prerendered dd { margin: 0; color: var(--hl-text-1); }
+
+/* A console window inside the static document (the 404 router, the empty
+   testimonials file) is terminal output, not document paragraphs: the p rules
+   above would re-margin and re-colour the kit's line classes, so they are
+   restated here at matching specificity. */
+.prerendered .hl-window p { margin: 0; }
+.prerendered .hl-window__line--cmd,
+.prerendered .hl-window__line--accent { color: var(--hl-accent); }
+.prerendered .hl-window__line--muted { color: var(--hl-text-4); }
+
+/* ==========================================================================
+   Reveal system — additive only. motion.js adds .js-motion and is the only
+   thing that gates a hidden state; without the script nothing is hidden.
+   ========================================================================== */
+
+.reveal { opacity: 1; transform: none; }
+
+.js-motion .reveal {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .5s cubic-bezier(.22, .8, .3, 1), transform .5s cubic-bezier(.22, .8, .3, 1);
+    transition-delay: calc(var(--i, 0) * 50ms);
+}
+
+.js-motion .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* ==========================================================================
+   Loading / boot
+   ========================================================================== */
+
+.booting { padding: 4rem 1.5rem; color: var(--hl-text-3); }
+
+/*
+    Blazor's template spinner. It carried no styles in this world, so with the
+    deferred component stylesheet missing it rendered as a page-width black disc.
+    Sized and tinted here; hidden outright once a prerendered page is present.
+*/
+.loading-progress {
+    position: relative;
+    display: block;
+    width: 3rem;
+    height: 3rem;
+    margin: 20vh auto 1rem;
+}
+.loading-progress circle {
+    fill: none;
+    stroke: var(--hl-line);
+    stroke-width: .5rem;
+    transform-origin: 50% 50%;
+    transform: rotate(-90deg);
+}
+.loading-progress circle:last-child {
+    stroke: var(--hl-accent);
+    stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
+    transition: stroke-dasharray .05s ease-in-out;
+}
+.loading-progress-text { text-align: center; color: var(--hl-text-4); font-size: .9rem; }
+.loading-progress-text::after { content: var(--blazor-load-percentage-text, "Loading…"); }
+
+#app:has(.prerendered) .loading-progress,
+#app:has(.prerendered) .loading-progress-text { display: none; }
+
+/* Blazor's error bar: hidden until the framework shows it on a real error. */
+#blazor-error-ui {
+    color-scheme: light only;
+    background: var(--hl-warn-wash);
+    color: var(--hl-text-1);
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+/* Testimonial tiles render only when a real, attributed quote exists. The card
+   itself is the kit's (.hl-card carries surface, border, radius); these rules add
+   the page head and the quote's voice and the mono attribution row. Like the
+   header and the skills tabs, the markup is mirrored by prerender.py — keep both
+   in step. */
+.testimonials__head {
+    margin-top: 1.4rem;
+    padding-bottom: var(--hl-space-40);
+}
+
+.testimonials__title { max-width: 24ch; text-wrap: balance; }
+
+.testimonials__lede { margin-top: var(--hl-space-16); max-width: 62ch; }
+
+.testimonials__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--hl-space-16);
+}
+
+/* The empty state's console: the data file, honestly — one line, an empty
+   array. A short log, not the kit's fixed-height console: it hugs its line. */
+.testimonials__empty {
+    margin-top: var(--hl-space-24);
+    max-width: 40rem;
+}
+
+.testimonials__empty-log { height: auto; }
+
+.testimonial { margin: 0; }
+
+.testimonial__quote { margin: 0; }
+
+.testimonial__by {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--hl-space-6) var(--hl-space-12);
+    margin-top: var(--hl-space-16);
+    padding-top: var(--hl-space-12);
+    border-top: 1px solid var(--hl-line-faint);
+    font-family: var(--hl-font-mono);
+    font-size: .78rem;
+}
+
+.testimonial__name {
+    color: var(--hl-text-1);
+    font-weight: 500;
+}
+
+.testimonial__meta { color: var(--hl-text-4); }
+
+.testimonial__source {
+    margin-inline-start: auto;
+    color: var(--hl-accent);
+    text-decoration: none;
+}
+.testimonial__source::after { content: " ↗"; }
+.testimonial__source:hover { color: var(--hl-accent-bright); }
+
+/* ==========================================================================
+   404 — the router, as a console: the requested path, the failed match in the
+   warn colour, and the recovery routes. Mirrored by prerender.py's static 404
+   (which shows a generic "<this page>" line — change both).
+   ========================================================================== */
+
+.notfound__window {
+    margin-top: var(--hl-space-24);
+    max-width: 40rem;
+}
+
+/* A short log, not the kit's fixed-height console. */
+.notfound__log { height: auto; }
+
+.notfound__window .notfound__warn { color: var(--hl-warn); }
+
+.notfound__route a {
+    color: var(--hl-accent);
+    text-decoration: none;
+}
+.notfound__route a:hover { color: var(--hl-accent-bright); text-decoration: underline; }
+
+/* ==========================================================================
+   /styleguide — the kit, shown with this site's own content. UNSCOPED like the
+   skills section: prerender.py mirrors this page into the static shell with the
+   same class names, and a scoped component stylesheet cannot reach that copy.
+   Everything visual is a kit token; these rules are layout glue only, the same
+   role the kit's own demo page's demo-* classes play.
+   ========================================================================== */
+
+.sg-sub { margin: var(--hl-space-40) 0 var(--hl-space-16); }
+
+/* The intro's way back out of the reference. */
+.sg-back { margin-top: var(--hl-space-24); }
+
+/* Swatch grids — colours, gradients, radius, shadow, easing cards. */
+.sg-grid {
+    display: grid;
+    gap: var(--hl-space-12);
+    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+}
+
+.sg-grid--tight { grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr)); }
+.sg-grid--tiles { grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); }
+
+/* The contact-facts specimen: the kit's .hl-grid is single-column by default,
+   so the cells get their responsive columns here (shared by the static copy). */
+.sg-facts { grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
+.sg-facts .hl-cell { display: grid; gap: var(--hl-space-6); align-content: start; }
+.sg-facts dd { margin: 0; color: var(--hl-text-2); }
+
+.sg-swatch {
+    display: grid;
+    gap: var(--hl-space-6);
+    padding: var(--hl-space-10);
+    background: var(--hl-surface-2);
+    border: 1px solid var(--hl-line-soft);
+    border-radius: var(--hl-r-panel);
+    align-content: start;
+}
+
+.sg-swatch__chip {
+    height: 3.5rem;
+    border-radius: var(--hl-r-xs);
+    border: 1px solid var(--hl-line-soft);
+}
+
+.sg-swatch__grad { height: 4.5rem; }
+
+/* Token names and their resolved values are data: mono, small, breakable —
+   resolved gradient values are long, and a cell must never push the page wide. */
+.sg-swatch code,
+.sg-swatch small {
+    font-family: var(--hl-font-mono);
+    font-size: .625rem;
+    line-height: 1.5;
+    word-break: break-all;
+}
+.sg-swatch code { color: var(--hl-text-4); }
+.sg-swatch small { color: var(--hl-text-5); }
+
+/* The spacing scale as bars: the bar IS the token (width reads var). */
+.sg-space {
+    display: flex;
+    align-items: center;
+    gap: var(--hl-space-12);
+}
+
+.sg-space__bar {
+    flex: none;
+    height: .75rem;
+    background: var(--hl-accent-wash);
+    border: 1px solid var(--hl-accent-edge);
+    border-radius: var(--hl-r-xs);
+}
+
+.sg-mono {
+    font-family: var(--hl-font-mono);
+    font-size: .6875rem;
+    color: var(--hl-text-4);
+}
+
+/* Radius tiles and shadow casts. */
+.sg-radius {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 6rem;
+    height: 4rem;
+    background: var(--hl-surface-3);
+    border: 1px solid var(--hl-line);
+}
+
+.sg-shadow {
+    display: grid;
+    gap: var(--hl-space-8);
+    place-items: center;
+    min-height: 6.5rem;
+    padding: var(--hl-space-16) var(--hl-space-10) var(--hl-space-6);
+    background: var(--hl-bg);
+    border: 1px solid var(--hl-line-faint);
+    border-radius: var(--hl-r-panel);
+}
+
+.sg-shadow__cast {
+    width: 4rem;
+    height: 2rem;
+    border-radius: var(--hl-r-xs);
+    background: var(--hl-surface-4);
+}
+
+/* The glow-dot tile: the kit's own dot, sized up to a cast's role. */
+.sg-shadow__dot { width: .6rem; height: .6rem; }
+
+/* Type specimens: the token name in mono beside the copy set in the token. */
+.sg-typerow {
+    display: grid;
+    gap: var(--hl-space-6);
+    padding-block: var(--hl-space-16);
+    border-top: 1px solid var(--hl-line-faint);
+}
+@media (min-width: 720px) {
+    .sg-typerow { grid-template-columns: 13rem 1fr; align-items: baseline; }
+}
+.sg-typerow code {
+    font-family: var(--hl-font-mono);
+    font-size: .6875rem;
+    color: var(--hl-text-4);
+}
+.sg-term { font: var(--hl-type-term); color: var(--hl-text-3); }
+.sg-cta {
+    font: var(--hl-type-cta);
+    text-transform: uppercase;
+    letter-spacing: var(--hl-track-label);
+    color: var(--hl-text-1);
+}
+
+/* Easing cards: the plot is a static SVG; styleguide.js re-derives the path
+   from the live token value once it runs. */
+.sg-eases {
+    display: grid;
+    gap: var(--hl-space-12);
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+}
+.sg-ease {
+    display: grid;
+    gap: var(--hl-space-8);
+    justify-items: center;
+    padding: var(--hl-space-12);
+    background: var(--hl-surface-2);
+    border: 1px solid var(--hl-line-soft);
+    border-radius: var(--hl-r-panel);
+}
+.sg-ease svg { width: 4.5rem; height: 4.5rem; }
+.sg-ease code {
+    font-family: var(--hl-font-mono);
+    font-size: .625rem;
+    color: var(--hl-text-4);
+    text-align: center;
+    word-break: break-all;
+}
+
+/* Entrance-animation cards: a dashed stage, the animated box, the Replay chip
+   and a mono caption. The drivers below mirror the kit demo's — the keyframes
+   themselves are the kit's. */
+.sg-kfs {
+    display: grid;
+    gap: var(--hl-space-16);
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+}
+
+.sg-kf {
+    display: grid;
+    gap: var(--hl-space-12);
+    padding: var(--hl-space-16);
+    background: var(--hl-surface-2);
+    border: 1px solid var(--hl-line);
+    border-radius: var(--hl-r-card);
+    align-content: start;
+}
+
+.sg-kf__stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 6.5rem;
+    overflow: hidden;
+    border: 1px dashed var(--hl-line);
+    border-radius: var(--hl-r-panel);
+    background: var(--hl-surface-1);
+}
+
+.sg-kf__box {
+    position: relative;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: var(--hl-r-panel);
+    background: var(--hl-accent-wash);
+    border: 1px solid var(--hl-accent-edge);
+}
+
+.sg-kf__caption {
+    display: grid;
+    gap: var(--hl-space-4);
+    font-family: var(--hl-font-mono);
+    font-size: .625rem;
+    color: var(--hl-text-5);
+}
+.sg-kf__caption b { color: var(--hl-text-2); font-weight: 500; }
+
+/* Gated on hl-motion exactly like the kit's own animations: without the class
+   (dead JS, reduced motion) the box simply sits there, fully visible. */
+html.hl-motion .sg-kf--rise.is-anim { animation: hl-rise var(--hl-dur-5) var(--hl-ease-reveal) both; }
+html.hl-motion .sg-kf--scene.is-anim { animation: hl-scene-in var(--hl-dur-6) var(--hl-ease-expo) both; }
+html.hl-motion .sg-kf--line.is-anim { animation: hl-line-in var(--hl-dur-3) var(--hl-ease-out) both; }
+html.hl-motion .sg-kf--pop.is-anim { animation: hl-pop-in var(--hl-dur-4) var(--hl-ease-pop) both; }
+
+/* The live event log: terminal output, mono, internally scrollable so a long
+   JSON detail never pushes the page wide. */
+.sg-eventlog {
+    background: var(--hl-surface-1);
+    border: 1px solid var(--hl-line);
+    border-radius: var(--hl-r-window);
+    padding: var(--hl-space-16);
+    max-height: 16rem;
+    overflow: auto;
+}
+
+.sg-eventlog__line {
+    font-family: var(--hl-font-mono);
+    font-size: .65625rem;
+    line-height: 1.9;
+    color: var(--hl-text-4);
+    white-space: nowrap;
+}
+
+/* Component specimen rows. */
+.sg-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--hl-space-12);
+    align-items: center;
+}
+
+.sg-stack { display: grid; gap: var(--hl-space-16); }
+
+.sg-cards { display: flex; flex-wrap: wrap; gap: var(--hl-space-16); align-items: stretch; }
+.sg-cards .hl-card { flex: 1 1 16rem; }
+
+/* The trimmed console and the rail specimens read best on a measure, not the
+   full ruled column. */
+.sg-console { max-width: 40rem; }
+
+.sg-rails {
+    display: grid;
+    gap: var(--hl-space-16);
+    max-width: 34rem;
+}
+
+/* ==========================================================================
+   Reading progress — a hairline of accent across the top
+   ========================================================================== */
+
+@supports (animation-timeline: scroll()) {
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: var(--hl-accent);
+        transform-origin: 0 50%;
+        transform: scaleX(0);
+        animation: thread-read linear both;
+        animation-timeline: scroll();
+        z-index: 50;
+    }
+    @keyframes thread-read {
+        from { transform: scaleX(0); }
+        to { transform: scaleX(1); }
+    }
+}
+
+/* ==========================================================================
+   Scroll margins — anchors clear the sticky band
+   ========================================================================== */
+
+.sheet[id], .case[id], .section[id] { scroll-margin-top: var(--scroll-margin); }
+
+@media (max-width: 720px) {
+    .sheet[id], .case[id], .section[id] { scroll-margin-top: calc(var(--site-header-h) + .5rem); }
+}
+
+/* The nav strip never silently clips a link: below 430px the labels tighten so
+   all of them — the CV pill last, the recruiter's destination — stay on screen. */
+@media (max-width: 430px) {
+    .site-nav { gap: 0; }
+    .site-nav a {
+        padding: 0 .5rem;
+        font-size: .86rem;
+    }
+    .site-nav .site-nav__cta { margin-left: .25rem; }
+}
+
+/* ==========================================================================
+   Reduced motion — every hidden state restored, everything static
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .js-motion .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+    .js-motion .contact-dock:not(.is-shown) {
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+    }
+    body::before { animation: none; display: none; }
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
+}
+
+/* ==========================================================================
+   Print — chrome drops out; content prints complete
+   ========================================================================== */
+
+@media print {
+    .site-header,
+    .contact-dock,
+    .back-to-top,
+    .skip-link,
+    .tech-marquee,
+    .cv-actions { display: none !important; }
+
+    body::before { display: none; }
+
+    .js-motion .reveal {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .hero { background-image: none; overflow: visible; }
+    .hero__glow,
+    .hero__actions,
+    .hero__console { display: none; }
+    .hero__figures { border-bottom-color: #999; }
+
+    .sheet { border-top: 1px solid #999; padding-block: 1.5rem; }
+    .section__frame { border-color: #999; padding-block: 1.5rem; }
+
+    body { background: #fff; color: #111; }
+    a { color: #111; }
+}

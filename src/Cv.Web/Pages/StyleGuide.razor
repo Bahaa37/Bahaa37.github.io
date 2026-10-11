@@ -1,0 +1,608 @@
+@page "/styleguide"
+@using System.Net
+@using static Cv.Web.Components.Showcase.CaseStudyConsole
+@using System.Text
+@inject CvDataService CvData
+@inject HttpClient Http
+
+@*
+    The Hairline kit, shown live with this site's real content.
+
+    A working reference for future work on the site more than a marketing page —
+    it is linked from the footer, not the nav, and prerender.py marks it noindex
+    (a design-system page is for the humans building the site, not a route a
+    recruiter should land on). Every specimen is the kit's own markup fed from
+    cv.json through the same services the real pages use; nothing here is sample
+    content.
+
+    prerender.py's styleguide_body mirrors this whole page into the static shell
+    with the same sg-* class names (app.css styles both copies — a scoped sheet
+    cannot reach the static one). The token lists and easing constants below are
+    the kit's; when the vendored kit is re-synced, keep them in step.
+*@
+
+<PageTitle>Style guide · Bahaa Aldeen Mohamed</PageTitle>
+
+@if (document is null)
+{
+    <p class="booting">Loading…</p>
+}
+else
+{
+    @* ------------------------------------------------------------------ intro *@
+    <section class="section">
+        <div class="hl-container section__frame">
+            <header class="section__head" data-hl-reveal>
+                <h1 class="hl-display"><span class="hl-dim">Hairline,</span> as this site uses it</h1>
+                <p class="hl-lead">
+                    The tokens and components on this page come from Hairline, a design kit that
+                    lives in its own repository and is vendored into this
+                    one@(kitVersion is { } version ? $", at commit {version}" : "").
+                </p>
+                <a class="hl-btn hl-btn--ghost sg-back" href="/">Back to the portfolio</a>
+            </header>
+        </div>
+    </section>
+
+    @* ----------------------------------------------------------------- colour *@
+    <section class="section">
+        <div class="hl-container section__frame">
+            <header class="section__head" data-hl-reveal>
+                <h2 class="hl-h2"><span class="hl-dim">The</span> colour</h2>
+            </header>
+            <div class="sg-grid" data-hl-reveal>
+                @foreach (var token in ColorTokens)
+                {
+                    <div class="sg-swatch">
+                        <span class="sg-swatch__chip" style="@($"background: var({token})")"></span>
+                        <code>@token</code>
+                        @* Empty until js/styleguide.js runs: the swatch itself is the
+                           var(), so it always renders; the resolved value is the only
+                           thing the live cascade can add — and it changes with the theme. *@
+                        <small data-sg-token="@token"></small>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    @* -------------------------------------------------------- gradients, glows *@
+    <section class="section">
+        <div class="hl-container section__frame">
+            <header class="section__head" data-hl-reveal>
+                <h2 class="hl-h2"><span class="hl-dim">The</span> gradients and glows</h2>
+            </header>
+            <div class="sg-grid" data-hl-reveal>
+                @foreach (var token in GradientTokens)
+                {
+                    <div class="sg-swatch">
+                        <span class="sg-swatch__chip sg-swatch__grad" style="@($"background-image: var({token})")"></span>
+                        <code>@token</code>
+                        <small data-sg-token="@token"></small>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    @* ------------------------------------------------------------------- type *@
+    <section class="section">
+        <div class="hl-container section__frame">
+            <header class="section__head" data-hl-reveal>
+                <h2 class="hl-h2"><span class="hl-dim">The</span> type</h2>
+            </header>
+            <div data-hl-reveal>
+                <div class="sg-typerow"><code>--hl-type-display</code><span class="hl-display">I make the architecture decisions, then I write the code.</span></div>
+                <div class="sg-typerow"><code>--hl-type-h2</code><span class="hl-h2">Selected work, in depth</span></div>
+                <div class="sg-typerow"><code>--hl-type-h3</code><span class="hl-h3">@(TabGroups.Count > 0 ? TabGroups[0].Category : "")</span></div>
+                <div class="sg-typerow"><code>--hl-type-h4</code><span class="hl-h4">@FirstStudy?.DisplayTitle</span></div>
+                <div class="sg-typerow"><code>--hl-type-lead</code><span class="hl-lead">Anyone can list a technology. Where a skill shows up in the achievement record, the employers are named beside it.</span></div>
+                <div class="sg-typerow"><code>--hl-type-body</code><span class="hl-body">@(FirstStudy is null ? "" : FirstSentence(FirstStudy.Summary))</span></div>
+                <div class="sg-typerow"><code>--hl-type-label</code><span class="hl-label">@(roles.Count > 0 ? roles[0].Period.ToShortDisplayString() : "")</span></div>
+                <div class="sg-typerow"><code>--hl-type-term</code><span class="sg-term">open @(FirstStudy?.Slug)</span></div>
+                <div class="sg-typerow"><code>--hl-type-cta</code><span class="sg-cta">Read the CV</span></div>
+            </div>
+        </div>
+    </section>
+
+    @* --------------------------------------------------- space, radius, shadow *@
+    <section class="section">
+        <div class="hl-container section__frame">
+            <header class="section__head" data-hl-reveal>
+                <h2 class="hl-h2"><span class="hl-dim">The</span> space, radius and shadow</h2>
+            </header>
+
+            <h3 class="hl-h3 sg-sub">Space</h3>
+            <div class="sg-stack" data-hl-reveal>
+                @foreach (var px in SpaceScale)
+                {
+                    <div class="sg-space">
+                        <span class="sg-space__bar" style="@($"width: var(--hl-space-{px})")"></span>
+                        <code class="sg-mono">--hl-space-@px · @(px)px</code>
+                    </div>
+                }
+            </div>
+
+            <h3 class="hl-h3 sg-sub">Radius</h3>
+            <div class="sg-grid sg-grid--tight" data-hl-reveal>
+                @foreach (var (token, value) in RadiusTokens)
+                {
+                    <div class="sg-swatch">
+                        <span class="sg-radius" style="@($"border-radius: var({token})")"></span>
+                        <code>@token</code>
+                        <small>@value</small>
+                    </div>
+                }
+            </div>
+
+            <h3 class="hl-h3 sg-sub">Shadow</h3>
+            <div class="sg-grid sg-grid--tiles" data-hl-reveal>
+                @foreach (var token in ShadowTokens)
+                {
+                    <div class="sg-shadow">
+                        @if (token == "--hl-glow-dot")
+                        {
+                            <span class="hl-dot sg-shadow__dot"></span>
+                        }
+                        else
+                        {
+                            <span class="sg-shadow__cast" style="@($"box-shadow: var({token})")"></span>
+                        }
+                        <code class="sg-mono">@token</code>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    @* ----------------------------------------------------------------- motion *@
+    <section class="section">
+        <div class="hl-container section__frame">
+            <header class="section__head" data-hl-reveal>
+                <h2 class="hl-h2"><span class="hl-dim">The</span> motion</h2>
+            </header>
+
+            <h3 class="hl-h3 sg-sub">Easing</h3>
+            <div class="sg-eases" data-hl-reveal>
+                @foreach (var (token, x1, y1, x2, y2) in EaseTokens)
+                {
+                    <div class="sg-ease" data-sg-ease="@token">
+                        <svg viewBox="0 0 100 100" aria-hidden="true">
+                            <rect x="0" y="0" width="100" height="100" fill="none" stroke="var(--hl-line)" stroke-width="1" vector-effect="non-scaling-stroke"></rect>
+                            @* The static path is computed from the constants below; js/styleguide.js re-derives it from the token's live value once it runs. *@
+                            <path d="M @EasePath(x1, y1, x2, y2)" fill="none" stroke="var(--hl-accent)" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+                        </svg>
+                        <code>@token<br />@BezierText(x1, y1, x2, y2)</code>
+                    </div>
+                }
+            </div>
+
+            <h3 class="hl-h3 sg-sub">Entrances</h3>
+            <div class="sg-kfs" data-hl-reveal>
+                @foreach (var (id, boxClass, name, meta) in Entrances)
+                {
+                    <div class="sg-kf">
+                        <div class="sg-kf__stage"><div class="sg-kf__box @boxClass is-anim" id="@id"></div></div>
+                        @* Wired by js/styleguide.js (class out, reflow, class in). Under
+                           reduced motion the script relabels it "Motion reduced" and
+                           aria-disables it; without JS it is an inert chip — the box it
+                           would replay is fully visible either way. *@
+                        <button class="hl-chip" type="button" data-sg-replay data-sg-target="@id" data-sg-class="is-anim">Replay</button>
+                        <p class="sg-kf__caption"><b>@name</b>@meta</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    @* ------------------------------------------------------------- components *@
+    <section class="section">
+        <div class="hl-container section__frame">
+            <header class="section__head" data-hl-reveal>
+                <h2 class="hl-h2"><span class="hl-dim">The</span> components</h2>
+            </header>
+
+            <h3 class="hl-h3 sg-sub">Buttons</h3>
+            <div class="sg-row" data-hl-reveal>
+                <a class="hl-btn hl-btn--primary" href="/cv">Read the CV</a>
+                <a class="hl-btn hl-btn--ghost" href="/#work">See the work</a>
+                <a class="hl-btn hl-btn--primary hl-btn--sm" href="/cv">CV</a>
+                <a class="hl-btn hl-btn--ghost hl-btn--sm" href="/testimonials">Testimonials</a>
+                <button class="hl-btn hl-btn--primary" type="button" aria-disabled="true">Disabled</button>
+                <button class="hl-btn hl-btn--ghost" type="button" aria-disabled="true">Disabled ghost</button>
+            </div>
+
+            <h3 class="hl-h3 sg-sub">Chips, badge, live dot</h3>
+            <div class="sg-row" data-hl-reveal>
+                @* The run chip carries its study's slug as the label (the console's
+                   own grammar — see Hero); the title rides in the attributes. *@
+                <a class="hl-chip" href="@StudyUrl(FirstStudy)" data-hl-run="@FirstStudy?.Slug"
+                   title="@FirstStudy?.DisplayTitle" aria-label="Run: @FirstStudy?.DisplayTitle"><span class="hl-chip__label">@FirstStudy?.Slug</span></a>
+                <span class="hl-chip is-active" aria-pressed="true"><span class="hl-chip__label">@FirstStudy?.DisplayTitle</span></span>
+                <span class="hl-chip" aria-disabled="true"><span class="hl-chip__label">@SecondStudy?.DisplayTitle</span></span>
+                <span class="hl-badge">@(kitVersion is { } commit ? $"kit · {commit}" : "kit")</span>
+                <span class="hl-badge"><span class="hl-dot" aria-hidden="true"></span> live</span>
+            </div>
+
+            @if (FirstStudy is not null)
+            {
+                <h3 class="hl-h3 sg-sub">Cards</h3>
+                <div class="sg-cards" data-hl-reveal>
+                    <div class="hl-card">
+                        <h4 class="hl-h4">@FirstStudy.DisplayTitle</h4>
+                        <p class="hl-body">@FirstStudy.Summary</p>
+                    </div>
+                    @if (SecondStudy is not null)
+                    {
+                        <div class="hl-card hl-card--featured">
+                            <h4 class="hl-h4">@SecondStudy.DisplayTitle</h4>
+                            <p class="hl-body">@SecondStudy.Summary</p>
+                        </div>
+                    }
+                </div>
+
+                <h3 class="hl-h3 sg-sub">Ruled grid</h3>
+                <dl class="hl-grid sg-facts" data-hl-reveal>
+                    @foreach (var (label, value) in Facts)
+                    {
+                        <div class="hl-cell">
+                            <dt class="hl-label">@label</dt>
+                            <dd>@value</dd>
+                        </div>
+                    }
+                </dl>
+
+                @* The kit's compare, fed by the first case study's own record — the
+                   same problem/outcome pair the study's page argues. *@
+                <h3 class="hl-h3 sg-sub">Compare</h3>
+                <div class="hl-compare" data-hl-reveal>
+                    <div class="hl-compare__from">
+                        <h4 class="hl-h4">The problem</h4>
+                        <p class="hl-body">@FirstStudy.Problem</p>
+                    </div>
+                    <div class="hl-compare__to">
+                        <h4 class="hl-h4">The outcome</h4>
+                        <p class="hl-body">@(FirstStudy.Outcomes.FirstOrDefault() ?? "")</p>
+                    </div>
+                </div>
+            }
+
+            <h3 class="hl-h3 sg-sub">Rail</h3>
+            <div class="sg-rails">
+                @foreach (var role in roles.Take(2))
+                {
+                    <div class="hl-rail" data-hl-reveal>
+                        <span class="hl-rail__bar" aria-hidden="true"></span>
+                        <p class="hl-label"><span class="hl-key">@role.Period.ToShortDisplayString()</span> · @role.Company</p>
+                        <p class="hl-body">@role.Role</p>
+                    </div>
+                }
+            </div>
+
+            <h3 class="hl-h3 sg-sub">Tabs</h3>
+            @* The kit's tabs contract exactly (see SkillMatrix): list and controls
+               render hidden, panels stacked, so the whole thing reads without JS —
+               hairline.js unhides and wires it, on the static copy too. Evidence
+               rows come through the same SkillEvidence the real matrix uses. *@
+            <div class="hl-tabs" data-hl-tabs data-hl-autoplay="7000">
+                <div class="hl-tabs__list" hidden>
+                    @foreach (var group in TabGroups)
+                    {
+                        <button class="hl-tabs__tab" type="button" data-hl-tab="@Slug(group.Category)">@group.Category</button>
+                    }
+                </div>
+
+                @foreach (var group in TabGroups)
+                {
+                    var slug = Slug(group.Category);
+                    var evidence = SkillEvidence.For(group, document.Experience);
+                    var cited = evidence.Where(s => s.HasEvidence).ToList();
+                    var listed = evidence.Where(s => !s.HasEvidence).Select(s => s.Skill).ToList();
+
+                    <section class="hl-tabs__panel" data-hl-panel="@slug">
+                        <div class="skills-panel__copy">
+                            <h3 class="hl-h3">@group.Category</h3>
+                            @if (cited.Count > 0)
+                            {
+                                <ul class="skills-rows">
+                                    @foreach (var skill in cited)
+                                    {
+                                        <li class="skills-row" title="@(string.Join(" · ", skill.UsedAt))">
+                                            <span class="skills-row__arrow" aria-hidden="true">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                                                     stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M5 12h14" />
+                                                    <path d="m12 5 7 7-7 7" />
+                                                </svg>
+                                            </span>
+                                            <span class="skills-row__name">@skill.Skill</span>
+                                            <span class="skills-row__where">@Evidence(skill)</span>
+                                            <span class="visually-hidden">, used at @string.Join(", ", skill.UsedAt)</span>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            @if (listed.Count > 0)
+                            {
+                                <p class="skills-also">@string.Join(" · ", listed)</p>
+                            }
+                        </div>
+                    </section>
+                }
+
+                <div class="hl-tabs__controls" hidden>
+                    <div class="hl-ring">
+                        <svg viewBox="0 0 40 40" aria-hidden="true">
+                            <circle class="hl-ring__track" cx="20" cy="20" r="17"></circle>
+                            <circle class="hl-ring__bar" cx="20" cy="20" r="17" pathLength="100"></circle>
+                        </svg>
+                        <button class="hl-ring__btn" type="button" aria-label="Pause autoplay">
+                            <svg class="hl-ring__icon hl-ring__icon--pause" viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1.5" width="3" height="9" rx="1" fill="currentColor"/><rect x="7" y="1.5" width="3" height="9" rx="1" fill="currentColor"/></svg>
+                            <svg class="hl-ring__icon hl-ring__icon--play" viewBox="0 0 12 12" aria-hidden="true" hidden><path d="M3.5 1.5v9l7-4.5z" fill="currentColor"/></svg>
+                        </button>
+                    </div>
+                    <span class="hl-tabs__count">1 / @TabGroups.Count</span>
+                </div>
+            </div>
+
+            @if (ConsoleStudies.Count > 0)
+            {
+                <h3 class="hl-h3 sg-sub">Console</h3>
+                @* A trimmed Hero console — two studies instead of all of them, the
+                   same four lines per run, hairline.js driving it on both the static
+                   copy and this render. The lines come from CaseStudyConsole, shared with the Hero. *@
+                <div class="hl-window hl-enter hl-enter--scene hero__console sg-console"
+                     style="--hl-enter-delay:350ms" data-hl-console data-hl-interval="6000">
+                    <div class="hl-window__bar">
+                        <div class="hl-window__dots"><i></i><i></i><i></i></div>
+                        <span class="hl-window__title">bahaa · case-studies.run</span>
+                    </div>
+                    <div class="hl-window__log" aria-live="off">@RunLines(ConsoleStudies[0])</div>
+                    <div class="hl-window__status">
+                        <span class="hl-dot" aria-hidden="true"></span>
+                        <span>Tap a study to run it</span>
+                    </div>
+                    <div class="hl-window__chips">
+                        @foreach (var study in ConsoleStudies)
+                        {
+                            <a class="hl-chip" href="@StudyUrl(study)" data-hl-run="@study.Slug"
+                               title="@study.DisplayTitle" aria-label="Run: @study.DisplayTitle"><span class="hl-chip__label">@study.Slug</span></a>
+                        }
+                    </div>
+                    @foreach (var study in ConsoleStudies)
+                    {
+                        <template data-hl-run-id="@study.Slug">@RunLines(study)</template>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
+    @* ----------------------------------------------------------------- events *@
+    <section class="section">
+        <div class="hl-container section__frame">
+            <header class="section__head" data-hl-reveal>
+                <h2 class="hl-h2"><span class="hl-dim">The</span> events</h2>
+            </header>
+            @* js/styleguide.js listens for every hl:* event the kit's engine fires
+               on this page and prepends a line here. Statically: an honest empty
+               log, not a fake one. *@
+            <div class="sg-eventlog" id="sg-eventlog" data-hl-reveal>
+                <p class="sg-eventlog__line" data-sg-log-placeholder>waiting for events…</p>
+            </div>
+        </div>
+    </section>
+}
+
+@code {
+    [Inject]
+    private IJSRuntime JS { get; set; } = default!;
+
+    private CvDocument? document;
+    private IReadOnlyList<ExperienceEntry> roles = [];
+    private string? kitVersion;
+    private bool wired;
+    private IJSObjectReference? motion;
+    private IJSObjectReference? styleguide;
+
+    // The kit's colour and gradient tokens, in the kit demo's own order. These are
+    // the kit's values, kept in step with kit/hairline.css when the kit is re-synced;
+    // the resolved values under the current theme are read at runtime by
+    // js/styleguide.js, which is why these lists carry names only.
+    private static readonly string[] ColorTokens =
+    [
+        "--hl-bg", "--hl-surface-1", "--hl-surface-2", "--hl-surface-3", "--hl-surface-4",
+        "--hl-line", "--hl-line-soft", "--hl-line-faint",
+        "--hl-text-1", "--hl-text-2", "--hl-text-3", "--hl-text-4", "--hl-text-5",
+        "--hl-accent", "--hl-accent-bright", "--hl-accent-teal", "--hl-accent-wash", "--hl-accent-edge",
+        "--hl-info", "--hl-warn", "--hl-warn-wash", "--hl-gold", "--hl-violet",
+        "--hl-action-bg", "--hl-action-ink", "--hl-header-bg", "--hl-veil", "--hl-raise", "--hl-edge-bright", "--hl-ghost-bg",
+    ];
+
+    private static readonly string[] GradientTokens =
+    [
+        "--hl-glow-accent", "--hl-glow-gold", "--hl-glow-violet", "--hl-wash-top",
+        "--hl-lit-x", "--hl-lit-y", "--hl-lit-compare", "--hl-sheen", "--hl-hero-mesh",
+    ];
+
+    // Easing tokens with their control points — theme-independent constants, so the
+    // plot and the printed value are correct statically; the live value is re-read
+    // (and the plot re-derived) by js/styleguide.js all the same.
+    private static readonly (string Token, double X1, double Y1, double X2, double Y2)[] EaseTokens =
+    [
+        ("--hl-ease-standard", 0.4, 0, 0.2, 1),
+        ("--hl-ease-out", 0, 0, 0.2, 1),
+        ("--hl-ease-reveal", 0.2, 0.8, 0.2, 1),
+        ("--hl-ease-expo", 0.22, 1, 0.36, 1),
+        ("--hl-ease-pop", 0.2, 0.9, 0.3, 1.2),
+    ];
+
+    private static readonly int[] SpaceScale = [4, 6, 8, 10, 12, 16, 20, 24, 40, 56, 80];
+
+    private static readonly (string Token, string Value)[] RadiusTokens =
+    [
+        ("--hl-r-pill", "9999px"),
+        ("--hl-r-window", "16px"),
+        ("--hl-r-card", "12px"),
+        ("--hl-r-panel", "10px"),
+        ("--hl-r-chip-sq", "6px"),
+        ("--hl-r-xs", "3px"),
+    ];
+
+    private static readonly string[] ShadowTokens =
+    [
+        "--hl-shadow-deep", "--hl-shadow-window", "--hl-glow-lift", "--hl-glow-chip", "--hl-glow-dot",
+    ];
+
+    private static readonly (string Id, string BoxClass, string Name, string Meta)[] Entrances =
+    [
+        ("sg-kf-rise", "sg-kf--rise", "hl-rise", "700ms · reveal ease"),
+        ("sg-kf-scene", "sg-kf--scene", "hl-scene-in", "800ms · expo ease"),
+        ("sg-kf-line", "sg-kf--line", "hl-line-in", "300ms · out ease"),
+        ("sg-kf-pop", "sg-kf--pop", "hl-pop-in", "500ms · pop ease"),
+    ];
+
+    private List<CaseStudy> OrderedStudies =>
+        document?.CaseStudies.OrderBy(c => c.DisplayOrder).ToList() ?? [];
+
+    private CaseStudy? FirstStudy => OrderedStudies.FirstOrDefault();
+
+    private CaseStudy? SecondStudy => OrderedStudies.Skip(1).FirstOrDefault();
+
+    /// <summary>The console's two studies: the flagship and its follow-up, the same opening pair the home page argues.</summary>
+    private List<CaseStudy> ConsoleStudies => OrderedStudies.Take(2).ToList();
+
+    /// <summary>The first two skill groups in cv.json's order — real groups, real evidence.</summary>
+    private List<SkillGroup> TabGroups => document?.SkillGroups.Take(2).ToList() ?? [];
+
+    /// <summary>The facts a recruiter asks for first — the same rows Home's contact grid renders.</summary>
+    private IEnumerable<(string Label, string Value)> Facts
+    {
+        get
+        {
+            var profile = document!.Profile;
+
+            if (!string.IsNullOrWhiteSpace(profile.Timezone))
+            {
+                yield return ("Timezone", profile.Timezone);
+            }
+
+            if (!string.IsNullOrWhiteSpace(profile.Availability))
+            {
+                yield return ("Availability", profile.Availability);
+            }
+
+            if (!string.IsNullOrWhiteSpace(profile.Relocation))
+            {
+                yield return ("Working arrangement", profile.Relocation);
+            }
+
+            if (profile.Languages.Count > 0)
+            {
+                yield return ("Languages", string.Join(" · ", profile.Languages));
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        document = await CvData.GetAsync();
+        roles = CareerSummary.InReverseChronologicalOrder(document.Experience);
+        kitVersion = await ReadKitVersionAsync();
+    }
+
+    /// <summary>
+    /// The vendored kit's commit, read from kit/VERSION over HTTP so the page can
+    /// never claim a commit the deployed kit does not carry.
+    /// </summary>
+    /// <remarks>
+    /// A bare-path fetch, like the module imports CLAUDE.md lists as accepted
+    /// exceptions — and forced to revalidate, because a stale hash is the one wrong
+    /// answer here. Any failure returns null and the intro sentence simply omits
+    /// the clause: a missing version is honest, a broken page is not.
+    /// </remarks>
+    private async Task<string?> ReadKitVersionAsync()
+    {
+        try
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, "kit/VERSION");
+            request.SetBrowserRequestCache(BrowserRequestCache.NoCache);
+
+            using var response = await Http.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            var version = (await response.Content.ReadAsStringAsync()).Trim();
+
+            return version.Length == 0 ? null : version;
+        }
+        catch (HttpRequestException)
+        {
+            return null;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // The sections exist only after the document has loaded and rendered, so the
+        // wiring lands here rather than on initialization (the same shape as Home).
+        if (document is null || wired)
+        {
+            return;
+        }
+
+        wired = true;
+
+        // motion.js's start() normalizes the console templates Blazor renders as
+        // literal children and re-scans the new DOM for the kit (consoles, tabs,
+        // reveals) — without it this page's kit behaviours never come alive post-boot.
+        motion = await JS.InvokeAsync<IJSObjectReference>("import", "./js/motion.js");
+        await motion.InvokeVoidAsync("start");
+
+        // Then this page's own module: live token values, theme re-reads, Replay,
+        // the event log. js/styleguide.js is the accepted bare-path import
+        // (CLAUDE.md), fetched by literal path exactly like motion.js above.
+        styleguide = await JS.InvokeAsync<IJSObjectReference>("import", "./js/styleguide.js");
+        await styleguide.InvokeVoidAsync("init");
+    }
+
+    /// <summary>The employer evidence in the compact form a row can carry (SkillMatrix's form).</summary>
+    private static string Evidence(SkillWithEvidence skill)
+    {
+        var first = skill.UsedAt[0];
+
+        return skill.UsedAt.Count > 1 ? $"{first} +{skill.UsedAt.Count - 1}" : first;
+    }
+
+    /// <summary>The category as a tab id: lowercase, dashes, no ampersands (SkillMatrix's slug).</summary>
+    private static string Slug(string category)
+    {
+        var slug = new StringBuilder();
+
+        foreach (var c in category.ToLowerInvariant())
+        {
+            slug.Append(char.IsLetterOrDigit(c) ? c : '-');
+        }
+
+        return slug.ToString().Trim('-');
+    }
+
+    /// <summary>The easing plot as an SVG path: 41 samples, y flipped, one decimal — the kit demo's sampler.</summary>
+    private static string EasePath(double x1, double y1, double x2, double y2)
+    {
+        static double Bezier(double a, double b, double t) =>
+            3 * (1 - t) * (1 - t) * t * a + 3 * (1 - t) * t * t * b + t * t * t;
+
+        var points = Enumerable.Range(0, 41).Select(i =>
+        {
+            var t = i / 40.0;
+
+            return $"{Bezier(x1, x2, t) * 100:F1},{100 - Bezier(y1, y2, t) * 100:F1}";
+        });
+
+        return string.Join(" L ", points);
+    }
+
+    /// <summary>The control points as the token's own cubic-bezier text, for the static label.</summary>
+    private static string BezierText(double x1, double y1, double x2, double y2) =>
+        $"cubic-bezier({x1}, {y1}, {x2}, {y2})";
+}
